@@ -457,7 +457,7 @@
                 <a href="#university" class="menu-link" onclick="toggleMenu()"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></a>
                 <a href="#contact" class="menu-link" onclick="toggleMenu()"><i class="fas fa-envelope"></i><span data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</span></a>
                 <a href="#" class="menu-link" onclick="openReportModal(); toggleMenu(); return false;"><i class="fas fa-exclamation-triangle"></i><span data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</span></a>
-                <!-- تم إزالة رابط لوحة التحكم من هنا ليصبح الدخول فقط عبر رابط url/admin02 -->
+                <!-- تم إزالة رابط لوحة التحكم من هنا ليصبح الدخول فقط عبر رابط url/#adminblida2 -->
             </div>
         </div>
 
@@ -479,8 +479,6 @@
             </div>
         </section>
         
-        <!-- ملاحظة: تم إزالة مربع عرض التسجيلات من واجهة الزوار هنا بناءً على طلبك -->
-
         <!-- قسم الإحصائيات (إنجازاتنا) -->
         <section class="section" id="stats">
             <div class="section-header animate-on-scroll">
@@ -994,7 +992,7 @@
 
         // دالة فحص وتأمين رابط لوحة التحكم (مخفي للزوار تماما)
         function checkAdminHash() {
-            if (window.location.hash === '#/admin02') {
+            if (window.location.hash === '#/adminblida2' || window.location.hash === '#adminblida2') {
                 if (!isAdmin) { openAdminLogin(); }
             } else {
                 if (isAdmin) { logoutAdmin(); }
@@ -1394,8 +1392,8 @@
                 document.getElementById('content-pages').style.display = 'none';
                 document.getElementById('admin-panel').classList.add('active');
                 
-                // تحديث الرابط ليكون /#admin02 كما طلبت
-                window.location.hash = '#/admin02';
+                // تحديث الرابط ليكون /#adminblida2
+                window.location.hash = '#/adminblida2';
                 
                 showAdminSection('dashboard');
                 loadAdminStats();
