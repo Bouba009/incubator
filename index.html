@@ -1450,9 +1450,12 @@
                 document.getElementById('public-site').style.display = 'none';
                 document.getElementById('content-pages').style.display = 'none';
                 document.getElementById('admin-panel').classList.add('active');
+                document.getElementById('admin-panel').style.display = 'block';
                 window.location.hash = '#/admin02';
-                
-                showAdminSection('dashboard');
+
+                // Show dashboard by default and mark it active
+                var dashboardNav = document.querySelector('.admin-nav-item[onclick*="dashboard"]');
+                showAdminSection('dashboard', dashboardNav);
                 loadAdminStats();
                 loadReports();
                 showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Connexion réussie');
@@ -1469,20 +1472,33 @@
             showToast('info', currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Déconnecté');
         }
 
-        function showAdminSection(section, element = null) {
-            document.querySelectorAll('.admin-section-content').forEach(el => el.style.display = 'none');
-            const targetSection = document.getElementById(`admin-${section}`);
-            if (targetSection) targetSection.style.display = 'block';
-
-            document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
-            if (element) {
-                element.classList.add('active');
-            } else {
-                const activeNav = document.querySelector(`.admin-nav-item[onclick*="${section}"]`);
-                if (activeNav) activeNav.classList.add('active');
+        function showAdminSection(section, clickedElement) {
+            // Hide ALL admin section contents
+            var allSections = document.querySelectorAll('.admin-section-content');
+            for (var i = 0; i < allSections.length; i++) {
+                allSections[i].style.display = 'none';
             }
 
-            const titles = {
+            // Show the selected section
+            var targetId = 'admin-' + section;
+            var targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Remove active class from ALL nav items
+            var allNavItems = document.querySelectorAll('.admin-nav-item');
+            for (var i = 0; i < allNavItems.length; i++) {
+                allNavItems[i].classList.remove('active');
+            }
+
+            // Add active class to clicked element
+            if (clickedElement && clickedElement.classList) {
+                clickedElement.classList.add('active');
+            }
+
+            // Update title
+            var titles = {
                 dashboard: { ar: 'الداشبورد', fr: 'Tableau de Bord' },
                 banner: { ar: 'إضافة حدث أو دورة', fr: 'Événement / Bannière' },
                 stats: { ar: 'تعديل الإنجازات', fr: 'Réalisations' },
@@ -1494,18 +1510,20 @@
                 privacy: { ar: 'الخصوصية والموقع', fr: 'Confidentialité et Localisation' },
                 reports: { ar: 'الإبلاغات', fr: 'Signalements' }
             };
-            
-            const titleEl = document.getElementById('admin-section-title');
+
+            var titleEl = document.getElementById('admin-section-title');
             if (titleEl && titles[section]) {
                 titleEl.textContent = currentLang === 'ar' ? titles[section].ar : titles[section].fr;
                 titleEl.setAttribute('data-ar', titles[section].ar);
                 titleEl.setAttribute('data-fr', titles[section].fr);
             }
 
+            // Load section-specific data
             if (section === 'dashboard') loadAdminStats();
             else if (section === 'reports') loadReports();
         }
 
+        
         async function loadAdminStats() {
             const visitsSnap = await getDoc(doc(db, 'settings', 'visits'));
             if (visitsSnap.exists()) {
