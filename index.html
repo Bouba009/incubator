@@ -31,6 +31,7 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        // تصدير دوال Firebase لتكون متاحة
         window.firebaseDB = db;
         window.firebaseStorage = storage;
         window.firestoreModules = { collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp };
@@ -40,54 +41,114 @@
     <style>
         /* ==================== المتغيرات الأساسية ==================== */
         :root {
-            --purple-primary: #7C3AED; --purple-dark: #6D28D9; --purple-light: #A78BFA;
-            --orange-primary: #F97316; --orange-dark: #EA580C; --orange-light: #FDBA74;
-            --white: #FFFFFF; --gray-50: #F9FAFB; --gray-100: #F3F4F6;
-            --gray-200: #E5E7EB; --gray-600: #4B5563; --gray-800: #1F2937; --gray-900: #111827;
+            --purple-primary: #7C3AED;
+            --purple-dark: #6D28D9;
+            --purple-light: #A78BFA;
+            --orange-primary: #F97316;
+            --orange-dark: #EA580C;
+            --orange-light: #FDBA74;
+            --white: #FFFFFF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-600: #4B5563;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
             --gradient-purple: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
             --gradient-orange: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
             --gradient-mixed: linear-gradient(135deg, #7C3AED 0%, #F97316 100%);
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1); --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--gray-50); color: var(--gray-800); overflow-x: hidden; line-height: 1.6; }
-        body.fr-mode { direction: ltr; font-family: 'Montserrat', sans-serif; }
 
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        body.fr-mode { 
+            direction: ltr; 
+            font-family: 'Montserrat', sans-serif; 
+        }
+
+        /* شريط التمرير */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--gray-100); }
         ::-webkit-scrollbar-thumb { background: var(--purple-primary); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--purple-dark); }
 
+        /* الحركات */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         
-        .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
 
-        /* ==================== القائمة ==================== */
-        .navbar { position: fixed; top: 0; width: 100%; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(124, 58, 237, 0.1); transition: all 0.3s ease; }
+        /* ==================== القائمة العلوية ==================== */
+        .navbar {
+            position: fixed;
+            top: 0; width: 100%; z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+            transition: all 0.3s ease;
+        }
         .navbar.scrolled { box-shadow: var(--shadow-lg); background: rgba(255, 255, 255, 0.98); }
-        .navbar-container { max-width: 1400px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .navbar-container {
+            max-width: 1400px; margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
         .logo-section { display: flex; align-items: center; gap: 1rem; }
         .logo-img { height: 55px; width: auto; transition: transform 0.3s ease; }
         .logo-img:hover { transform: scale(1.05); }
-        .logo-text { font-weight: 900; font-size: 1.2rem; background: var(--gradient-mixed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text {
+            font-weight: 900; font-size: 1.2rem;
+            background: var(--gradient-mixed);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
         
         .lang-switcher { display: flex; background: var(--gray-100); border-radius: 50px; padding: 4px; gap: 4px; }
-        .lang-btn { padding: 6px 16px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.3s ease; background: transparent; color: var(--gray-600); font-family: inherit; }
+        .lang-btn {
+            padding: 6px 16px; border: none; border-radius: 50px;
+            cursor: pointer; font-weight: 700; font-size: 0.95rem;
+            transition: all 0.3s ease; background: transparent; color: var(--gray-600);
+            font-family: inherit; letter-spacing: 1px;
+        }
         .lang-btn.active { background: var(--gradient-purple); color: white; box-shadow: var(--shadow-sm); }
         
-        .menu-toggle { width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--gradient-purple); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-md); }
+        .menu-toggle {
+            width: 45px; height: 45px; border-radius: 12px; border: none;
+            background: var(--gradient-purple); color: white;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-md);
+        }
         .menu-toggle:hover { transform: scale(1.1); box-shadow: var(--shadow-lg); }
 
-        .side-menu { position: fixed; top: 0; right: -400px; width: 380px; max-width: 90vw; height: 100vh; background: white; z-index: 2000; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: right 0.4s ease; overflow-y: auto; padding: 2rem; }
-        body.fr-mode .side-menu { right: auto; left: -400px; transition: left 0.4s ease; }
+        /* ==================== القائمة الجانبية ==================== */
+        .side-menu {
+            position: fixed; top: 0; right: -400px; width: 380px; max-width: 90vw; height: 100vh;
+            background: white; z-index: 2000; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; padding: 2rem;
+        }
+        body.fr-mode .side-menu { right: auto; left: -400px; transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         body.fr-mode .side-menu.open { left: 0; right: auto; }
         .side-menu.open { right: 0; }
         .side-menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--gray-100); }
@@ -95,15 +156,20 @@
         .close-menu { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--gray-100); color: var(--gray-600); cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
         .close-menu:hover { background: var(--orange-primary); color: white; }
         .menu-links { display: flex; flex-direction: column; gap: 0.5rem; }
-        .menu-link { padding: 1rem 1.25rem; border-radius: var(--radius-md); text-decoration: none; color: var(--gray-800); font-weight: 700; display: flex; align-items: center; gap: 1rem; transition: all 0.3s ease; font-size: 1.05rem; }
+        .menu-link {
+            padding: 1rem 1.25rem; border-radius: var(--radius-md); text-decoration: none;
+            color: var(--gray-800); font-weight: 700; display: flex; align-items: center; gap: 1rem;
+            transition: all 0.3s ease; font-size: 1.05rem;
+        }
         .menu-link:hover { background: var(--gradient-purple); color: white; transform: translateX(-5px); box-shadow: var(--shadow-md); }
         body.fr-mode .menu-link:hover { transform: translateX(5px); }
         .menu-link i { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); border-radius: 8px; color: var(--purple-primary); transition: all 0.3s ease; }
         .menu-link:hover i { background: rgba(255,255,255,0.2); color: white; }
+        
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1999; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .menu-overlay.active { opacity: 1; visibility: visible; }
 
-        /* ==================== البانر والأقسام ==================== */
+        /* ==================== قسم البانر الرئيسي ==================== */
         .hero { margin-top: 80px; position: relative; min-height: 600px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
         .hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; filter: brightness(0.3); transform: scale(1.1); transition: transform 10s ease; }
         .hero:hover .hero-bg { transform: scale(1.2); }
@@ -115,11 +181,13 @@
         .hero-cta { display: inline-flex; align-items: center; gap: 0.75rem; background: var(--gradient-orange); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4); animation: pulse 2s ease infinite; font-family: inherit; }
         .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(249, 115, 22, 0.5); }
 
+        /* ==================== الأقسام العامة ==================== */
         .section { padding: 5rem 2rem; max-width: 1400px; margin: 0 auto; }
         .section-header { text-align: center; margin-bottom: 3.5rem; }
-        .section-tag { display: inline-block; padding: 0.5rem 1.25rem; background: rgba(124, 58, 237, 0.1); color: var(--purple-primary); border-radius: 50px; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; }
+        .section-tag { display: inline-block; padding: 0.5rem 1.25rem; background: rgba(124, 58, 237, 0.1); color: var(--purple-primary); border-radius: 50px; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }
         .section-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; color: var(--gray-900); margin-bottom: 1rem; }
 
+        /* قسم الإحصائيات (الإنجازات) */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
         .stat-card { background: white; padding: 2rem; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-md); transition: all 0.4s ease; position: relative; overflow: hidden; border: 1px solid var(--gray-100); }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient-mixed); transform: scaleX(0); transition: transform 0.4s ease; }
@@ -134,25 +202,35 @@
         .stat-number { font-size: 2.8rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.5rem; line-height: 1; }
         .stat-label { font-weight: 700; color: var(--gray-700); font-size: 1.05rem; }
 
+        /* قسم المدونة (سلايدر) */
         .blog-section { background: white; border-radius: var(--radius-xl); padding: 4rem 3rem; margin: 2rem auto; max-width: 1400px; box-shadow: var(--shadow-md); position: relative; }
         .blog-slider-container { position: relative; overflow: hidden; padding: 1rem 0; }
-        .blog-slider { display: flex; transition: transform 0.5s ease; }
-        .blog-card { flex: 0 0 calc(33.333% - 1.33rem); margin: 0 0.665rem; background: var(--gray-50); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: all 0.4s ease; cursor: pointer; border: 1px solid var(--gray-200); }
+        .blog-slider { display: flex; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .blog-card {
+            flex: 0 0 calc(33.333% - 1.33rem); margin: 0 0.665rem;
+            background: var(--gray-50); border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow-sm); transition: all 0.4s ease; cursor: pointer; border: 1px solid var(--gray-200);
+        }
         .blog-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-xl); border-color: var(--purple-light); }
         .blog-image { width: 100%; height: 220px; object-fit: cover; transition: transform 0.5s ease; }
         .blog-card:hover .blog-image { transform: scale(1.08); }
         .blog-content { padding: 1.5rem; }
         .blog-title { font-size: 1.15rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.75rem; line-height: 1.4; }
         .blog-excerpt { font-size: 0.95rem; color: var(--gray-600); line-height: 1.6; font-weight: 500; }
+        
         .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: white; color: var(--purple-primary); font-size: 1.2rem; cursor: pointer; box-shadow: var(--shadow-lg); transition: all 0.3s ease; z-index: 10; display: flex; align-items: center; justify-content: center; }
         .slider-btn:hover { background: var(--purple-primary); color: white; transform: translateY(-50%) scale(1.1); }
-        .slider-prev { right: 10px; } .slider-next { left: 10px; }
-        body.fr-mode .slider-prev { right: auto; left: 10px; } body.fr-mode .slider-next { left: auto; right: 10px; }
+        .slider-prev { right: 10px; }
+        .slider-next { left: 10px; }
+        body.fr-mode .slider-prev { right: auto; left: 10px; }
+        body.fr-mode .slider-next { left: auto; right: 10px; }
 
+        /* الشركاء */
         .partners-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; align-items: center; }
         .partner-logo { width: 160px; height: 100px; object-fit: contain; filter: grayscale(100%); opacity: 0.6; transition: all 0.4s ease; }
         .partner-logo:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.15); }
 
+        /* الفريق */
         .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
         .team-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); transition: all 0.4s ease; text-align: center; border: 1px solid var(--gray-100); }
         .team-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-xl); }
@@ -164,6 +242,7 @@
         .team-name { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.25rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .team-role { color: var(--orange-light); font-weight: 800; font-size: 0.95rem; }
 
+        /* قسم الجامعة */
         .university-section { background: var(--gradient-purple); border-radius: var(--radius-xl); padding: 4rem 3rem; color: white; text-align: center; position: relative; overflow: hidden; box-shadow: var(--shadow-lg); }
         .university-section::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3; }
         .uni-logo { height: 110px; width: auto; margin-bottom: 2rem; filter: brightness(0) invert(1); position: relative; z-index: 1; }
@@ -171,6 +250,7 @@
         .uni-link { padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; color: white; text-decoration: none; font-weight: 700; transition: all 0.3s ease; }
         .uni-link:hover { background: white; color: var(--purple-primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
+        /* ==================== الفوتر والاتصال ==================== */
         .footer { background: var(--gray-900); color: white; padding: 4rem 2rem 2rem; margin-top: 4rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; max-width: 1400px; margin: 0 auto; }
         .footer-brand { display: flex; flex-direction: column; gap: 1rem; }
@@ -179,21 +259,38 @@
         .footer-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--orange-primary); position: relative; padding-bottom: 0.5rem; }
         .footer-title::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: var(--purple-primary); border-radius: 2px; }
         body.fr-mode .footer-title::after { right: auto; left: 0; }
+        
         .footer-links { display: flex; flex-direction: column; gap: 0.75rem; }
         .footer-link { color: rgba(255,255,255,0.8); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease; font-weight: 600; }
         .footer-link:hover { color: var(--orange-primary); transform: translateX(-5px); }
         body.fr-mode .footer-link:hover { transform: translateX(5px); }
         .footer-link i { color: var(--purple-light); }
+        
         .footer-contact-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; color: rgba(255,255,255,0.9); font-weight: 600; }
         .footer-contact-icon { width: 45px; height: 45px; border-radius: 12px; background: rgba(124, 58, 237, 0.2); display: flex; align-items: center; justify-content: center; color: var(--purple-light); font-size: 1.2rem; }
+        
         .footer-bottom { max-width: 1400px; margin: 3rem auto 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         .footer-copyright { color: rgba(255,255,255,0.5); font-size: 0.95rem; font-weight: 600; }
         .footer-social { display: flex; gap: 1rem; }
         .social-btn { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; }
         .social-btn:hover { background: var(--orange-primary); transform: translateY(-3px); }
 
+        /* خريطة */
         .map-container { width: 100%; height: 250px; border-radius: var(--radius-lg); overflow: hidden; margin-top: 1rem; border: 2px solid rgba(124, 58, 237, 0.2); }
         .map-container iframe { width: 100%; height: 100%; border: none; }
+
+        /* ==================== النوافذ المنبثقة (Modals) ==================== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { background: white; border-radius: var(--radius-xl); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9) translateY(20px); transition: all 0.3s ease; box-shadow: var(--shadow-xl); }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
+        .modal-title { font-size: 1.5rem; font-weight: 900; color: var(--gray-900); }
+        .modal-close { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--gray-100); color: var(--gray-600); cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
+        .modal-close:hover { background: #FEE2E2; color: #EF4444; }
+        .modal-body { padding: 2rem; }
+        .modal-image { width: 100%; height: 350px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 1.5rem; }
+        .modal-content { font-size: 1.1rem; line-height: 1.8; color: var(--gray-700); font-weight: 500; }
 
         /* ==================== لوحة تحكم الأدمن ==================== */
         .admin-panel { display: none; min-height: 100vh; background: var(--gray-100); }
@@ -215,7 +312,7 @@
         .admin-logout { padding: 0.625rem 1.5rem; background: #FEE2E2; color: #EF4444; border: none; border-radius: var(--radius-md); font-weight: 800; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
         .admin-logout:hover { background: #EF4444; color: white; }
 
-        /* احصائيات الأدمن الملونة */
+        /* احصائيات الأدمن */
         .admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .admin-stat-card { background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 1.2rem; transition: all 0.3s ease; border-right: 4px solid var(--purple-primary); }
         body.fr-mode .admin-stat-card { border-right: none; border-left: 4px solid var(--purple-primary); }
@@ -225,6 +322,7 @@
         .admin-stat-value { font-size: 2rem; font-weight: 900; color: var(--gray-900); line-height: 1; margin-bottom: 0.2rem; }
         .admin-stat-label { font-size: 0.9rem; color: var(--gray-600); font-weight: 700; }
 
+        /* النماذج وعناصر الإدخال */
         .admin-section { background: white; border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); }
         .admin-section-title { font-size: 1.3rem; font-weight: 900; color: var(--gray-900); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; gap: 0.75rem; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
@@ -244,6 +342,7 @@
         .btn-danger { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
         .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
 
+        /* جداول الإدارة */
         .admin-table-container { overflow-x: auto; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .admin-table th { background: var(--gray-100); padding: 1.2rem 1rem; text-align: start; font-weight: 900; color: var(--gray-700); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -252,24 +351,12 @@
         .table-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--gray-200); }
         .table-actions { display: flex; gap: 0.5rem; }
         .table-btn { padding: 0.5rem 0.75rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease; }
-        .table-btn-edit { background: #FEF08A; color: #CA8A04; }
-        .table-btn-edit:hover { background: #CA8A04; color: white; }
+        .table-btn-edit { background: #FEF3C7; color: #D97706; }
+        .table-btn-edit:hover { background: #D97706; color: white; }
         .table-btn-delete { background: #FEE2E2; color: #EF4444; }
         .table-btn-delete:hover { background: #EF4444; color: white; }
 
-        /* ==================== النوافذ والإشعارات ==================== */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal { background: white; border-radius: var(--radius-xl); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9) translateY(20px); transition: all 0.3s ease; box-shadow: var(--shadow-xl); }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-        .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
-        .modal-title { font-size: 1.5rem; font-weight: 900; color: var(--gray-900); }
-        .modal-close { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--gray-100); color: var(--gray-600); cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
-        .modal-close:hover { background: #FEE2E2; color: #EF4444; }
-        .modal-body { padding: 2rem; }
-        .modal-image { width: 100%; height: 350px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 1.5rem; }
-        .modal-content { font-size: 1.1rem; line-height: 1.8; color: var(--gray-700); font-weight: 500; }
-
+        /* نافذة تسجيل الدخول */
         .login-container { max-width: 400px; width: 100%; background: white; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-xl); text-align: center; }
         .login-logo { height: 80px; margin-bottom: 1.5rem; }
         .login-title { font-size: 1.6rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.5rem; }
@@ -279,6 +366,7 @@
         .login-error { color: #EF4444; font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; display: none; }
         .login-error.show { display: block; }
 
+        /* الإشعارات */
         .toast-container { position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); z-index: 5000; display: flex; flex-direction: column; gap: 0.75rem; }
         .toast { padding: 1rem 1.5rem; border-radius: var(--radius-md); color: white; font-weight: 800; display: flex; align-items: center; gap: 0.75rem; box-shadow: var(--shadow-lg); animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s; min-width: 300px; }
         @keyframes fadeOut { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
@@ -286,18 +374,20 @@
         .toast-error { background: linear-gradient(135deg, #EF4444, #DC2626); }
         .toast-info { background: linear-gradient(135deg, #3B82F6, #2563EB); }
 
+        /* تحميل */
         .spinner { width: 40px; height: 40px; border: 4px solid var(--gray-200); border-top-color: var(--purple-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .loading-overlay.active { opacity: 1; visibility: visible; }
 
+        /* صفحات المحتوى المستقلة */
         .content-page { background: white; padding: 3rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); max-width: 900px; margin: 2rem auto; }
         .content-page h2 { color: var(--purple-dark); margin-bottom: 1.5rem; font-size: 2rem; font-weight: 900; border-bottom: 2px solid var(--gray-100); padding-bottom: 1rem; }
         .content-page p { color: var(--gray-700); line-height: 1.8; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem; }
 
         /* متجاوب */
         @media (max-width: 1024px) {
-            .blog-card { flex: 0 0 calc(50% - 1rem); }
+            .blog-card { flex: 0 0 calc(50% - 1rem); margin: 0 0.5rem; }
             .admin-sidebar { transform: translateX(100%); }
             body.fr-mode .admin-sidebar { transform: translateX(-100%); }
             .admin-sidebar.open { transform: translateX(0); }
@@ -307,7 +397,7 @@
             .navbar-container { padding: 0.75rem 1rem; }
             .hero { min-height: 500px; }
             .hero-title { font-size: 2rem; }
-            .blog-card { flex: 0 0 calc(100% - 1rem); }
+            .blog-card { flex: 0 0 calc(100% - 1rem); margin: 0 0.5rem; }
             .section { padding: 3rem 1rem; }
             .blog-section { padding: 1.5rem 1rem; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
@@ -316,18 +406,30 @@
             .stat-label { font-size: 0.9rem; }
             .team-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; text-align: center; }
             .form-grid { grid-template-columns: 1fr; }
             .admin-stats-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .stat-number { font-size: 1.8rem; }
+            .stat-label { font-size: 0.8rem; }
+            .content-page { padding: 1.5rem; margin: 1rem; }
         }
     </style>
 </head>
 <body>
-    <!-- ==================== الموقع العام ==================== -->
+    <!-- ==================== الموقع العام للزوار ==================== -->
     <div id="public-site">
+        
+        <!-- القائمة العلوية -->
         <nav class="navbar" id="navbar">
             <div class="navbar-container">
                 <div class="logo-section">
-                    <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+                    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <!-- لوغو الحاضنة -->
                     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="logo-img" id="nav-logo">
                     <span class="logo-text" data-ar="حاضنة الأعمال" data-fr="Incubateur">حاضنة الأعمال</span>
                 </div>
@@ -340,6 +442,7 @@
             </div>
         </nav>
 
+        <!-- القائمة الجانبية -->
         <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
         <div class="side-menu" id="sideMenu">
             <div class="side-menu-header">
@@ -358,11 +461,15 @@
             </div>
         </div>
 
+        <!-- قسم البانر -->
         <section class="hero" id="hero">
             <div class="hero-bg" id="heroBg" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80')"></div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
-                <div class="hero-badge"><i class="fas fa-rocket"></i><span id="hero-badge-text" data-ar="حاضنة الأعمال - جامعة البليدة 2" data-fr="Incubateur - Université Blida 2">حاضنة الأعمال - جامعة البليدة 2</span></div>
+                <div class="hero-badge">
+                    <i class="fas fa-rocket"></i>
+                    <span id="hero-badge-text" data-ar="حاضنة الأعمال - جامعة البليدة 2" data-fr="Incubateur - Université Blida 2">حاضنة الأعمال - جامعة البليدة 2</span>
+                </div>
                 <h1 class="hero-title" id="hero-title" data-ar="نحو مستقبل مبتكر وريادي" data-fr="Vers un Avenir Innovant et Entrepreneurial">نحو مستقبل مبتكر وريادي</h1>
                 <p class="hero-desc" id="hero-desc" data-ar="انضم إلينا وكن جزءاً من مجتمع ريادي ناشئ يبني المستقبل" data-fr="Rejoignez-nous et faites partie d'une communauté entrepreneuriale qui construit l'avenir">انضم إلينا وكن جزءاً من مجتمع ريادي ناشئ يبني المستقبل</p>
                 <button class="hero-cta" id="hero-cta" onclick="handleRegistration()">
@@ -371,22 +478,48 @@
                 </button>
             </div>
         </section>
-        
+
+        <!-- قسم الإحصائيات (إنجازاتنا) -->
         <section class="section" id="stats">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="إنجازاتنا" data-fr="Nos Réalisations">إنجازاتنا</span>
                 <h2 class="section-title" data-ar="أرقام تتحدث عن نجاحنا" data-fr="Des Chiffres qui Parlent de Notre Succès">أرقام تتحدث عن نجاحنا</h2>
             </div>
             <div class="stats-grid" id="stats-grid">
-                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-lightbulb"></i></div><div class="stat-number" data-target="1000">0</div><div class="stat-label" data-ar="فكرة مشروع" data-fr="Idées de Projets">فكرة مشروع</div></div>
-                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-graduation-cap"></i></div><div class="stat-number" data-target="100">0</div><div class="stat-label" data-ar="دورة تدريبية" data-fr="Formations">دورة تدريبية</div></div>
-                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-tag"></i></div><div class="stat-number" data-target="40">0</div><div class="stat-label" data-ar="وسم لابل مشروع مبتكر" data-fr="Labels Projets Innovants">وسم لابل مشروع مبتكر</div></div>
-                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-rocket"></i></div><div class="stat-number" data-target="10">0</div><div class="stat-label" data-ar="مؤسسة ناشئة" data-fr="Startups">مؤسسة ناشئة</div></div>
-                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="stat-number" data-target="100">0</div><div class="stat-label" data-ar="مؤطر" data-fr="Encadrants">مؤطر</div></div>
-                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-number" data-target="2000">0</div><div class="stat-label" data-ar="منخرط" data-fr="Membres">منخرط</div></div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div class="stat-number" data-target="1000">0</div>
+                    <div class="stat-label" data-ar="فكرة مشروع" data-fr="Idées de Projets">فكرة مشروع</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="stat-number" data-target="100">0</div>
+                    <div class="stat-label" data-ar="دورة تدريبية" data-fr="Formations">دورة تدريبية</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon"><i class="fas fa-tag"></i></div>
+                    <div class="stat-number" data-target="40">0</div>
+                    <div class="stat-label" data-ar="وسم لابل مشروع مبتكر" data-fr="Labels Projets Innovants">وسم لابل مشروع مبتكر</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="stat-number" data-target="10">0</div>
+                    <div class="stat-label" data-ar="مؤسسة ناشئة" data-fr="Startups">مؤسسة ناشئة</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="stat-number" data-target="100">0</div>
+                    <div class="stat-label" data-ar="مؤطر" data-fr="Encadrants">مؤطر</div>
+                </div>
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-number" data-target="2000">0</div>
+                    <div class="stat-label" data-ar="منخرط" data-fr="Membres">منخرط</div>
+                </div>
             </div>
         </section>
 
+        <!-- قسم المدونة والأعمال -->
         <section class="blog-section" id="works">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span>
@@ -394,35 +527,47 @@
             </div>
             <div class="blog-slider-container">
                 <button class="slider-btn slider-next" onclick="moveSlider(1)"><i class="fas fa-chevron-right"></i></button>
-                <div class="blog-slider" id="blogSlider"></div>
+                <div class="blog-slider" id="blogSlider">
+                    <!-- سيتم حقن المحتوى ديناميكيا -->
+                </div>
                 <button class="slider-btn slider-prev" onclick="moveSlider(-1)"><i class="fas fa-chevron-left"></i></button>
             </div>
         </section>
 
+        <!-- قسم الشركاء -->
         <section class="section" id="partners">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="شركاؤنا" data-fr="Nos Partenaires">شركاؤنا</span>
                 <h2 class="section-title" data-ar="شركاؤنا في النجاح" data-fr="Nos Partenaires dans le Succès">شركاؤنا في النجاح</h2>
             </div>
-            <div class="partners-grid" id="partners-grid"></div>
+            <div class="partners-grid" id="partners-grid">
+                <!-- سيتم حقن المحتوى ديناميكيا -->
+            </div>
         </section>
 
+        <!-- قسم الفريق -->
         <section class="section" id="team">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="فريقنا" data-fr="Notre Équipe">فريقنا</span>
                 <h2 class="section-title" data-ar="فريقنا المتميز" data-fr="Notre Équipe d'Excellence">فريقنا المتميز</h2>
             </div>
-            <div class="team-grid" id="team-grid"></div>
+            <div class="team-grid" id="team-grid">
+                <!-- سيتم حقن المحتوى ديناميكيا -->
+            </div>
         </section>
 
+        <!-- قسم الجامعة -->
         <section class="section" id="university">
             <div class="university-section animate-on-scroll">
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="University Logo" class="uni-logo" id="uni-logo">
                 <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 1rem; position: relative; z-index: 1;" data-ar="جامعة البليدة 2" data-fr="Université Blida 2">جامعة البليدة 2</h2>
-                <div class="uni-links" id="uni-links"></div>
+                <div class="uni-links" id="uni-links">
+                    <!-- سيتم حقن المحتوى ديناميكيا -->
+                </div>
             </div>
         </section>
 
+        <!-- الفوتر و الاتصال -->
         <footer class="footer" id="contact">
             <div class="footer-grid">
                 <div class="footer-brand">
@@ -507,7 +652,6 @@
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="admin-logo-img">
                 <span class="admin-logo-text">Admin</span>
             </div>
-            <!-- هذه هي الأقسام التي طلبتها، ستظهر هنا عند الدخول -->
             <div class="admin-nav">
                 <div class="admin-nav-item active" onclick="showAdminSection('dashboard', this)"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></div>
                 <div class="admin-nav-item" onclick="showAdminSection('banner', this)"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></div>
@@ -517,7 +661,7 @@
                 <div class="admin-nav-item" onclick="showAdminSection('team', this)"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></div>
                 <div class="admin-nav-item" onclick="showAdminSection('university', this)"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></div>
                 <div class="admin-nav-item" onclick="showAdminSection('contact', this)"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('privacy', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية والخريطة" data-fr="Confidentialité">الخصوصية والخريطة</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('privacy', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و الموقع" data-fr="Confidentialité">الخصوصية والموقع</span></div>
                 <div class="admin-nav-item" onclick="showAdminSection('reports', this)"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></div>
             </div>
         </div>
@@ -530,10 +674,34 @@
             <!-- لوحة القيادة -->
             <div id="admin-dashboard" class="admin-section-content">
                 <div class="admin-stats-grid">
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: var(--gradient-purple);"><i class="fas fa-user-plus"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-registrations">0</div><div class="admin-stat-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions">التسجيلات (في الحدث)</div></div></div>
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i class="fas fa-eye"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-daily">0</div><div class="admin-stat-label" data-ar="الزيارات اليومية" data-fr="Visites Aujourd'hui">الزيارات اليومية</div></div></div>
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-chart-line"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-monthly">0</div><div class="admin-stat-label" data-ar="الزيارات الشهرية" data-fr="Visites ce Mois">الزيارات الشهرية</div></div></div>
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626);"><i class="fas fa-exclamation-triangle"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-reports">0</div><div class="admin-stat-label" data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</div></div></div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon" style="background: var(--gradient-purple);"><i class="fas fa-user-plus"></i></div>
+                        <div class="admin-stat-info">
+                            <div class="admin-stat-value" id="admin-stat-registrations">0</div>
+                            <div class="admin-stat-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions (Événement)">التسجيلات (في الحدث)</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i class="fas fa-eye"></i></div>
+                        <div class="admin-stat-info">
+                            <div class="admin-stat-value" id="admin-stat-daily">0</div>
+                            <div class="admin-stat-label" data-ar="الزيارات اليومية" data-fr="Visites Aujourd'hui">الزيارات اليومية</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-chart-line"></i></div>
+                        <div class="admin-stat-info">
+                            <div class="admin-stat-value" id="admin-stat-monthly">0</div>
+                            <div class="admin-stat-label" data-ar="الزيارات الشهرية" data-fr="Visites ce Mois">الزيارات الشهرية</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626);"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="admin-stat-info">
+                            <div class="admin-stat-value" id="admin-stat-reports">0</div>
+                            <div class="admin-stat-label" data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -542,17 +710,41 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-image"></i> <span data-ar="إضافة حدث أو دورة (البانر)" data-fr="Événement/Bannière">إضافة حدث أو دورة</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (عربي)" data-fr="Titre (AR)">عنوان الحدث (عربي)</label><input type="text" class="form-input" id="banner-title-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (فرنسي)" data-fr="Titre (FR)">عنوان الحدث (فرنسي)</label><input type="text" class="form-input" id="banner-title-fr"></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="وصف (عربي)" data-fr="Description (AR)">وصف (عربي)</label><textarea class="form-textarea" id="banner-desc-ar"></textarea></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="وصف (فرنسي)" data-fr="Description (FR)">وصف (فرنسي)</label><textarea class="form-textarea" id="banner-desc-fr"></textarea></div>
-                        <div class="form-group"><label class="form-label" data-ar="نص الزر (عربي)" data-fr="Texte du Bouton (AR)">نص الزر (عربي)</label><input type="text" class="form-input" id="banner-btn-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="نص الزر (فرنسي)" data-fr="Texte du Bouton (FR)">نص الزر (فرنسي)</label><input type="text" class="form-input" id="banner-btn-fr"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رابط التسجيل (تغيير الرابط يصفر الإحصائيات)" data-fr="Lien du Bouton">رابط التسجيل للزر</label><input type="url" class="form-input" id="banner-link"></div>
-                        <div class="form-group"><label class="form-label" data-ar="صورة الخلفية المظلمة" data-fr="Image de Fond">صورة الخلفية المظلمة</label><input type="file" class="form-file" id="banner-image" accept="image/*"></div>
+                        <div class="form-group">
+                            <label class="form-label" data-ar="عنوان الحدث (عربي)" data-fr="Titre (AR)">عنوان الحدث (عربي)</label>
+                            <input type="text" class="form-input" id="banner-title-ar">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-ar="عنوان الحدث (فرنسي)" data-fr="Titre (FR)">عنوان الحدث (فرنسي)</label>
+                            <input type="text" class="form-input" id="banner-title-fr">
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label" data-ar="وصف (عربي)" data-fr="Description (AR)">وصف (عربي)</label>
+                            <textarea class="form-textarea" id="banner-desc-ar"></textarea>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label" data-ar="وصف (فرنسي)" data-fr="Description (FR)">وصف (فرنسي)</label>
+                            <textarea class="form-textarea" id="banner-desc-fr"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-ar="نص الزر (عربي)" data-fr="Texte du Bouton (AR)">نص الزر (عربي)</label>
+                            <input type="text" class="form-input" id="banner-btn-ar">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-ar="نص الزر (فرنسي)" data-fr="Texte du Bouton (FR)">نص الزر (فرنسي)</label>
+                            <input type="text" class="form-input" id="banner-btn-fr">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-ar="رابط التسجيل للزر (تغيير الرابط يصفر الإحصائيات)" data-fr="Lien du Bouton">رابط التسجيل للزر</label>
+                            <input type="url" class="form-input" id="banner-link">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-ar="صورة الخلفية المظلمة" data-fr="Image de Fond">صورة الخلفية المظلمة</label>
+                            <input type="file" class="form-file" id="banner-image" accept="image/*">
+                        </div>
                     </div>
                     <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
-                        <button class="btn btn-primary" onclick="saveBanner()"><i class="fas fa-save"></i><span data-ar="حفظ" data-fr="Enregistrer">حفظ</span></button>
+                        <button class="btn btn-primary" onclick="saveBanner()"><i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span></button>
                         <button class="btn btn-danger" onclick="deleteBanner()"><i class="fas fa-trash"></i><span data-ar="حذف البانر" data-fr="Supprimer">حذف البانر</span></button>
                     </div>
                 </div>
@@ -577,15 +769,15 @@
             <!-- المدونة -->
             <div id="admin-blog" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-edit"></i> <span data-ar="إضافة / تعديل مقال للمدونة" data-fr="Ajouter/Modifier Article">إضافة / تعديل مقال للمدونة</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل مقال للمدونة" data-fr="Ajouter/Modifier un Article">إضافة أو تعديل مقال للمدونة</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="العنوان (عربي)" data-fr="Titre (AR)">العنوان (عربي)</label><input type="text" class="form-input" id="blog-title-ar"></div>
                         <div class="form-group"><label class="form-label" data-ar="العنوان (فرنسي)" data-fr="Titre (FR)">العنوان (فرنسي)</label><input type="text" class="form-input" id="blog-title-fr"></div>
                         <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="المحتوى (عربي)" data-fr="Contenu (AR)">المحتوى (عربي)</label><textarea class="form-textarea" id="blog-content-ar"></textarea></div>
                         <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="المحتوى (فرنسي)" data-fr="Contenu (FR)">المحتوى (فرنسي)</label><textarea class="form-textarea" id="blog-content-fr"></textarea></div>
-                        <div class="form-group"><label class="form-label" data-ar="صورة المقال (اتركه فارغاً للاحتفاظ بالصورة القديمة)" data-fr="Image">صورة المقال</label><input type="file" class="form-file" id="blog-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label" data-ar="صورة المقال" data-fr="Image">صورة المقال</label><input type="file" class="form-file" id="blog-image" accept="image/*"></div>
                     </div>
-                    <button class="btn btn-success" style="margin-top: 1.5rem;" id="btn-submit-blog" onclick="submitBlog()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
+                    <button class="btn btn-success" id="btn-add-blog" style="margin-top: 1.5rem;" onclick="addBlog()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="المقالات السابقة" data-fr="Articles Précédents">المقالات السابقة</span></h3>
@@ -601,12 +793,12 @@
             <!-- الشركاء -->
             <div id="admin-partners" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-edit"></i> <span data-ar="إضافة / تعديل شريك" data-fr="Ajouter/Modifier Partenaire">إضافة / تعديل شريك</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل شريك (لوغو الشركة)" data-fr="Ajouter/Modifier un Partenaire">إضافة أو تعديل شريك</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="اسم الشركة" data-fr="Nom">اسم الشركة</label><input type="text" class="form-input" id="partner-name"></div>
                         <div class="form-group"><label class="form-label" data-ar="شعار الشركة (اللوغو)" data-fr="Logo">شعار الشركة (اللوغو)</label><input type="file" class="form-file" id="partner-logo" accept="image/*"></div>
                     </div>
-                    <button class="btn btn-success" style="margin-top: 1.5rem;" id="btn-submit-partner" onclick="submitPartner()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
+                    <button class="btn btn-success" id="btn-add-partner" style="margin-top: 1.5rem;" onclick="addPartner()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="الشركاء السابقين" data-fr="Partenaires Précédents">الشركاء السابقين</span></h3>
@@ -622,14 +814,14 @@
             <!-- الفريق -->
             <div id="admin-team" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-edit"></i> <span data-ar="إضافة / تعديل شخص" data-fr="Ajouter/Modifier Membre">إضافة / تعديل شخص</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل شخص" data-fr="Ajouter/Modifier Membre">إضافة أو تعديل شخص</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="الاسم" data-fr="Nom">الاسم</label><input type="text" class="form-input" id="team-name"></div>
                         <div class="form-group"><label class="form-label" data-ar="المهنة (عربي)" data-fr="Poste (AR)">المهنة (عربي)</label><input type="text" class="form-input" id="team-role-ar"></div>
                         <div class="form-group"><label class="form-label" data-ar="المهنة (فرنسي)" data-fr="Poste (FR)">المهنة (فرنسي)</label><input type="text" class="form-input" id="team-role-fr"></div>
                         <div class="form-group"><label class="form-label" data-ar="الصورة الشخصية" data-fr="Photo">الصورة الشخصية</label><input type="file" class="form-file" id="team-image" accept="image/*"></div>
                     </div>
-                    <button class="btn btn-success" style="margin-top: 1.5rem;" id="btn-submit-team" onclick="submitTeamMember()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
+                    <button class="btn btn-success" id="btn-add-team" style="margin-top: 1.5rem;" onclick="addTeamMember()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="الفريق الحالي" data-fr="Équipe Actuelle">الفريق الحالي</span></h3>
@@ -650,13 +842,13 @@
                     <button class="btn btn-primary" style="margin-top: 1rem;" onclick="saveUniLogo()"><i class="fas fa-save"></i><span data-ar="حفظ الشعار" data-fr="Enregistrer">حفظ الشعار</span></button>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-link"></i> <span data-ar="إضافة / تعديل رابط" data-fr="Ajouter/Modifier Lien">إضافة / تعديل رابط</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-link"></i> <span data-ar="إضافة أو تعديل رابط جديد" data-fr="Ajouter/Modifier un Lien">إضافة أو تعديل رابط جديد</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="عنوان الرابط (عربي)" data-fr="Titre (AR)">عنوان الرابط (عربي)</label><input type="text" class="form-input" id="uni-link-title-ar"></div>
                         <div class="form-group"><label class="form-label" data-ar="عنوان الرابط (فرنسي)" data-fr="Titre (FR)">عنوان الرابط (فرنسي)</label><input type="text" class="form-input" id="uni-link-title-fr"></div>
                         <div class="form-group"><label class="form-label" data-ar="الرابط الفعلي (URL)" data-fr="URL">الرابط الفعلي (URL)</label><input type="url" class="form-input" id="uni-link-url"></div>
                     </div>
-                    <button class="btn btn-success" style="margin-top: 1.5rem;" id="btn-submit-unilink" onclick="submitUniLink()"><i class="fas fa-plus"></i><span data-ar="إضافة رابط" data-fr="Ajouter">إضافة رابط</span></button>
+                    <button class="btn btn-success" id="btn-add-uni-link" style="margin-top: 1.5rem;" onclick="addUniLink()"><i class="fas fa-plus"></i><span data-ar="إضافة رابط" data-fr="Ajouter">إضافة رابط</span></button>
                 </div>
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="الروابط الحالية" data-fr="Liens Actuels">الروابط الحالية</span></h3>
@@ -683,15 +875,8 @@
                 </div>
             </div>
 
-            <!-- الخصوصية و خريطة الموقع -->
+            <!-- الخصوصية و من نحن و الخريطة -->
             <div id="admin-privacy" class="admin-section-content" style="display:none;">
-                <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-map-marker-alt"></i> <span data-ar="موقع الحاضنة (الخريطة)" data-fr="Carte (Map)">موقع الحاضنة (الخريطة)</span></h3>
-                    <div class="form-group">
-                        <label class="form-label" data-ar="رابط خريطة جوجل (src الخاص بالـ iframe)" data-fr="Lien Google Maps (src iframe)">رابط خريطة جوجل (src الخاص بالـ iframe)</label>
-                        <input type="text" class="form-input" id="privacy-map" placeholder="https://www.google.com/maps/embed?...">
-                    </div>
-                </div>
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-shield-alt"></i> <span data-ar="سياسة الخصوصية" data-fr="Politique de Confidentialité">سياسة الخصوصية</span></h3>
                     <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="سياسة الخصوصية (عربي)" data-fr="Politique (AR)">سياسة الخصوصية (عربي)</label><textarea class="form-textarea" id="privacy-text-ar"></textarea></div>
@@ -701,7 +886,14 @@
                     <h3 class="admin-section-title"><i class="fas fa-info-circle"></i> <span data-ar="من نحن" data-fr="Qui Sommes-Nous">من نحن</span></h3>
                     <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="من نحن (عربي)" data-fr="Qui (AR)">من نحن (عربي)</label><textarea class="form-textarea" id="about-text-ar"></textarea></div>
                     <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="من نحن (فرنسي)" data-fr="Qui (FR)">من نحن (فرنسي)</label><textarea class="form-textarea" id="about-text-fr"></textarea></div>
-                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="savePrivacy()"><i class="fas fa-save"></i><span data-ar="حفظ" data-fr="Enregistrer">حفظ</span></button>
+                </div>
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-map-marker-alt"></i> <span data-ar="موقع الحاضنة (خرائط جوجل)" data-fr="Localisation (Google Maps)">موقع الحاضنة (خرائط جوجل)</span></h3>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" data-ar="رابط التضمين (iframe src)" data-fr="Lien d'intégration (iframe src)">رابط التضمين (iframe src)</label>
+                        <input type="text" class="form-input" id="admin-map-url" placeholder="https://www.google.com/maps/embed?...">
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="savePrivacy()"><i class="fas fa-save"></i><span data-ar="حفظ الكل (الخصوصية، من نحن، الخريطة)" data-fr="Tout Enregistrer">حفظ الكل (الخصوصية، من نحن، الخريطة)</span></button>
                 </div>
             </div>
 
@@ -720,7 +912,7 @@
         </div>
     </div>
 
-    <!-- النوافذ المنبثقة -->
+    <!-- ==================== النوافذ المنبثقة ==================== -->
     <div class="modal-overlay" id="blogModal">
         <div class="modal">
             <div class="modal-header">
@@ -761,20 +953,33 @@
         </div>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><p style="color: var(--gray-600); font-weight: 800; margin-top: 10px;" data-ar="جاري التحميل..." data-fr="Chargement...">جاري التحميل...</p></div>
+    <!-- تراكب التحميل -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="color: var(--gray-600); font-weight: 800; margin-top: 10px;" data-ar="جاري التحميل..." data-fr="Chargement...">جاري التحميل...</p>
+    </div>
+
+    <!-- حاوية الإشعارات -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ==================== الجافاسكريبت ==================== -->
+    <!-- ==================== الجافاسكريبت والمهام ==================== -->
     <script>
         let currentLang = 'ar';
         let isAdmin = false;
         let blogSliderIndex = 0;
-        
-        // متغيرات حفظ حالة التعديل
-        let editState = { blog: null, partner: null, team: null, unilink: null };
-        let cachedData = { blogs: {}, partners: {}, team: {}, unilinks: {} };
-
         let db, storage, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp, ref, uploadBytes, getDownloadURL;
+
+        // متغيرات حفظ البيانات لتسهيل التعديل
+        let blogsData = {};
+        let partnersData = {};
+        let teamData = {};
+        let uniLinksData = {};
+
+        // معرفات التعديل
+        let editingBlogId = null;
+        let editingPartnerId = null;
+        let editingTeamId = null;
+        let editingUniLinkId = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
             let attempts = 0;
@@ -782,22 +987,32 @@
                 attempts++;
                 if (window.firebaseDB && window.firestoreModules && window.storageModules) {
                     clearInterval(initInterval);
-                    db = window.firebaseDB; storage = window.firebaseStorage;
+                    db = window.firebaseDB;
+                    storage = window.firebaseStorage;
                     ({ collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp } = window.firestoreModules);
                     ({ ref, uploadBytes, getDownloadURL } = window.storageModules);
                     
-                    await initializeData(); loadAllData(); setupScrollAnimations(); setupNavbarScroll(); trackVisit();
-                    window.addEventListener('hashchange', checkAdminHash); checkAdminHash(); 
+                    await initializeData();
+                    loadAllData();
+                    setupScrollAnimations();
+                    setupNavbarScroll();
+                    trackVisit();
+                    
+                    window.addEventListener('hashchange', checkAdminHash);
+                    checkAdminHash();
                 }
-                if (attempts > 50) { clearInterval(initInterval); showToast('error', currentLang === 'ar' ? 'فشل تحميل قواعد البيانات' : 'Erreur DB'); }
+                if (attempts > 50) {
+                    clearInterval(initInterval);
+                    showToast('error', currentLang === 'ar' ? 'فشل تحميل قواعد البيانات Firebase' : 'Échec du chargement de Firebase');
+                }
             }, 100);
         });
 
         function checkAdminHash() {
-            if (window.location.hash === '#/adminblida2' || window.location.hash === '#adminblida2') {
-                if (!isAdmin) openAdminLogin();
+            if (window.location.hash === '#/admin02') {
+                if (!isAdmin) { openAdminLogin(); }
             } else {
-                if (isAdmin) logoutAdmin();
+                if (isAdmin) { logoutAdmin(); }
             }
         }
 
@@ -805,35 +1020,58 @@
             const defaults = {
                 stats: { ideas: 1000, courses: 100, labels: 40, startups: 10, mentors: 100, members: 2000 },
                 contact: { email: 'contact@incubator-blida2.dz', phone: '+213 000 000 000', incubatorPhone: '', fax: '' },
-                privacy: { privacy_ar: 'سياسة الخصوصية...', privacy_fr: 'Politique...', about_ar: 'من نحن...', about_fr: 'Qui...', mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1' },
+                privacy: { privacy_ar: 'سياسة الخصوصية...', privacy_fr: 'Politique...', about_ar: 'من نحن...', about_fr: 'Qui...', mapUrl: '' },
                 visits: { daily: 0, monthly: 0, total: 0, lastDate: new Date().toDateString(), lastMonth: `${new Date().getFullYear()}-${new Date().getMonth()}` }
             };
             for (const [key, value] of Object.entries(defaults)) {
                 const docRef = doc(db, 'settings', key);
-                if (!(await getDoc(docRef)).exists()) await setDoc(docRef, value);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) await setDoc(docRef, value);
             }
         }
 
         function switchLang(lang) {
-            currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.body.classList.toggle('fr-mode', lang === 'fr');
-            document.getElementById('btn-ar').classList.toggle('active', lang === 'ar'); document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+
+            document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+            document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
             if (document.getElementById('btn-ar-page')) document.getElementById('btn-ar-page').classList.toggle('active', lang === 'ar');
             if (document.getElementById('btn-fr-page')) document.getElementById('btn-fr-page').classList.toggle('active', lang === 'fr');
+
             document.querySelectorAll('[data-ar][data-fr]').forEach(el => {
-                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = el.getAttribute(`data-${lang}`); else el.textContent = el.getAttribute(`data-${lang}`);
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = el.getAttribute(`data-${lang}`);
+                else el.textContent = el.getAttribute(`data-${lang}`);
             });
-            const ctaIcon = document.getElementById('hero-cta-icon'); if (ctaIcon) ctaIcon.className = lang === 'ar' ? 'fas fa-arrow-left' : 'fas fa-arrow-right';
-            const backIcon = document.getElementById('back-icon'); if (backIcon) backIcon.className = lang === 'ar' ? 'fas fa-arrow-right' : 'fas fa-arrow-left';
+
+            const ctaIcon = document.getElementById('hero-cta-icon');
+            if (ctaIcon) ctaIcon.className = lang === 'ar' ? 'fas fa-arrow-left' : 'fas fa-arrow-right';
+            const backIcon = document.getElementById('back-icon');
+            if (backIcon) backIcon.className = lang === 'ar' ? 'fas fa-arrow-right' : 'fas fa-arrow-left';
+
             if (document.getElementById('privacy-content-ar')) document.getElementById('privacy-content-ar').style.display = lang === 'ar' ? 'block' : 'none';
             if (document.getElementById('privacy-content-fr')) document.getElementById('privacy-content-fr').style.display = lang === 'fr' ? 'block' : 'none';
             if (document.getElementById('about-content-ar')) document.getElementById('about-content-ar').style.display = lang === 'ar' ? 'block' : 'none';
             if (document.getElementById('about-content-fr')) document.getElementById('about-content-fr').style.display = lang === 'fr' ? 'block' : 'none';
-            loadAllData(); updateSlider();
-            if(isAdmin){ const activeEl = document.querySelector('.admin-nav-item.active'); if(activeEl) { const match = activeEl.getAttribute('onclick').match(/'([^']+)'/); if(match) showAdminSection(match[1], activeEl); } }
+
+            loadAllData();
+            updateSlider();
+            
+            if(isAdmin){
+                const activeEl = document.querySelector('.admin-nav-item.active');
+                if(activeEl) {
+                    const match = activeEl.getAttribute('onclick').match(/'([^']+)'/);
+                    if(match) showAdminSection(match[1], activeEl);
+                }
+            }
         }
 
-        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('menuOverlay').classList.toggle('active'); }
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('open');
+            document.getElementById('menuOverlay').classList.toggle('active');
+        }
 
         function setupScrollAnimations() {
             const observer = new IntersectionObserver((entries) => {
@@ -847,22 +1085,47 @@
             document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
         }
 
-        function setupNavbarScroll() { window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50); }); }
+        function setupNavbarScroll() {
+            window.addEventListener('scroll', () => {
+                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+            });
+        }
 
         function animateCounter(el) {
             const target = parseInt(el.getAttribute('data-target'));
             if (!target || el.classList.contains('counted')) return;
-            el.classList.add('counted'); const duration = 2000; const step = target / (duration / 16); let current = 0;
-            const timer = setInterval(() => { current += step; if (current >= target) { el.textContent = '+' + target.toLocaleString(); clearInterval(timer); } else { el.textContent = '+' + Math.floor(current).toLocaleString(); } }, 16);
+            el.classList.add('counted');
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) { el.textContent = '+' + target.toLocaleString(); clearInterval(timer); } 
+                else { el.textContent = '+' + Math.floor(current).toLocaleString(); }
+            }, 16);
         }
 
-        function loadAllData() { loadBanner(); loadStats(); loadBlogs(); loadPartners(); loadTeam(); loadUniversity(); loadContact(); loadPrivacy(); }
+        function loadAllData() {
+            loadBanner();
+            loadStats();
+            loadBlogs();
+            loadPartners();
+            loadTeam();
+            loadUniversity();
+            loadContact();
+            loadPrivacy();
+        }
 
         async function loadBanner() {
-            const docSnap = await getDoc(doc(db, 'settings', 'banner'));
+            const docRef = doc(db, 'settings', 'banner');
+            const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                const heroTitle = document.getElementById('hero-title'); const heroDesc = document.getElementById('hero-desc'); const heroCta = document.querySelector('#hero-cta span'); const heroBg = document.getElementById('heroBg');
+                const heroTitle = document.getElementById('hero-title');
+                const heroDesc = document.getElementById('hero-desc');
+                const heroCta = document.querySelector('#hero-cta span');
+                const heroBg = document.getElementById('heroBg');
+
                 if (heroTitle) { heroTitle.setAttribute('data-ar', data.title_ar || 'نحو مستقبل مبتكر وريادي'); heroTitle.setAttribute('data-fr', data.title_fr || 'Vers un Avenir Innovant'); heroTitle.textContent = heroTitle.getAttribute(`data-${currentLang}`); }
                 if (heroDesc) { heroDesc.setAttribute('data-ar', data.desc_ar || 'انضم إلينا...'); heroDesc.setAttribute('data-fr', data.desc_fr || 'Rejoignez-nous...'); heroDesc.textContent = heroDesc.getAttribute(`data-${currentLang}`); }
                 if (heroCta) { heroCta.setAttribute('data-ar', data.btn_ar || 'سجل الآن'); heroCta.setAttribute('data-fr', data.btn_fr || 'Inscrivez-vous'); heroCta.textContent = heroCta.getAttribute(`data-${currentLang}`); }
@@ -872,47 +1135,79 @@
                 if (document.getElementById('admin-stat-registrations')) document.getElementById('admin-stat-registrations').textContent = data.registrations || 0;
                 
                 if(isAdmin) {
-                    document.getElementById('banner-title-ar').value = data.title_ar || ''; document.getElementById('banner-title-fr').value = data.title_fr || '';
-                    document.getElementById('banner-desc-ar').value = data.desc_ar || ''; document.getElementById('banner-desc-fr').value = data.desc_fr || '';
-                    document.getElementById('banner-btn-ar').value = data.btn_ar || ''; document.getElementById('banner-btn-fr').value = data.btn_fr || ''; document.getElementById('banner-link').value = data.link || '';
+                    document.getElementById('banner-title-ar').value = data.title_ar || '';
+                    document.getElementById('banner-title-fr').value = data.title_fr || '';
+                    document.getElementById('banner-desc-ar').value = data.desc_ar || '';
+                    document.getElementById('banner-desc-fr').value = data.desc_fr || '';
+                    document.getElementById('banner-btn-ar').value = data.btn_ar || '';
+                    document.getElementById('banner-btn-fr').value = data.btn_fr || '';
+                    document.getElementById('banner-link').value = data.link || '';
                 }
             }
         }
 
         async function loadStats() {
-            const docSnap = await getDoc(doc(db, 'settings', 'stats'));
+            const docRef = doc(db, 'settings', 'stats');
+            const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                const data = docSnap.data(); const stats = ['ideas', 'courses', 'labels', 'startups', 'mentors', 'members'];
+                const data = docSnap.data();
+                const stats = ['ideas', 'courses', 'labels', 'startups', 'mentors', 'members'];
                 const cards = document.querySelectorAll('#stats-grid .stat-card');
-                cards.forEach((card, i) => { const num = card.querySelector('.stat-number'); if (num && stats[i]) { num.setAttribute('data-target', data[stats[i]] || 0); num.classList.remove('counted'); num.textContent = '0'; if (card.classList.contains('visible')) animateCounter(num); } });
-                if(isAdmin) { stats.forEach(s => { const el = document.getElementById(`stat-${s}`); if (el) el.value = data[s] || 0; }); }
+                cards.forEach((card, i) => {
+                    const num = card.querySelector('.stat-number');
+                    if (num && stats[i]) {
+                        num.setAttribute('data-target', data[stats[i]] || 0);
+                        num.classList.remove('counted'); num.textContent = '0';
+                        if (card.classList.contains('visible')) animateCounter(num);
+                    }
+                });
+                if(isAdmin) {
+                    stats.forEach(s => { const el = document.getElementById(`stat-${s}`); if (el) el.value = data[s] || 0; });
+                }
             }
         }
 
         async function loadBlogs() {
-            onSnapshot(query(collection(db, 'blogs'), orderBy('createdAt', 'desc')), (snapshot) => {
-                const slider = document.getElementById('blogSlider'); const adminList = document.getElementById('admin-blog-list');
-                if(slider) slider.innerHTML = ''; if (adminList) adminList.innerHTML = '';
-                cachedData.blogs = {};
+            const q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                const slider = document.getElementById('blogSlider');
+                const adminList = document.getElementById('admin-blog-list');
+                if(slider) slider.innerHTML = '';
+                if (adminList) adminList.innerHTML = '';
+                blogsData = {}; // تصفير البيانات
+
                 snapshot.forEach(docSnap => {
-                    const data = docSnap.data(); const id = docSnap.id;
-                    cachedData.blogs[id] = data;
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    blogsData[id] = data; // حفظ للتعديل السريع
+
                     const title = currentLang === 'ar' ? (data.title_ar || '') : (data.title_fr || '');
                     const content = currentLang === 'ar' ? (data.content_ar || '') : (data.content_fr || '');
                     
                     if(slider) {
-                        const card = document.createElement('div'); card.className = 'blog-card'; card.onclick = () => openBlogModal(id, data);
-                        card.innerHTML = `<img src="${data.image || 'https://via.placeholder.com/400x220?text=Blog'}" class="blog-image"><div class="blog-content"><h3 class="blog-title">${title}</h3><p class="blog-excerpt">${content.substring(0, 100)}...</p></div>`;
+                        const card = document.createElement('div');
+                        card.className = 'blog-card';
+                        card.onclick = () => openBlogModal(id, data);
+                        card.innerHTML = `
+                            <img src="${data.image || 'https://via.placeholder.com/400x220?text=Blog'}" alt="Blog Image" class="blog-image">
+                            <div class="blog-content">
+                                <h3 class="blog-title">${title}</h3>
+                                <p class="blog-excerpt">${content.substring(0, 100)}...</p>
+                            </div>
+                        `;
                         slider.appendChild(card);
                     }
 
                     if (adminList) {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><img src="${data.image || 'https://via.placeholder.com/60'}" class="table-img"></td><td>${title}</td>
+                        tr.innerHTML = `
+                            <td><img src="${data.image || 'https://via.placeholder.com/60'}" class="table-img"></td>
+                            <td>${title}</td>
                             <td class="table-actions">
                                 <button class="table-btn table-btn-edit" onclick="editBlog('${id}')"><i class="fas fa-edit"></i></button>
                                 <button class="table-btn table-btn-delete" onclick="deleteBlog('${id}')"><i class="fas fa-trash"></i></button>
-                            </td>`;
+                            </td>
+                        `;
                         adminList.appendChild(tr);
                     }
                 });
@@ -921,38 +1216,57 @@
         }
 
         function updateSlider() {
-            const slider = document.getElementById('blogSlider'); if(!slider) return;
-            const cards = slider.querySelectorAll('.blog-card'); if (cards.length === 0) return;
-            const card = cards[0]; const cardWidth = card.offsetWidth + parseInt(window.getComputedStyle(card).marginLeft) * 2;
+            const slider = document.getElementById('blogSlider');
+            if(!slider) return;
+            const cards = slider.querySelectorAll('.blog-card');
+            if (cards.length === 0) return;
+            const card = cards[0];
+            const cardWidth = card.offsetWidth + parseInt(window.getComputedStyle(card).marginLeft) * 2;
             const dirMultiplier = currentLang === 'ar' ? 1 : -1;
             slider.style.transform = `translateX(${blogSliderIndex * cardWidth * dirMultiplier}px)`;
         }
 
         function moveSlider(direction) {
-            const slider = document.getElementById('blogSlider'); if(!slider) return;
-            const cards = slider.querySelectorAll('.blog-card'); if (cards.length === 0) return;
+            const slider = document.getElementById('blogSlider');
+            if(!slider) return;
+            const cards = slider.querySelectorAll('.blog-card');
+            if (cards.length === 0) return;
             const visibleCards = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
             const maxIndex = Math.max(0, cards.length - visibleCards);
+            
             if(currentLang === 'ar') direction = -direction;
-            blogSliderIndex = Math.max(0, Math.min(blogSliderIndex + direction, maxIndex)); updateSlider();
+
+            blogSliderIndex = Math.max(0, Math.min(blogSliderIndex + direction, maxIndex));
+            updateSlider();
         }
+
         window.addEventListener('resize', updateSlider);
 
         async function loadPartners() {
             onSnapshot(collection(db, 'partners'), (snapshot) => {
-                const grid = document.getElementById('partners-grid'); const adminList = document.getElementById('admin-partners-list');
-                if(grid) grid.innerHTML = ''; if (adminList) adminList.innerHTML = '';
-                cachedData.partners = {};
+                const grid = document.getElementById('partners-grid');
+                const adminList = document.getElementById('admin-partners-list');
+                if(grid) grid.innerHTML = '';
+                if (adminList) adminList.innerHTML = '';
+                partnersData = {};
+
                 snapshot.forEach(docSnap => {
-                    const data = docSnap.data(); const id = docSnap.id;
-                    cachedData.partners[id] = data;
-                    if(grid) { const img = document.createElement('img'); img.src = data.logo || ''; img.alt = data.name; img.className = 'partner-logo'; grid.appendChild(img); }
+                    const data = docSnap.data();
+                    partnersData[docSnap.id] = data;
+
+                    if(grid) {
+                        const img = document.createElement('img');
+                        img.src = data.logo || ''; img.alt = data.name; img.className = 'partner-logo';
+                        grid.appendChild(img);
+                    }
                     if (adminList) {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><img src="${data.logo || ''}" class="table-img"></td><td>${data.name}</td>
+                        tr.innerHTML = `
+                            <td><img src="${data.logo || ''}" class="table-img"></td>
+                            <td>${data.name}</td>
                             <td class="table-actions">
-                                <button class="table-btn table-btn-edit" onclick="editPartner('${id}')"><i class="fas fa-edit"></i></button>
-                                <button class="table-btn table-btn-delete" onclick="deletePartner('${id}')"><i class="fas fa-trash"></i></button>
+                                <button class="table-btn table-btn-edit" onclick="editPartner('${docSnap.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn table-btn-delete" onclick="deletePartner('${docSnap.id}')"><i class="fas fa-trash"></i></button>
                             </td>`;
                         adminList.appendChild(tr);
                     }
@@ -962,26 +1276,33 @@
 
         async function loadTeam() {
             onSnapshot(collection(db, 'team'), (snapshot) => {
-                const grid = document.getElementById('team-grid'); const adminList = document.getElementById('admin-team-list');
-                if(grid) grid.innerHTML = ''; if (adminList) adminList.innerHTML = '';
-                cachedData.team = {};
+                const grid = document.getElementById('team-grid');
+                const adminList = document.getElementById('admin-team-list');
+                if(grid) grid.innerHTML = '';
+                if (adminList) adminList.innerHTML = '';
+                teamData = {};
+
                 snapshot.forEach(docSnap => {
-                    const data = docSnap.data(); const id = docSnap.id;
-                    cachedData.team[id] = data;
+                    const data = docSnap.data();
+                    teamData[docSnap.id] = data;
                     const role = currentLang === 'ar' ? (data.role_ar || '') : (data.role_fr || '');
                     
                     if(grid) {
-                        const card = document.createElement('div'); card.className = 'team-card animate-on-scroll';
+                        const card = document.createElement('div');
+                        card.className = 'team-card animate-on-scroll';
                         card.innerHTML = `<div class="team-image-wrapper"><img src="${data.image || 'https://via.placeholder.com/300x280'}" alt="${data.name}" class="team-image"><div class="team-overlay"></div><div class="team-info"><h3 class="team-name">${data.name}</h3><p class="team-role">${role}</p></div></div>`;
                         grid.appendChild(card);
                     }
 
                     if (adminList) {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><img src="${data.image || ''}" class="table-img"></td><td>${data.name}</td><td>${role}</td>
+                        tr.innerHTML = `
+                            <td><img src="${data.image || ''}" class="table-img"></td>
+                            <td>${data.name}</td>
+                            <td>${role}</td>
                             <td class="table-actions">
-                                <button class="table-btn table-btn-edit" onclick="editTeamMember('${id}')"><i class="fas fa-edit"></i></button>
-                                <button class="table-btn table-btn-delete" onclick="deleteTeamMember('${id}')"><i class="fas fa-trash"></i></button>
+                                <button class="table-btn table-btn-edit" onclick="editTeamMember('${docSnap.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn table-btn-delete" onclick="deleteTeamMember('${docSnap.id}')"><i class="fas fa-trash"></i></button>
                             </td>`;
                         adminList.appendChild(tr);
                     }
@@ -991,27 +1312,40 @@
         }
 
         async function loadUniversity() {
-            onSnapshot(doc(db, 'settings', 'university'), (docSnap) => {
-                if (docSnap.exists() && docSnap.data().logo) { const uniLogo = document.getElementById('uni-logo'); if(uniLogo) uniLogo.src = docSnap.data().logo; }
+            const docRef = doc(db, 'settings', 'university');
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists() && docSnap.data().logo) {
+                    const uniLogo = document.getElementById('uni-logo');
+                    if(uniLogo) uniLogo.src = docSnap.data().logo;
+                }
             });
 
             onSnapshot(collection(db, 'university_links'), (snapshot) => {
-                const container = document.getElementById('uni-links'); const adminList = document.getElementById('admin-uni-links-list');
-                if(container) container.innerHTML = ''; if (adminList) adminList.innerHTML = '';
-                cachedData.unilinks = {};
+                const container = document.getElementById('uni-links');
+                const adminList = document.getElementById('admin-uni-links-list');
+                if(container) container.innerHTML = '';
+                if (adminList) adminList.innerHTML = '';
+                uniLinksData = {};
+
                 snapshot.forEach(docSnap => {
-                    const data = docSnap.data(); const id = docSnap.id;
-                    cachedData.unilinks[id] = data;
+                    const data = docSnap.data();
+                    uniLinksData[docSnap.id] = data;
                     const title = currentLang === 'ar' ? data.title_ar : data.title_fr;
                     
-                    if(container) { const link = document.createElement('a'); link.href = data.url; link.target = '_blank'; link.className = 'uni-link'; link.textContent = title; container.appendChild(link); }
+                    if(container) {
+                        const link = document.createElement('a');
+                        link.href = data.url; link.target = '_blank'; link.className = 'uni-link'; link.textContent = title;
+                        container.appendChild(link);
+                    }
 
                     if (adminList) {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${title}</td><td><a href="${data.url}" target="_blank">${data.url}</a></td>
+                        tr.innerHTML = `
+                            <td>${title}</td>
+                            <td><a href="${data.url}" target="_blank">${data.url}</a></td>
                             <td class="table-actions">
-                                <button class="table-btn table-btn-edit" onclick="editUniLink('${id}')"><i class="fas fa-edit"></i></button>
-                                <button class="table-btn table-btn-delete" onclick="deleteUniLink('${id}')"><i class="fas fa-trash"></i></button>
+                                <button class="table-btn table-btn-edit" onclick="editUniLink('${docSnap.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn table-btn-delete" onclick="deleteUniLink('${docSnap.id}')"><i class="fas fa-trash"></i></button>
                             </td>`;
                         adminList.appendChild(tr);
                     }
@@ -1025,13 +1359,24 @@
                     const data = docSnap.data();
                     if(document.getElementById('contact-email')) document.getElementById('contact-email').textContent = data.email || '';
                     if(document.getElementById('contact-phone')) document.getElementById('contact-phone').textContent = data.phone || '';
-                    const incDiv = document.getElementById('contact-incubator'); const faxDiv = document.getElementById('contact-fax');
-                    if(incDiv) { if (data.incubatorPhone) { incDiv.style.display = 'flex'; document.getElementById('contact-incubator-phone').textContent = data.incubatorPhone; } else incDiv.style.display = 'none'; }
-                    if(faxDiv) { if (data.fax) { faxDiv.style.display = 'flex'; document.getElementById('contact-fax-number').textContent = data.fax; } else faxDiv.style.display = 'none'; }
+                    
+                    const incDiv = document.getElementById('contact-incubator');
+                    const faxDiv = document.getElementById('contact-fax');
+                    
+                    if(incDiv) {
+                        if (data.incubatorPhone) { incDiv.style.display = 'flex'; document.getElementById('contact-incubator-phone').textContent = data.incubatorPhone; } 
+                        else incDiv.style.display = 'none';
+                    }
+                    if(faxDiv) {
+                        if (data.fax) { faxDiv.style.display = 'flex'; document.getElementById('contact-fax-number').textContent = data.fax; } 
+                        else faxDiv.style.display = 'none';
+                    }
                     
                     if(isAdmin) {
-                        document.getElementById('admin-email').value = data.email || ''; document.getElementById('admin-phone').value = data.phone || ''; 
-                        document.getElementById('admin-incubator-phone').value = data.incubatorPhone || ''; document.getElementById('admin-fax').value = data.fax || '';
+                        document.getElementById('admin-email').value = data.email || ''; 
+                        document.getElementById('admin-phone').value = data.phone || ''; 
+                        document.getElementById('admin-incubator-phone').value = data.incubatorPhone || ''; 
+                        document.getElementById('admin-fax').value = data.fax || '';
                     }
                 }
             });
@@ -1046,15 +1391,20 @@
                     if(document.getElementById('about-content-ar')) document.getElementById('about-content-ar').innerHTML = data.about_ar || '';
                     if(document.getElementById('about-content-fr')) document.getElementById('about-content-fr').innerHTML = data.about_fr || '';
                     
+                    // تحديث خريطة الموقع
                     if(data.mapUrl) {
-                        if(document.getElementById('footer-map-iframe')) document.getElementById('footer-map-iframe').src = data.mapUrl;
-                        if(document.getElementById('page-map-iframe')) document.getElementById('page-map-iframe').src = data.mapUrl;
+                        const footerIframe = document.getElementById('footer-map-iframe');
+                        const pageIframe = document.getElementById('page-map-iframe');
+                        if(footerIframe) footerIframe.src = data.mapUrl;
+                        if(pageIframe) pageIframe.src = data.mapUrl;
                     }
-                    
+
                     if(isAdmin) {
-                        document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; 
-                        document.getElementById('about-text-ar').value = data.about_ar || ''; document.getElementById('about-text-fr').value = data.about_fr || '';
-                        document.getElementById('privacy-map').value = data.mapUrl || '';
+                        document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; 
+                        document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; 
+                        document.getElementById('about-text-ar').value = data.about_ar || ''; 
+                        document.getElementById('about-text-fr').value = data.about_fr || '';
+                        document.getElementById('admin-map-url').value = data.mapUrl || '';
                     }
                 }
             });
@@ -1070,60 +1420,109 @@
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         async function submitReport() {
-            const name = document.getElementById('report-name').value; const email = document.getElementById('report-email').value; const message = document.getElementById('report-message').value;
+            const name = document.getElementById('report-name').value;
+            const email = document.getElementById('report-email').value;
+            const message = document.getElementById('report-message').value;
             if (!name || !email || !message) { showToast('error', currentLang === 'ar' ? 'الرجاء ملء كل الحقول' : 'Veuillez remplir tous les champs'); return; }
+            
             showLoading(true);
             try {
                 await addDoc(collection(db, 'reports'), { name, email, message, createdAt: serverTimestamp() });
-                showToast('success', currentLang === 'ar' ? 'تم الإرسال بنجاح' : 'Envoyé avec succès'); closeModal('reportModal');
+                showToast('success', currentLang === 'ar' ? 'تم الإرسال بنجاح' : 'Envoyé avec succès');
+                closeModal('reportModal');
                 document.getElementById('report-name').value = ''; document.getElementById('report-email').value = ''; document.getElementById('report-message').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
 
-        /* ==================== مهام لوحة التحكم ==================== */
-        function openAdminLogin() { document.getElementById('adminLoginModal').classList.add('active'); document.getElementById('admin-password').value = ''; document.getElementById('login-error').classList.remove('show'); }
+        /* ==================== مهام لوحة التحكم (Admin) ==================== */
+        function openAdminLogin() {
+            document.getElementById('adminLoginModal').classList.add('active');
+            document.getElementById('admin-password').value = '';
+            document.getElementById('login-error').classList.remove('show');
+        }
 
         function loginAdmin() {
             if (document.getElementById('admin-password').value === '#incubatorblida2#') {
-                isAdmin = true; closeModal('adminLoginModal');
-                document.getElementById('public-site').style.display = 'none'; document.getElementById('content-pages').style.display = 'none';
+                isAdmin = true;
+                closeModal('adminLoginModal');
+                document.getElementById('public-site').style.display = 'none';
+                document.getElementById('content-pages').style.display = 'none';
                 document.getElementById('admin-panel').classList.add('active');
-                window.location.hash = '#/adminblida2';
-                showAdminSection('dashboard'); loadAdminStats(); loadReports();
-                showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول' : 'Connexion réussie');
-            } else { document.getElementById('login-error').classList.add('show'); }
+                window.location.hash = '#/admin02';
+                
+                showAdminSection('dashboard');
+                loadAdminStats();
+                loadReports();
+                showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Connexion réussie');
+            } else {
+                document.getElementById('login-error').classList.add('show');
+            }
         }
 
         function logoutAdmin() {
-            isAdmin = false; document.getElementById('admin-panel').classList.remove('active'); document.getElementById('public-site').style.display = 'block';
-            window.location.hash = ''; showToast('info', currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Déconnecté');
+            isAdmin = false;
+            document.getElementById('admin-panel').classList.remove('active');
+            document.getElementById('public-site').style.display = 'block';
+            window.location.hash = '';
+            showToast('info', currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Déconnecté');
         }
 
         function showAdminSection(section, element = null) {
             document.querySelectorAll('.admin-section-content').forEach(el => el.style.display = 'none');
-            const targetSection = document.getElementById(`admin-${section}`); if (targetSection) targetSection.style.display = 'block';
-            document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
-            if (element) { element.classList.add('active'); } else { const activeNav = document.querySelector(`.admin-nav-item[onclick*="${section}"]`); if (activeNav) activeNav.classList.add('active'); }
-            
-            const titles = { dashboard: {ar: 'الداشبورد', fr: 'Tableau de Bord'}, banner: {ar: 'إضافة حدث أو دورة', fr: 'Événement / Bannière'}, stats: {ar: 'تعديل الإنجازات', fr: 'Réalisations'}, blog: {ar: 'المدونة والأعمال', fr: 'Blog'}, partners: {ar: 'الشركاء', fr: 'Partenaires'}, team: {ar: 'فريق العمل', fr: 'Équipe'}, university: {ar: 'الجامعة', fr: 'Université'}, contact: {ar: 'معلومات الاتصال', fr: 'Contact'}, privacy: {ar: 'الخصوصية والخريطة', fr: 'Confidentialité'}, reports: {ar: 'الإبلاغات', fr: 'Signalements'} };
-            const titleEl = document.getElementById('admin-section-title');
-            if (titleEl && titles[section]) { titleEl.textContent = currentLang === 'ar' ? titles[section].ar : titles[section].fr; titleEl.setAttribute('data-ar', titles[section].ar); titleEl.setAttribute('data-fr', titles[section].fr); }
+            const targetSection = document.getElementById(`admin-${section}`);
+            if (targetSection) targetSection.style.display = 'block';
 
-            if (section === 'dashboard') loadAdminStats(); else if (section === 'reports') loadReports();
+            document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
+            if (element) {
+                element.classList.add('active');
+            } else {
+                const activeNav = document.querySelector(`.admin-nav-item[onclick*="${section}"]`);
+                if (activeNav) activeNav.classList.add('active');
+            }
+
+            const titles = {
+                dashboard: { ar: 'الداشبورد', fr: 'Tableau de Bord' },
+                banner: { ar: 'إضافة حدث أو دورة', fr: 'Événement / Bannière' },
+                stats: { ar: 'تعديل الإنجازات', fr: 'Réalisations' },
+                blog: { ar: 'المدونة والأعمال', fr: 'Blog' },
+                partners: { ar: 'الشركاء', fr: 'Partenaires' },
+                team: { ar: 'فريق العمل', fr: 'Équipe' },
+                university: { ar: 'الجامعة', fr: 'Université' },
+                contact: { ar: 'معلومات الاتصال', fr: 'Contact' },
+                privacy: { ar: 'الخصوصية والموقع', fr: 'Confidentialité et Localisation' },
+                reports: { ar: 'الإبلاغات', fr: 'Signalements' }
+            };
+            
+            const titleEl = document.getElementById('admin-section-title');
+            if (titleEl && titles[section]) {
+                titleEl.textContent = currentLang === 'ar' ? titles[section].ar : titles[section].fr;
+                titleEl.setAttribute('data-ar', titles[section].ar);
+                titleEl.setAttribute('data-fr', titles[section].fr);
+            }
+
+            if (section === 'dashboard') loadAdminStats();
+            else if (section === 'reports') loadReports();
         }
 
         async function loadAdminStats() {
             const visitsSnap = await getDoc(doc(db, 'settings', 'visits'));
-            if (visitsSnap.exists()) { document.getElementById('admin-stat-daily').textContent = visitsSnap.data().daily || 0; document.getElementById('admin-stat-monthly').textContent = visitsSnap.data().monthly || 0; }
-            const reportsSnap = await getDocs(collection(db, 'reports')); document.getElementById('admin-stat-reports').textContent = reportsSnap.size;
+            if (visitsSnap.exists()) {
+                document.getElementById('admin-stat-daily').textContent = visitsSnap.data().daily || 0;
+                document.getElementById('admin-stat-monthly').textContent = visitsSnap.data().monthly || 0;
+            }
+            const reportsSnap = await getDocs(collection(db, 'reports'));
+            document.getElementById('admin-stat-reports').textContent = reportsSnap.size;
         }
 
         async function loadReports() {
             onSnapshot(query(collection(db, 'reports'), orderBy('createdAt', 'desc')), (snapshot) => {
-                const tbody = document.getElementById('admin-reports-list'); if(!tbody) return; tbody.innerHTML = '';
+                const tbody = document.getElementById('admin-reports-list');
+                if(!tbody) return;
+                tbody.innerHTML = '';
                 snapshot.forEach(docSnap => {
-                    const data = docSnap.data(); const tr = document.createElement('tr');
+                    const data = docSnap.data();
+                    const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${data.name}</td><td>${data.email}</td><td>${data.message}</td><td>${data.createdAt ? new Date(data.createdAt.toDate()).toLocaleString() : ''}</td><td class="table-actions"><button class="table-btn table-btn-delete" onclick="deleteReport('${docSnap.id}')"><i class="fas fa-trash"></i></button></td>`;
                     tbody.appendChild(tr);
                 });
@@ -1132,184 +1531,338 @@
 
         async function uploadImageSafe(file, path) {
             if (!file) return null;
-            try { const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`); await uploadBytes(storageRef, file); return await getDownloadURL(storageRef); } 
-            catch (err) { showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة' : 'Erreur image'); return null; }
+            try {
+                const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                return await getDownloadURL(storageRef);
+            } catch (err) {
+                showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة' : 'Erreur de téléchargement d\'image');
+                return null;
+            }
         }
 
         async function saveBanner() {
             showLoading(true);
             try {
-                const file = document.getElementById('banner-image').files[0]; let imageUrl = file ? await uploadImageSafe(file, 'banners') : null;
+                const file = document.getElementById('banner-image').files[0];
+                let imageUrl = file ? await uploadImageSafe(file, 'banners') : null;
                 const currentData = (await getDoc(doc(db, 'settings', 'banner'))).data() || {};
+                
                 const newLink = document.getElementById('banner-link').value;
-                const data = { title_ar: document.getElementById('banner-title-ar').value, title_fr: document.getElementById('banner-title-fr').value, desc_ar: document.getElementById('banner-desc-ar').value, desc_fr: document.getElementById('banner-desc-fr').value, btn_ar: document.getElementById('banner-btn-ar').value, btn_fr: document.getElementById('banner-btn-fr').value, link: newLink, registrations: newLink !== currentData.link ? 0 : (currentData.registrations || 0) };
+                const data = {
+                    title_ar: document.getElementById('banner-title-ar').value,
+                    title_fr: document.getElementById('banner-title-fr').value,
+                    desc_ar: document.getElementById('banner-desc-ar').value,
+                    desc_fr: document.getElementById('banner-desc-fr').value,
+                    btn_ar: document.getElementById('banner-btn-ar').value,
+                    btn_fr: document.getElementById('banner-btn-fr').value,
+                    link: newLink,
+                    registrations: newLink !== currentData.link ? 0 : (currentData.registrations || 0)
+                };
                 if (imageUrl) data.image = imageUrl;
+
                 await setDoc(doc(db, 'settings', 'banner'), data, { merge: true });
-                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+                showToast('success', currentLang === 'ar' ? 'تم حفظ التعديلات' : 'Enregistré');
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
-        async function deleteBanner() { if (!confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr ?')) return; await setDoc(doc(db, 'settings', 'banner'), { title_ar: '', title_fr: '', desc_ar: '', desc_fr: '', btn_ar: '', btn_fr: '', link: '', registrations: 0, image: '' }); showToast('success', currentLang === 'ar' ? 'تم الحذف' : 'Supprimé'); }
+
+        async function deleteBanner() {
+            if (!confirm(currentLang === 'ar' ? 'هل أنت متأكد من حذف البانر والحدث؟' : 'Êtes-vous sûr ?')) return;
+            await setDoc(doc(db, 'settings', 'banner'), { title_ar: '', title_fr: '', desc_ar: '', desc_fr: '', btn_ar: '', btn_fr: '', link: '', registrations: 0, image: '' });
+            showToast('success', currentLang === 'ar' ? 'تم الحذف' : 'Supprimé');
+        }
 
         async function saveStats() {
             showLoading(true);
-            const data = { ideas: parseInt(document.getElementById('stat-ideas').value) || 0, courses: parseInt(document.getElementById('stat-courses').value) || 0, labels: parseInt(document.getElementById('stat-labels').value) || 0, startups: parseInt(document.getElementById('stat-startups').value) || 0, mentors: parseInt(document.getElementById('stat-mentors').value) || 0, members: parseInt(document.getElementById('stat-members').value) || 0 };
-            await setDoc(doc(db, 'settings', 'stats'), data); showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré'); showLoading(false);
+            const data = {
+                ideas: parseInt(document.getElementById('stat-ideas').value) || 0, courses: parseInt(document.getElementById('stat-courses').value) || 0,
+                labels: parseInt(document.getElementById('stat-labels').value) || 0, startups: parseInt(document.getElementById('stat-startups').value) || 0,
+                mentors: parseInt(document.getElementById('stat-mentors').value) || 0, members: parseInt(document.getElementById('stat-members').value) || 0
+            };
+            await setDoc(doc(db, 'settings', 'stats'), data);
+            showToast('success', currentLang === 'ar' ? 'تم حفظ الإحصائيات بنجاح' : 'Enregistré');
+            showLoading(false);
         }
 
-        /* ===== تعديل و إضافة مقال للمدونة ===== */
+        /* ------------------ إدارة المدونة ------------------ */
         function editBlog(id) {
-            const data = cachedData.blogs[id];
-            document.getElementById('blog-title-ar').value = data.title_ar || ''; document.getElementById('blog-title-fr').value = data.title_fr || '';
-            document.getElementById('blog-content-ar').value = data.content_ar || ''; document.getElementById('blog-content-fr').value = data.content_fr || '';
-            editState.blog = id;
-            document.getElementById('btn-submit-blog').innerHTML = '<i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span>';
-            switchLang(currentLang); // Refresh translations
-            document.getElementById('admin-blog').scrollIntoView({behavior: 'smooth'});
+            const data = blogsData[id];
+            if(!data) return;
+            document.getElementById('blog-title-ar').value = data.title_ar || '';
+            document.getElementById('blog-title-fr').value = data.title_fr || '';
+            document.getElementById('blog-content-ar').value = data.content_ar || '';
+            document.getElementById('blog-content-fr').value = data.content_fr || '';
+            editingBlogId = id;
+            
+            const btn = document.getElementById('btn-add-blog');
+            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
+            btn.className = 'btn btn-primary';
+            document.getElementById('admin-blog').scrollIntoView({behavior: 'smooth', block: 'start'});
         }
-        async function submitBlog() {
-            const title_ar = document.getElementById('blog-title-ar').value; if(!title_ar) { showToast('error', currentLang === 'ar' ? 'العنوان مطلوب' : 'Le titre est requis'); return; }
+
+        async function addBlog() {
+            const title_ar = document.getElementById('blog-title-ar').value;
+            if(!title_ar) { showToast('error', currentLang === 'ar' ? 'العنوان مطلوب' : 'Le titre est requis'); return; }
             showLoading(true);
             try {
                 const file = document.getElementById('blog-image').files[0];
-                let imageUrl = '';
-                if (file) imageUrl = await uploadImageSafe(file, 'blogs');
+                let imageUrl = file ? await uploadImageSafe(file, 'blogs') : null;
                 
-                const data = { title_ar, title_fr: document.getElementById('blog-title-fr').value, content_ar: document.getElementById('blog-content-ar').value, content_fr: document.getElementById('blog-content-fr').value };
-                
-                if (editState.blog) {
-                    if (imageUrl) data.image = imageUrl;
-                    await updateDoc(doc(db, 'blogs', editState.blog), data);
-                    showToast('success', currentLang === 'ar' ? 'تم تعديل المقال' : 'Modifié');
+                const blogData = {
+                    title_ar, 
+                    title_fr: document.getElementById('blog-title-fr').value,
+                    content_ar: document.getElementById('blog-content-ar').value, 
+                    content_fr: document.getElementById('blog-content-fr').value
+                };
+                if(imageUrl) blogData.image = imageUrl;
+
+                if (editingBlogId) {
+                    await updateDoc(doc(db, 'blogs', editingBlogId), blogData);
+                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
+                    editingBlogId = null;
+                    const btn = document.getElementById('btn-add-blog');
+                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
+                    btn.className = 'btn btn-success';
                 } else {
-                    data.image = imageUrl; data.createdAt = serverTimestamp();
-                    await addDoc(collection(db, 'blogs'), data);
-                    showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté');
+                    if(!blogData.image) blogData.image = '';
+                    blogData.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'blogs'), blogData);
+                    showToast('success', currentLang === 'ar' ? 'تم إضافة المقال للمدونة' : 'Ajouté');
                 }
                 
-                // إعادة الضبط
-                document.getElementById('blog-title-ar').value = ''; document.getElementById('blog-title-fr').value = ''; document.getElementById('blog-content-ar').value = ''; document.getElementById('blog-content-fr').value = ''; document.getElementById('blog-image').value = '';
-                editState.blog = null;
-                document.getElementById('btn-submit-blog').innerHTML = '<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span>'; switchLang(currentLang);
+                document.getElementById('blog-title-ar').value = ''; 
+                document.getElementById('blog-title-fr').value = ''; 
+                document.getElementById('blog-content-ar').value = ''; 
+                document.getElementById('blog-content-fr').value = '';
+                document.getElementById('blog-image').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
-        async function deleteBlog(id) { if (confirm(currentLang === 'ar' ? 'تأكيد الحذف؟' : 'Confirmer?')) await deleteDoc(doc(db, 'blogs', id)); }
+        async function deleteBlog(id) { if (confirm(currentLang === 'ar' ? 'هل أنت متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'blogs', id)); }
 
-        /* ===== تعديل و إضافة شريك ===== */
+        /* ------------------ إدارة الشركاء ------------------ */
         function editPartner(id) {
-            const data = cachedData.partners[id];
+            const data = partnersData[id];
+            if(!data) return;
             document.getElementById('partner-name').value = data.name || '';
-            editState.partner = id;
-            document.getElementById('btn-submit-partner').innerHTML = '<i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span>'; switchLang(currentLang);
-            document.getElementById('admin-partners').scrollIntoView({behavior: 'smooth'});
+            editingPartnerId = id;
+            
+            const btn = document.getElementById('btn-add-partner');
+            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
+            btn.className = 'btn btn-primary';
+            document.getElementById('admin-partners').scrollIntoView({behavior: 'smooth', block: 'start'});
         }
-        async function submitPartner() {
+
+        async function addPartner() {
             showLoading(true);
             try {
                 const file = document.getElementById('partner-logo').files[0];
-                let logoUrl = ''; if (file) logoUrl = await uploadImageSafe(file, 'partners');
+                let logoUrl = file ? await uploadImageSafe(file, 'partners') : null;
                 const data = { name: document.getElementById('partner-name').value };
-                
-                if (editState.partner) {
-                    if (logoUrl) data.logo = logoUrl;
-                    await updateDoc(doc(db, 'partners', editState.partner), data);
-                    showToast('success', currentLang === 'ar' ? 'تم التعديل' : 'Modifié');
+                if(logoUrl) data.logo = logoUrl;
+
+                if (editingPartnerId) {
+                    await updateDoc(doc(db, 'partners', editingPartnerId), data);
+                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
+                    editingPartnerId = null;
+                    const btn = document.getElementById('btn-add-partner');
+                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
+                    btn.className = 'btn btn-success';
                 } else {
-                    data.logo = logoUrl; await addDoc(collection(db, 'partners'), data);
-                    showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté');
+                    if(!data.logo) data.logo = '';
+                    await addDoc(collection(db, 'partners'), data);
+                    showToast('success', currentLang === 'ar' ? 'تم إضافة الشريك بنجاح' : 'Ajouté');
                 }
-                document.getElementById('partner-name').value = ''; document.getElementById('partner-logo').value = ''; editState.partner = null;
-                document.getElementById('btn-submit-partner').innerHTML = '<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span>'; switchLang(currentLang);
+                document.getElementById('partner-name').value = '';
+                document.getElementById('partner-logo').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
-        async function deletePartner(id) { if (confirm(currentLang === 'ar' ? 'تأكيد الحذف؟' : 'Confirmer?')) await deleteDoc(doc(db, 'partners', id)); }
+        async function deletePartner(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'partners', id)); }
 
-        /* ===== تعديل و إضافة شخص للفريق ===== */
+        /* ------------------ إدارة الفريق ------------------ */
         function editTeamMember(id) {
-            const data = cachedData.team[id];
-            document.getElementById('team-name').value = data.name || ''; document.getElementById('team-role-ar').value = data.role_ar || ''; document.getElementById('team-role-fr').value = data.role_fr || '';
-            editState.team = id;
-            document.getElementById('btn-submit-team').innerHTML = '<i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span>'; switchLang(currentLang);
-            document.getElementById('admin-team').scrollIntoView({behavior: 'smooth'});
+            const data = teamData[id];
+            if(!data) return;
+            document.getElementById('team-name').value = data.name || '';
+            document.getElementById('team-role-ar').value = data.role_ar || '';
+            document.getElementById('team-role-fr').value = data.role_fr || '';
+            editingTeamId = id;
+            
+            const btn = document.getElementById('btn-add-team');
+            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
+            btn.className = 'btn btn-primary';
+            document.getElementById('admin-team').scrollIntoView({behavior: 'smooth', block: 'start'});
         }
-        async function submitTeamMember() {
+
+        async function addTeamMember() {
             showLoading(true);
             try {
-                const file = document.getElementById('team-image').files[0]; let imageUrl = ''; if (file) imageUrl = await uploadImageSafe(file, 'team');
-                const data = { name: document.getElementById('team-name').value, role_ar: document.getElementById('team-role-ar').value, role_fr: document.getElementById('team-role-fr').value };
-                if (editState.team) {
-                    if(imageUrl) data.image = imageUrl; await updateDoc(doc(db, 'team', editState.team), data); showToast('success', currentLang === 'ar' ? 'تم التعديل' : 'Modifié');
+                const file = document.getElementById('team-image').files[0];
+                let imageUrl = file ? await uploadImageSafe(file, 'team') : null;
+                const data = { 
+                    name: document.getElementById('team-name').value, 
+                    role_ar: document.getElementById('team-role-ar').value, 
+                    role_fr: document.getElementById('team-role-fr').value 
+                };
+                if(imageUrl) data.image = imageUrl;
+
+                if (editingTeamId) {
+                    await updateDoc(doc(db, 'team', editingTeamId), data);
+                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
+                    editingTeamId = null;
+                    const btn = document.getElementById('btn-add-team');
+                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
+                    btn.className = 'btn btn-success';
                 } else {
-                    data.image = imageUrl; await addDoc(collection(db, 'team'), data); showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté');
+                    if(!data.image) data.image = '';
+                    await addDoc(collection(db, 'team'), data);
+                    showToast('success', currentLang === 'ar' ? 'تم إضافة عضو الفريق' : 'Ajouté');
                 }
-                document.getElementById('team-name').value = ''; document.getElementById('team-role-ar').value = ''; document.getElementById('team-role-fr').value = ''; document.getElementById('team-image').value = ''; editState.team = null;
-                document.getElementById('btn-submit-team').innerHTML = '<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span>'; switchLang(currentLang);
+                document.getElementById('team-name').value = ''; 
+                document.getElementById('team-role-ar').value = ''; 
+                document.getElementById('team-role-fr').value = '';
+                document.getElementById('team-image').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
-        async function deleteTeamMember(id) { if (confirm(currentLang === 'ar' ? 'تأكيد الحذف؟' : 'Confirmer?')) await deleteDoc(doc(db, 'team', id)); }
+        async function deleteTeamMember(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'team', id)); }
 
-        /* ===== تعديل و إضافة روابط الجامعة ===== */
+        /* ------------------ إدارة روابط الجامعة ------------------ */
         async function saveUniLogo() {
             showLoading(true);
-            try { const file = document.getElementById('uni-logo-file').files[0]; if (file) { const url = await uploadImageSafe(file, 'university'); if(url) await setDoc(doc(db, 'settings', 'university'), { logo: url }, { merge: true }); } showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré'); } catch (e) { showToast('error', e.message); }
+            try {
+                const file = document.getElementById('uni-logo-file').files[0];
+                if (file) { const url = await uploadImageSafe(file, 'university'); if(url) await setDoc(doc(db, 'settings', 'university'), { logo: url }, { merge: true }); }
+                showToast('success', currentLang === 'ar' ? 'تم حفظ الشعار' : 'Enregistré');
+            } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
+
         function editUniLink(id) {
-            const data = cachedData.unilinks[id];
-            document.getElementById('uni-link-title-ar').value = data.title_ar || ''; document.getElementById('uni-link-title-fr').value = data.title_fr || ''; document.getElementById('uni-link-url').value = data.url || '';
-            editState.unilink = id;
-            document.getElementById('btn-submit-unilink').innerHTML = '<i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span>'; switchLang(currentLang);
-            document.getElementById('admin-university').scrollIntoView({behavior: 'smooth'});
+            const data = uniLinksData[id];
+            if(!data) return;
+            document.getElementById('uni-link-title-ar').value = data.title_ar || '';
+            document.getElementById('uni-link-title-fr').value = data.title_fr || '';
+            document.getElementById('uni-link-url').value = data.url || '';
+            editingUniLinkId = id;
+            
+            const btn = document.getElementById('btn-add-uni-link');
+            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
+            btn.className = 'btn btn-primary';
+            document.getElementById('admin-university').scrollIntoView({behavior: 'smooth', block: 'start'});
         }
-        async function submitUniLink() {
+
+        async function addUniLink() {
             showLoading(true);
             try {
-                const data = { title_ar: document.getElementById('uni-link-title-ar').value, title_fr: document.getElementById('uni-link-title-fr').value, url: document.getElementById('uni-link-url').value };
-                if (editState.unilink) { await updateDoc(doc(db, 'university_links', editState.unilink), data); showToast('success', currentLang === 'ar' ? 'تم التعديل' : 'Modifié'); } 
-                else { await addDoc(collection(db, 'university_links'), data); showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté'); }
-                document.getElementById('uni-link-title-ar').value = ''; document.getElementById('uni-link-title-fr').value = ''; document.getElementById('uni-link-url').value = ''; editState.unilink = null;
-                document.getElementById('btn-submit-unilink').innerHTML = '<i class="fas fa-plus"></i><span data-ar="إضافة رابط" data-fr="Ajouter">إضافة رابط</span>'; switchLang(currentLang);
+                const data = { 
+                    title_ar: document.getElementById('uni-link-title-ar').value, 
+                    title_fr: document.getElementById('uni-link-title-fr').value, 
+                    url: document.getElementById('uni-link-url').value 
+                };
+                
+                if (editingUniLinkId) {
+                    await updateDoc(doc(db, 'university_links', editingUniLinkId), data);
+                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
+                    editingUniLinkId = null;
+                    const btn = document.getElementById('btn-add-uni-link');
+                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة رابط" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة رابط' : 'Ajouter'}</span>`;
+                    btn.className = 'btn btn-success';
+                } else {
+                    await addDoc(collection(db, 'university_links'), data);
+                    showToast('success', currentLang === 'ar' ? 'تم إضافة الرابط' : 'Ajouté');
+                }
+                document.getElementById('uni-link-title-ar').value = '';
+                document.getElementById('uni-link-title-fr').value = '';
+                document.getElementById('uni-link-url').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
         async function deleteUniLink(id) { if (confirm('متأكد؟')) await deleteDoc(doc(db, 'university_links', id)); }
 
+        /* ------------------ إدارة معلومات الاتصال ------------------ */
         async function saveContact() {
             showLoading(true);
             await setDoc(doc(db, 'settings', 'contact'), { email: document.getElementById('admin-email').value, phone: document.getElementById('admin-phone').value, incubatorPhone: document.getElementById('admin-incubator-phone').value, fax: document.getElementById('admin-fax').value });
-            showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré'); showLoading(false);
+            showToast('success', currentLang === 'ar' ? 'تم حفظ معلومات الاتصال' : 'Enregistré');
+            showLoading(false);
         }
 
+        /* ------------------ إدارة الخصوصية ومن نحن والخريطة ------------------ */
         async function savePrivacy() {
             showLoading(true);
-            await setDoc(doc(db, 'settings', 'privacy'), { privacy_ar: document.getElementById('privacy-text-ar').value, privacy_fr: document.getElementById('privacy-text-fr').value, about_ar: document.getElementById('about-text-ar').value, about_fr: document.getElementById('about-text-fr').value, mapUrl: document.getElementById('privacy-map').value });
-            showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré'); showLoading(false);
+            await setDoc(doc(db, 'settings', 'privacy'), { 
+                privacy_ar: document.getElementById('privacy-text-ar').value, 
+                privacy_fr: document.getElementById('privacy-text-fr').value, 
+                about_ar: document.getElementById('about-text-ar').value, 
+                about_fr: document.getElementById('about-text-fr').value,
+                mapUrl: document.getElementById('admin-map-url').value
+            });
+            showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+            showLoading(false);
         }
         async function deleteReport(id) { if (confirm('متأكد من الحذف؟')) await deleteDoc(doc(db, 'reports', id)); }
 
+        /* ------------------ تتبع الزوار والتسجيلات ------------------ */
         async function trackVisit() {
-            const visitsRef = doc(db, 'settings', 'visits'); const visitsSnap = await getDoc(visitsRef);
+            const visitsRef = doc(db, 'settings', 'visits');
+            const visitsSnap = await getDoc(visitsRef);
             const now = new Date(); const today = now.toDateString(); const thisMonth = `${now.getFullYear()}-${now.getMonth()}`;
             if (!visitsSnap.exists()) await setDoc(visitsRef, { daily: 1, monthly: 1, total: 1, lastDate: today, lastMonth: thisMonth });
-            else { const data = visitsSnap.data(); const updates = {}; if (data.lastDate !== today) { updates.daily = 1; updates.lastDate = today; } else { updates.daily = increment(1); } if (data.lastMonth !== thisMonth) { updates.monthly = 1; updates.lastMonth = thisMonth; } else { updates.monthly = increment(1); } updates.total = increment(1); await updateDoc(visitsRef, updates); }
+            else {
+                const data = visitsSnap.data(); const updates = {};
+                if (data.lastDate !== today) { updates.daily = 1; updates.lastDate = today; } else { updates.daily = increment(1); }
+                if (data.lastMonth !== thisMonth) { updates.monthly = 1; updates.lastMonth = thisMonth; } else { updates.monthly = increment(1); }
+                updates.total = increment(1);
+                await updateDoc(visitsRef, updates);
+            }
         }
 
         async function handleRegistration() {
             const bannerSnap = await getDoc(doc(db, 'settings', 'banner'));
-            if (bannerSnap.exists() && bannerSnap.data().link) { await updateDoc(doc(db, 'settings', 'banner'), { registrations: increment(1) }); window.open(bannerSnap.data().link, '_blank'); } 
-            else { showToast('info', currentLang === 'ar' ? 'سيتم توفير رابط التسجيل قريباً' : 'Bientôt disponible'); }
+            if (bannerSnap.exists() && bannerSnap.data().link) {
+                await updateDoc(doc(db, 'settings', 'banner'), { registrations: increment(1) });
+                window.open(bannerSnap.data().link, '_blank');
+            } else {
+                const msg = currentLang === 'ar' ? 'سيتم توفير رابط التسجيل قريباً' : 'Le lien d\'inscription sera bientôt disponible';
+                showToast('info', msg);
+            }
         }
 
-        function showPage(page) { document.getElementById('public-site').style.display = 'none'; document.getElementById('content-pages').style.display = 'block'; document.querySelectorAll('.content-page').forEach(el => el.style.display = 'none'); document.getElementById(`${page}-page`).style.display = 'block'; window.scrollTo(0, 0); }
-        function goHome() { document.getElementById('public-site').style.display = 'block'; document.getElementById('content-pages').style.display = 'none'; window.scrollTo(0, 0); }
-        function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('active', show); }
-        function showToast(type, message) { const container = document.getElementById('toastContainer'); const toast = document.createElement('div'); toast.className = `toast toast-${type}`; const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' }; toast.innerHTML = `<i class="fas ${icons[type]}"></i> <span>${message}</span>`; container.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+        /* ------------------ التحكم بالواجهة ------------------ */
+        function showPage(page) {
+            document.getElementById('public-site').style.display = 'none';
+            document.getElementById('content-pages').style.display = 'block';
+            document.querySelectorAll('.content-page').forEach(el => el.style.display = 'none');
+            document.getElementById(`${page}-page`).style.display = 'block';
+            window.scrollTo(0, 0);
+        }
 
-        document.querySelectorAll('.modal-overlay').forEach(overlay => { overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); }); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active')); });
+        function goHome() {
+            document.getElementById('public-site').style.display = 'block';
+            document.getElementById('content-pages').style.display = 'none';
+            window.scrollTo(0, 0);
+        }
+
+        function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('active', show); }
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fas ${icons[type]}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        });
     </script>
 </body>
-</html>
+</html> 
