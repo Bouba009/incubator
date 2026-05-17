@@ -302,6 +302,17 @@
         .admin-logo-text { font-weight: 900; font-size: 1.2rem; }
         .admin-nav { display: flex; flex-direction: column; gap: 0.5rem; }
         .admin-nav-item { padding: 0.875rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease; font-weight: 700; color: rgba(255,255,255,0.7); }
+        button.admin-nav-item {
+            width: 100%;
+            text-align: inherit;
+            font-family: inherit;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
         .admin-nav-item:hover, .admin-nav-item.active { background: var(--gradient-purple); color: white; }
         .admin-nav-item i { width: 24px; text-align: center; font-size: 1.1rem; }
         
@@ -654,16 +665,46 @@
                 <span class="admin-logo-text">Admin</span>
             </div>
             <div class="admin-nav">
-                <div class="admin-nav-item active" onclick="showAdminSection('dashboard', this)"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('banner', this)"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('stats', this)"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('blog', this)"><i class="fas fa-blog"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('partners', this)"><i class="fas fa-handshake"></i><span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('team', this)"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('university', this)"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('contact', this)"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('privacy', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و الموقع" data-fr="Confidentialité">الخصوصية والموقع</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('reports', this)"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></div>
+                <button class="admin-nav-item active" data-section="dashboard" type="button" onclick="showAdminSection('dashboard', this)">
+                    <i class="fas fa-chart-pie"></i>
+                    <span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span>
+                </button>
+                <button class="admin-nav-item" data-section="banner" type="button" onclick="showAdminSection('banner', this)">
+                    <i class="fas fa-image"></i>
+                    <span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span>
+                </button>
+                <button class="admin-nav-item" data-section="stats" type="button" onclick="showAdminSection('stats', this)">
+                    <i class="fas fa-chart-bar"></i>
+                    <span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span>
+                </button>
+                <button class="admin-nav-item" data-section="blog" type="button" onclick="showAdminSection('blog', this)">
+                    <i class="fas fa-blog"></i>
+                    <span data-ar="المدونة" data-fr="Blog">المدونة</span>
+                </button>
+                <button class="admin-nav-item" data-section="partners" type="button" onclick="showAdminSection('partners', this)">
+                    <i class="fas fa-handshake"></i>
+                    <span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span>
+                </button>
+                <button class="admin-nav-item" data-section="team" type="button" onclick="showAdminSection('team', this)">
+                    <i class="fas fa-users"></i>
+                    <span data-ar="الفريق" data-fr="Équipe">الفريق</span>
+                </button>
+                <button class="admin-nav-item" data-section="university" type="button" onclick="showAdminSection('university', this)">
+                    <i class="fas fa-university"></i>
+                    <span data-ar="الجامعة" data-fr="Université">الجامعة</span>
+                </button>
+                <button class="admin-nav-item" data-section="contact" type="button" onclick="showAdminSection('contact', this)">
+                    <i class="fas fa-address-book"></i>
+                    <span data-ar="الاتصال" data-fr="Contact">الاتصال</span>
+                </button>
+                <button class="admin-nav-item" data-section="privacy" type="button" onclick="showAdminSection('privacy', this)">
+                    <i class="fas fa-shield-alt"></i>
+                    <span data-ar="الخصوصية والموقع" data-fr="Confidentialité">الخصوصية والموقع</span>
+                </button>
+                <button class="admin-nav-item" data-section="reports" type="button" onclick="showAdminSection('reports', this)">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span>
+                </button>
             </div>
         </div>
         <div class="admin-main" id="admin-main">
@@ -1007,6 +1048,40 @@
                     showToast('error', currentLang === 'ar' ? 'فشل تحميل قواعد البيانات Firebase' : 'Échec du chargement de Firebase');
                 }
             }, 100);
+
+        // Admin navigation event listeners - supports both click and touch for mobile
+        function setupAdminNavListeners() {
+            var navItems = document.querySelectorAll('.admin-nav-item');
+            navItems.forEach(function(item) {
+                // Remove any existing listeners first
+                var newItem = item.cloneNode(true);
+                item.parentNode.replaceChild(newItem, item);
+
+                // Add click listener
+                newItem.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var section = this.getAttribute('data-section');
+                    if (section) {
+                        showAdminSection(section, this);
+                    }
+                });
+
+                // Add touch listener for mobile
+                newItem.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var section = this.getAttribute('data-section');
+                    if (section) {
+                        showAdminSection(section, this);
+                    }
+                });
+            });
+        }
+
+        // Call setup after DOM is ready
+        setupAdminNavListeners();
+
         });
 
         function checkAdminHash() {
@@ -1453,9 +1528,16 @@
                 document.getElementById('admin-panel').style.display = 'block';
                 window.location.hash = '#/admin02';
 
+                // Re-setup nav listeners after admin panel is visible
+                setupAdminNavListeners();
+
                 // Show dashboard by default and mark it active
-                var dashboardNav = document.querySelector('.admin-nav-item[onclick*="dashboard"]');
-                showAdminSection('dashboard', dashboardNav);
+                var dashboardNav = document.querySelector('.admin-nav-item[data-section="dashboard"]');
+                if (dashboardNav) {
+                    showAdminSection('dashboard', dashboardNav);
+                } else {
+                    showAdminSection('dashboard', null);
+                }
                 loadAdminStats();
                 loadReports();
                 showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Connexion réussie');
@@ -1473,6 +1555,8 @@
         }
 
         function showAdminSection(section, clickedElement) {
+            console.log('Switching to section:', section);
+
             // Hide ALL admin section contents
             var allSections = document.querySelectorAll('.admin-section-content');
             for (var i = 0; i < allSections.length; i++) {
@@ -1484,6 +1568,9 @@
             var targetSection = document.getElementById(targetId);
             if (targetSection) {
                 targetSection.style.display = 'block';
+                console.log('Section shown:', targetId);
+            } else {
+                console.error('Section not found:', targetId);
             }
 
             // Remove active class from ALL nav items
@@ -1506,7 +1593,7 @@
                 partners: { ar: 'الشركاء', fr: 'Partenaires' },
                 team: { ar: 'فريق العمل', fr: 'Équipe' },
                 university: { ar: 'الجامعة', fr: 'Université' },
-                contact: { ar: 'معلومات الاتصال', fr: 'Contact' },
+                contact: { ar: 'الاتصال', fr: 'Contact' },
                 privacy: { ar: 'الخصوصية والموقع', fr: 'Confidentialité et Localisation' },
                 reports: { ar: 'الإبلاغات', fr: 'Signalements' }
             };
