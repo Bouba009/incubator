@@ -1,12 +1,3 @@
-أهلاً بك. لقد قمت بتصميم وبرمجة الموقع المطلوب بدقة عالية، مع الحفاظ على الواجهة
-الاحترافية والألوان المطلوبة (البنفسجي، البرتقالي، الأبيض). كما قمت بمعالجة جميع
-الأخطاء البرمجية (مثل مشكلة علامات التنصيص التي كانت توقف الجافاسكريبت، ومشاكل
-التمرير في شريط المقالات، وتكامل Firebase بالكامل).
-
-الموقع الآن يعمل كقطعة واحدة (Single Page Application) بملف index.html واحد،
-ويدعم التحديثات الحية (Real-time) بفضل Firebase لجميع الزوار.
-
-إليك الكود المكتمل الخالي من الأخطاء:
 
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -40,7 +31,7 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // تصدير دوال Firebase لتكون متاحة في النطاق العام (Global Scope)
+        // تصدير دوال Firebase لتكون متاحة
         window.firebaseDB = db;
         window.firebaseStorage = storage;
         window.firestoreModules = { collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp };
@@ -48,7 +39,7 @@
     </script>
 
     <style>
-        /* ==================== المتغيرات الأساسية والألوان ==================== */
+        /* ==================== المتغيرات الأساسية ==================== */
         :root {
             --purple-primary: #7C3AED;
             --purple-dark: #6D28D9;
@@ -97,7 +88,7 @@
         ::-webkit-scrollbar-thumb { background: var(--purple-primary); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--purple-dark); }
 
-        /* ==================== الحركات ==================== */
+        /* الحركات */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -137,9 +128,9 @@
         .lang-switcher { display: flex; background: var(--gray-100); border-radius: 50px; padding: 4px; gap: 4px; }
         .lang-btn {
             padding: 6px 16px; border: none; border-radius: 50px;
-            cursor: pointer; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; font-weight: 700; font-size: 0.95rem;
             transition: all 0.3s ease; background: transparent; color: var(--gray-600);
-            font-family: inherit;
+            font-family: inherit; letter-spacing: 1px;
         }
         .lang-btn.active { background: var(--gradient-purple); color: white; box-shadow: var(--shadow-sm); }
         
@@ -190,21 +181,13 @@
         .hero-cta { display: inline-flex; align-items: center; gap: 0.75rem; background: var(--gradient-orange); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4); animation: pulse 2s ease infinite; font-family: inherit; }
         .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(249, 115, 22, 0.5); }
 
-        /* احصائيات التسجيل تحت البانر */
-        .hero-stats-bar { position: relative; z-index: 2; display: flex; justify-content: center; gap: 2rem; margin-top: -40px; padding: 0 2rem; flex-wrap: wrap; }
-        .hero-stat-card { background: white; padding: 1.5rem 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); text-align: center; min-width: 140px; transition: all 0.3s ease; border-bottom: 4px solid var(--purple-primary); }
-        .hero-stat-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
-        .hero-stat-number { font-size: 2.2rem; font-weight: 900; background: var(--gradient-purple); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-stat-label { font-size: 1rem; color: var(--gray-800); font-weight: 800; margin-top: 0.25rem; }
-
         /* ==================== الأقسام العامة ==================== */
         .section { padding: 5rem 2rem; max-width: 1400px; margin: 0 auto; }
         .section-header { text-align: center; margin-bottom: 3.5rem; }
         .section-tag { display: inline-block; padding: 0.5rem 1.25rem; background: rgba(124, 58, 237, 0.1); color: var(--purple-primary); border-radius: 50px; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }
         .section-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; color: var(--gray-900); margin-bottom: 1rem; }
-        .section-desc { color: var(--gray-600); max-width: 600px; margin: 0 auto; font-size: 1.1rem; font-weight: 500; }
 
-        /* قسم الإحصائيات */
+        /* قسم الإحصائيات (الإنجازات) */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
         .stat-card { background: white; padding: 2rem; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-md); transition: all 0.4s ease; position: relative; overflow: hidden; border: 1px solid var(--gray-100); }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient-mixed); transform: scaleX(0); transition: transform 0.4s ease; }
@@ -232,7 +215,6 @@
         .blog-image { width: 100%; height: 220px; object-fit: cover; transition: transform 0.5s ease; }
         .blog-card:hover .blog-image { transform: scale(1.08); }
         .blog-content { padding: 1.5rem; }
-        .blog-date { font-size: 0.85rem; color: var(--orange-primary); font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         .blog-title { font-size: 1.15rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.75rem; line-height: 1.4; }
         .blog-excerpt { font-size: 0.95rem; color: var(--gray-600); line-height: 1.6; font-weight: 500; }
         
@@ -359,8 +341,6 @@
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
         .btn-danger { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
         .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
-        .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
-        .btn-secondary:hover { background: var(--gray-300); }
 
         /* جداول الإدارة */
         .admin-table-container { overflow-x: auto; }
@@ -415,12 +395,14 @@
             .navbar-container { padding: 0.75rem 1rem; }
             .hero { min-height: 500px; }
             .hero-title { font-size: 2rem; }
-            .hero-stats-bar { margin-top: -20px; }
-            .hero-stat-card { min-width: 120px; padding: 1rem; }
             .blog-card { flex: 0 0 calc(100% - 1rem); margin: 0 0.5rem; }
             .section { padding: 3rem 1rem; }
             .blog-section { padding: 1.5rem 1rem; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            /* هنا نجعل الإحصائيات 2 في كل سطر في الهواتف */
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .stat-icon { width: 50px; height: 50px; font-size: 1.4rem; }
+            .stat-number { font-size: 2.2rem; }
+            .stat-label { font-size: 0.9rem; }
             .team-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; text-align: center; }
@@ -428,15 +410,15 @@
             .admin-stats-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .hero-stat-number { font-size: 1.8rem; }
-            .stat-number { font-size: 2.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .stat-number { font-size: 1.8rem; }
+            .stat-label { font-size: 0.8rem; }
             .content-page { padding: 1.5rem; margin: 1rem; }
         }
     </style>
 </head>
 <body>
-    <!-- ==================== الموقع العام ==================== -->
+    <!-- ==================== الموقع العام للزوار ==================== -->
     <div id="public-site">
         
         <!-- القائمة العلوية -->
@@ -452,8 +434,8 @@
                 </div>
                 <div class="nav-controls">
                     <div class="lang-switcher">
-                        <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar">العربية</button>
-                        <button class="lang-btn" onclick="switchLang('fr')" id="btn-fr">Français</button>
+                        <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar">AR</button>
+                        <button class="lang-btn" onclick="switchLang('fr')" id="btn-fr">FR</button>
                     </div>
                 </div>
             </div>
@@ -475,7 +457,7 @@
                 <a href="#university" class="menu-link" onclick="toggleMenu()"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></a>
                 <a href="#contact" class="menu-link" onclick="toggleMenu()"><i class="fas fa-envelope"></i><span data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</span></a>
                 <a href="#" class="menu-link" onclick="openReportModal(); toggleMenu(); return false;"><i class="fas fa-exclamation-triangle"></i><span data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</span></a>
-                <a href="#/adminblida2" class="menu-link" onclick="openAdminLogin(); toggleMenu(); return false;"><i class="fas fa-lock"></i><span data-ar="لوحة التحكم" data-fr="Administration">لوحة التحكم</span></a>
+                <!-- تم إزالة رابط لوحة التحكم من هنا ليصبح الدخول فقط عبر رابط url/admin02 -->
             </div>
         </div>
 
@@ -496,15 +478,10 @@
                 </button>
             </div>
         </section>
+        
+        <!-- ملاحظة: تم إزالة مربع عرض التسجيلات من واجهة الزوار هنا بناءً على طلبك -->
 
-        <div class="hero-stats-bar" id="hero-stats-bar">
-            <div class="hero-stat-card animate-on-scroll">
-                <div class="hero-stat-number" id="stat-registrations">0</div>
-                <div class="hero-stat-label" data-ar="التسجيلات" data-fr="Inscriptions">التسجيلات</div>
-            </div>
-        </div>
-
-        <!-- قسم الإحصائيات -->
+        <!-- قسم الإحصائيات (إنجازاتنا) -->
         <section class="section" id="stats">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="إنجازاتنا" data-fr="Nos Réalisations">إنجازاتنا</span>
@@ -646,8 +623,8 @@
                 </div>
                 <div class="nav-controls">
                     <div class="lang-switcher">
-                        <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar-page">العربية</button>
-                        <button class="lang-btn" onclick="switchLang('fr')" id="btn-fr-page">Français</button>
+                        <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar-page">AR</button>
+                        <button class="lang-btn" onclick="switchLang('fr')" id="btn-fr-page">FR</button>
                     </div>
                 </div>
             </div>
@@ -678,16 +655,17 @@
                 <span class="admin-logo-text">Admin</span>
             </div>
             <div class="admin-nav">
-                <div class="admin-nav-item active" onclick="showAdminSection('dashboard')"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('banner')"><i class="fas fa-image"></i><span data-ar="إضافة حدث أو دورة (البانر)" data-fr="Événement/Bannière">إضافة حدث (البانر)</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('stats')"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('blog')"><i class="fas fa-blog"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('partners')"><i class="fas fa-handshake"></i><span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('team')"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('university')"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('contact')"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('privacy')"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و من نحن" data-fr="Confidentialité">الخصوصية ومن نحن</span></div>
-                <div class="admin-nav-item" onclick="showAdminSection('reports')"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></div>
+                <!-- تم إصلاح الدالة showAdminSection ليتم الإنتقال بسلاسة -->
+                <div class="admin-nav-item active" onclick="showAdminSection('dashboard', this)"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('banner', this)"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('stats', this)"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('blog', this)"><i class="fas fa-blog"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('partners', this)"><i class="fas fa-handshake"></i><span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('team', this)"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('university', this)"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('contact', this)"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('privacy', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و من نحن" data-fr="Confidentialité">الخصوصية ومن نحن</span></div>
+                <div class="admin-nav-item" onclick="showAdminSection('reports', this)"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></div>
             </div>
         </div>
         <div class="admin-main" id="admin-main">
@@ -980,7 +958,7 @@
     <!-- حاوية الإشعارات -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ==================== ملفات الجافاسكريبت والمهام ==================== -->
+    <!-- ==================== الجافاسكريبت والمهام ==================== -->
     <script>
         let currentLang = 'ar';
         let isAdmin = false;
@@ -1005,7 +983,7 @@
                     trackVisit();
                     
                     window.addEventListener('hashchange', checkAdminHash);
-                    checkAdminHash();
+                    checkAdminHash(); // فحص الرابط عند تحميل الصفحة
                 }
                 if (attempts > 50) {
                     clearInterval(initInterval);
@@ -1014,9 +992,12 @@
             }, 100);
         });
 
+        // دالة فحص وتأمين رابط لوحة التحكم (مخفي للزوار تماما)
         function checkAdminHash() {
-            if (window.location.hash === '#/adminblida2' && !isAdmin) {
-                openAdminLogin();
+            if (window.location.hash === '#/admin02') {
+                if (!isAdmin) { openAdminLogin(); }
+            } else {
+                if (isAdmin) { logoutAdmin(); }
             }
         }
 
@@ -1062,6 +1043,15 @@
 
             loadAllData();
             updateSlider();
+            
+            // تحديث العناوين في لوحة التحكم إن كانت مفتوحة
+            if(isAdmin){
+                const activeEl = document.querySelector('.admin-nav-item.active');
+                if(activeEl) {
+                    const match = activeEl.getAttribute('onclick').match(/'([^']+)'/);
+                    if(match) showAdminSection(match[1], activeEl);
+                }
+            }
         }
 
         function toggleMenu() {
@@ -1127,7 +1117,8 @@
                 if (heroCta) { heroCta.setAttribute('data-ar', data.btn_ar || 'سجل الآن'); heroCta.setAttribute('data-fr', data.btn_fr || 'Inscrivez-vous'); heroCta.textContent = heroCta.getAttribute(`data-${currentLang}`); }
                 if (data.image) heroBg.style.backgroundImage = `url('${data.image}')`;
                 
-                document.getElementById('stat-registrations').textContent = data.registrations || 0;
+                if (document.getElementById('stat-registrations')) document.getElementById('stat-registrations').textContent = data.registrations || 0;
+                if (document.getElementById('admin-stat-registrations')) document.getElementById('admin-stat-registrations').textContent = data.registrations || 0;
                 
                 if(isAdmin) {
                     document.getElementById('banner-title-ar').value = data.title_ar || '';
@@ -1167,7 +1158,7 @@
             onSnapshot(q, (snapshot) => {
                 const slider = document.getElementById('blogSlider');
                 const adminList = document.getElementById('admin-blog-list');
-                slider.innerHTML = '';
+                if(slider) slider.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
 
                 snapshot.forEach(docSnap => {
@@ -1176,17 +1167,19 @@
                     const title = currentLang === 'ar' ? (data.title_ar || '') : (data.title_fr || '');
                     const content = currentLang === 'ar' ? (data.content_ar || '') : (data.content_fr || '');
                     
-                    const card = document.createElement('div');
-                    card.className = 'blog-card';
-                    card.onclick = () => openBlogModal(id, data);
-                    card.innerHTML = `
-                        <img src="${data.image || 'https://via.placeholder.com/400x220?text=Blog'}" alt="Blog Image" class="blog-image">
-                        <div class="blog-content">
-                            <h3 class="blog-title">${title}</h3>
-                            <p class="blog-excerpt">${content.substring(0, 100)}...</p>
-                        </div>
-                    `;
-                    slider.appendChild(card);
+                    if(slider) {
+                        const card = document.createElement('div');
+                        card.className = 'blog-card';
+                        card.onclick = () => openBlogModal(id, data);
+                        card.innerHTML = `
+                            <img src="${data.image || 'https://via.placeholder.com/400x220?text=Blog'}" alt="Blog Image" class="blog-image">
+                            <div class="blog-content">
+                                <h3 class="blog-title">${title}</h3>
+                                <p class="blog-excerpt">${content.substring(0, 100)}...</p>
+                            </div>
+                        `;
+                        slider.appendChild(card);
+                    }
 
                     if (adminList) {
                         const tr = document.createElement('tr');
@@ -1206,6 +1199,7 @@
 
         function updateSlider() {
             const slider = document.getElementById('blogSlider');
+            if(!slider) return;
             const cards = slider.querySelectorAll('.blog-card');
             if (cards.length === 0) return;
             const card = cards[0];
@@ -1216,12 +1210,12 @@
 
         function moveSlider(direction) {
             const slider = document.getElementById('blogSlider');
+            if(!slider) return;
             const cards = slider.querySelectorAll('.blog-card');
             if (cards.length === 0) return;
             const visibleCards = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
             const maxIndex = Math.max(0, cards.length - visibleCards);
             
-            // في اللغة العربية (RTL) الاتجاه اليمين ينقص الاندكس، وفي الفرنسية (LTR) الاتجاه اليمين يزيد الاندكس.
             if(currentLang === 'ar') direction = -direction;
 
             blogSliderIndex = Math.max(0, Math.min(blogSliderIndex + direction, maxIndex));
@@ -1234,14 +1228,15 @@
             onSnapshot(collection(db, 'partners'), (snapshot) => {
                 const grid = document.getElementById('partners-grid');
                 const adminList = document.getElementById('admin-partners-list');
-                grid.innerHTML = '';
+                if(grid) grid.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    const img = document.createElement('img');
-                    img.src = data.logo || ''; img.alt = data.name; img.className = 'partner-logo';
-                    grid.appendChild(img);
-
+                    if(grid) {
+                        const img = document.createElement('img');
+                        img.src = data.logo || ''; img.alt = data.name; img.className = 'partner-logo';
+                        grid.appendChild(img);
+                    }
                     if (adminList) {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `<td><img src="${data.logo || ''}" class="table-img"></td><td>${data.name}</td><td class="table-actions"><button class="table-btn table-btn-delete" onclick="deletePartner('${docSnap.id}')"><i class="fas fa-trash"></i></button></td>`;
@@ -1255,15 +1250,18 @@
             onSnapshot(collection(db, 'team'), (snapshot) => {
                 const grid = document.getElementById('team-grid');
                 const adminList = document.getElementById('admin-team-list');
-                grid.innerHTML = '';
+                if(grid) grid.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     const role = currentLang === 'ar' ? (data.role_ar || '') : (data.role_fr || '');
-                    const card = document.createElement('div');
-                    card.className = 'team-card animate-on-scroll';
-                    card.innerHTML = `<div class="team-image-wrapper"><img src="${data.image || 'https://via.placeholder.com/300x280'}" alt="${data.name}" class="team-image"><div class="team-overlay"></div><div class="team-info"><h3 class="team-name">${data.name}</h3><p class="team-role">${role}</p></div></div>`;
-                    grid.appendChild(card);
+                    
+                    if(grid) {
+                        const card = document.createElement('div');
+                        card.className = 'team-card animate-on-scroll';
+                        card.innerHTML = `<div class="team-image-wrapper"><img src="${data.image || 'https://via.placeholder.com/300x280'}" alt="${data.name}" class="team-image"><div class="team-overlay"></div><div class="team-info"><h3 class="team-name">${data.name}</h3><p class="team-role">${role}</p></div></div>`;
+                        grid.appendChild(card);
+                    }
 
                     if (adminList) {
                         const tr = document.createElement('tr');
@@ -1278,20 +1276,26 @@
         async function loadUniversity() {
             const docRef = doc(db, 'settings', 'university');
             onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists() && docSnap.data().logo) document.getElementById('uni-logo').src = docSnap.data().logo;
+                if (docSnap.exists() && docSnap.data().logo) {
+                    const uniLogo = document.getElementById('uni-logo');
+                    if(uniLogo) uniLogo.src = docSnap.data().logo;
+                }
             });
 
             onSnapshot(collection(db, 'university_links'), (snapshot) => {
                 const container = document.getElementById('uni-links');
                 const adminList = document.getElementById('admin-uni-links-list');
-                container.innerHTML = '';
+                if(container) container.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     const title = currentLang === 'ar' ? data.title_ar : data.title_fr;
-                    const link = document.createElement('a');
-                    link.href = data.url; link.target = '_blank'; link.className = 'uni-link'; link.textContent = title;
-                    container.appendChild(link);
+                    
+                    if(container) {
+                        const link = document.createElement('a');
+                        link.href = data.url; link.target = '_blank'; link.className = 'uni-link'; link.textContent = title;
+                        container.appendChild(link);
+                    }
 
                     if (adminList) {
                         const tr = document.createElement('tr');
@@ -1306,13 +1310,26 @@
             onSnapshot(doc(db, 'settings', 'contact'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    document.getElementById('contact-email').textContent = data.email || '';
-                    document.getElementById('contact-phone').textContent = data.phone || '';
-                    if (data.incubatorPhone) { document.getElementById('contact-incubator').style.display = 'flex'; document.getElementById('contact-incubator-phone').textContent = data.incubatorPhone; } else document.getElementById('contact-incubator').style.display = 'none';
-                    if (data.fax) { document.getElementById('contact-fax').style.display = 'flex'; document.getElementById('contact-fax-number').textContent = data.fax; } else document.getElementById('contact-fax').style.display = 'none';
+                    if(document.getElementById('contact-email')) document.getElementById('contact-email').textContent = data.email || '';
+                    if(document.getElementById('contact-phone')) document.getElementById('contact-phone').textContent = data.phone || '';
+                    
+                    const incDiv = document.getElementById('contact-incubator');
+                    const faxDiv = document.getElementById('contact-fax');
+                    
+                    if(incDiv) {
+                        if (data.incubatorPhone) { incDiv.style.display = 'flex'; document.getElementById('contact-incubator-phone').textContent = data.incubatorPhone; } 
+                        else incDiv.style.display = 'none';
+                    }
+                    if(faxDiv) {
+                        if (data.fax) { faxDiv.style.display = 'flex'; document.getElementById('contact-fax-number').textContent = data.fax; } 
+                        else faxDiv.style.display = 'none';
+                    }
                     
                     if(isAdmin) {
-                        document.getElementById('admin-email').value = data.email || ''; document.getElementById('admin-phone').value = data.phone || ''; document.getElementById('admin-incubator-phone').value = data.incubatorPhone || ''; document.getElementById('admin-fax').value = data.fax || '';
+                        document.getElementById('admin-email').value = data.email || ''; 
+                        document.getElementById('admin-phone').value = data.phone || ''; 
+                        document.getElementById('admin-incubator-phone').value = data.incubatorPhone || ''; 
+                        document.getElementById('admin-fax').value = data.fax || '';
                     }
                 }
             });
@@ -1322,13 +1339,16 @@
             onSnapshot(doc(db, 'settings', 'privacy'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    document.getElementById('privacy-content-ar').innerHTML = data.privacy_ar || '';
-                    document.getElementById('privacy-content-fr').innerHTML = data.privacy_fr || '';
-                    document.getElementById('about-content-ar').innerHTML = data.about_ar || '';
-                    document.getElementById('about-content-fr').innerHTML = data.about_fr || '';
+                    if(document.getElementById('privacy-content-ar')) document.getElementById('privacy-content-ar').innerHTML = data.privacy_ar || '';
+                    if(document.getElementById('privacy-content-fr')) document.getElementById('privacy-content-fr').innerHTML = data.privacy_fr || '';
+                    if(document.getElementById('about-content-ar')) document.getElementById('about-content-ar').innerHTML = data.about_ar || '';
+                    if(document.getElementById('about-content-fr')) document.getElementById('about-content-fr').innerHTML = data.about_fr || '';
                     
                     if(isAdmin) {
-                        document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; document.getElementById('about-text-ar').value = data.about_ar || ''; document.getElementById('about-text-fr').value = data.about_fr || '';
+                        document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; 
+                        document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; 
+                        document.getElementById('about-text-ar').value = data.about_ar || ''; 
+                        document.getElementById('about-text-fr').value = data.about_fr || '';
                     }
                 }
             });
@@ -1373,11 +1393,14 @@
                 document.getElementById('public-site').style.display = 'none';
                 document.getElementById('content-pages').style.display = 'none';
                 document.getElementById('admin-panel').classList.add('active');
-                window.location.hash = '#/adminblida2';
+                
+                // تحديث الرابط ليكون /#admin02 كما طلبت
+                window.location.hash = '#/admin02';
+                
                 showAdminSection('dashboard');
                 loadAdminStats();
                 loadReports();
-                showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول' : 'Connexion réussie');
+                showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Connexion réussie');
             } else {
                 document.getElementById('login-error').classList.add('show');
             }
@@ -1387,16 +1410,50 @@
             isAdmin = false;
             document.getElementById('admin-panel').classList.remove('active');
             document.getElementById('public-site').style.display = 'block';
-            window.location.hash = '';
+            window.location.hash = ''; // مسح الرابط الخاص بالأدمن للعودة للزوار
             showToast('info', currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Déconnecté');
         }
 
-        function showAdminSection(section) {
+        // دالة التنقل بين أقسام الأدمن محصنة ولا تسبب أخطاء
+        function showAdminSection(section, element = null) {
+            // إخفاء جميع الأقسام
             document.querySelectorAll('.admin-section-content').forEach(el => el.style.display = 'none');
-            document.getElementById(`admin-${section}`).style.display = 'block';
+            // إظهار القسم المطلوب
+            const targetSection = document.getElementById(`admin-${section}`);
+            if (targetSection) targetSection.style.display = 'block';
+
+            // تفعيل الزر في القائمة الجانبية
             document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
-            if(event) event.target.closest('.admin-nav-item').classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else {
+                const activeNav = document.querySelector(`.admin-nav-item[onclick*="${section}"]`);
+                if (activeNav) activeNav.classList.add('active');
+            }
+
+            // تحديث العنوان
+            const titles = {
+                dashboard: { ar: 'الداشبورد', fr: 'Tableau de Bord' },
+                banner: { ar: 'إضافة حدث أو دورة', fr: 'Événement / Bannière' },
+                stats: { ar: 'تعديل الإنجازات', fr: 'Réalisations' },
+                blog: { ar: 'المدونة والأعمال', fr: 'Blog' },
+                partners: { ar: 'الشركاء', fr: 'Partenaires' },
+                team: { ar: 'فريق العمل', fr: 'Équipe' },
+                university: { ar: 'الجامعة', fr: 'Université' },
+                contact: { ar: 'معلومات الاتصال', fr: 'Contact' },
+                privacy: { ar: 'الخصوصية ومن نحن', fr: 'Confidentialité' },
+                reports: { ar: 'الإبلاغات', fr: 'Signalements' }
+            };
+            
+            const titleEl = document.getElementById('admin-section-title');
+            if (titleEl && titles[section]) {
+                titleEl.textContent = currentLang === 'ar' ? titles[section].ar : titles[section].fr;
+                titleEl.setAttribute('data-ar', titles[section].ar);
+                titleEl.setAttribute('data-fr', titles[section].fr);
+            }
+
             if (section === 'dashboard') loadAdminStats();
+            else if (section === 'reports') loadReports();
         }
 
         async function loadAdminStats() {
@@ -1412,6 +1469,7 @@
         async function loadReports() {
             onSnapshot(query(collection(db, 'reports'), orderBy('createdAt', 'desc')), (snapshot) => {
                 const tbody = document.getElementById('admin-reports-list');
+                if(!tbody) return;
                 tbody.innerHTML = '';
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
@@ -1430,7 +1488,7 @@
                 return await getDownloadURL(storageRef);
             } catch (err) {
                 console.error("Storage Error:", err);
-                showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة (يرجى مراجعة إعدادات Firebase Storage)' : 'Erreur de téléchargement d\'image');
+                showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة (تأكد من إعدادات Firebase)' : 'Erreur de téléchargement d\'image');
                 return null;
             }
         }
@@ -1456,13 +1514,13 @@
                 if (imageUrl) data.image = imageUrl;
 
                 await setDoc(doc(db, 'settings', 'banner'), data, { merge: true });
-                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+                showToast('success', currentLang === 'ar' ? 'تم حفظ التعديلات' : 'Enregistré');
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
 
         async function deleteBanner() {
-            if (!confirm(currentLang === 'ar' ? 'هل أنت متأكد؟' : 'Êtes-vous sûr ?')) return;
+            if (!confirm(currentLang === 'ar' ? 'هل أنت متأكد من حذف البانر والحدث؟' : 'Êtes-vous sûr ?')) return;
             await setDoc(doc(db, 'settings', 'banner'), { title_ar: '', title_fr: '', desc_ar: '', desc_fr: '', btn_ar: '', btn_fr: '', link: '', registrations: 0, image: '' });
             showToast('success', currentLang === 'ar' ? 'تم الحذف' : 'Supprimé');
         }
@@ -1475,7 +1533,7 @@
                 mentors: parseInt(document.getElementById('stat-mentors').value) || 0, members: parseInt(document.getElementById('stat-members').value) || 0
             };
             await setDoc(doc(db, 'settings', 'stats'), data);
-            showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+            showToast('success', currentLang === 'ar' ? 'تم حفظ الإحصائيات بنجاح' : 'Enregistré');
             showLoading(false);
         }
 
@@ -1491,7 +1549,7 @@
                     content_ar: document.getElementById('blog-content-ar').value, content_fr: document.getElementById('blog-content-fr').value,
                     image: imageUrl, createdAt: serverTimestamp()
                 });
-                showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté');
+                showToast('success', currentLang === 'ar' ? 'تم إضافة المقال للمدونة' : 'Ajouté');
                 document.getElementById('blog-title-ar').value = ''; document.getElementById('blog-title-fr').value = ''; document.getElementById('blog-content-ar').value = ''; document.getElementById('blog-content-fr').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
@@ -1504,7 +1562,7 @@
                 const file = document.getElementById('partner-logo').files[0];
                 let logoUrl = file ? await uploadImageSafe(file, 'partners') : '';
                 await addDoc(collection(db, 'partners'), { name: document.getElementById('partner-name').value, logo: logoUrl });
-                showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté');
+                showToast('success', currentLang === 'ar' ? 'تم إضافة الشريك بنجاح' : 'Ajouté');
                 document.getElementById('partner-name').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
@@ -1517,7 +1575,7 @@
                 const file = document.getElementById('team-image').files[0];
                 let imageUrl = file ? await uploadImageSafe(file, 'team') : '';
                 await addDoc(collection(db, 'team'), { name: document.getElementById('team-name').value, role_ar: document.getElementById('team-role-ar').value, role_fr: document.getElementById('team-role-fr').value, image: imageUrl });
-                showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté');
+                showToast('success', currentLang === 'ar' ? 'تم إضافة عضو الفريق' : 'Ajouté');
                 document.getElementById('team-name').value = ''; document.getElementById('team-role-ar').value = ''; document.getElementById('team-role-fr').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
@@ -1529,7 +1587,7 @@
             try {
                 const file = document.getElementById('uni-logo-file').files[0];
                 if (file) { const url = await uploadImageSafe(file, 'university'); if(url) await setDoc(doc(db, 'settings', 'university'), { logo: url }, { merge: true }); }
-                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+                showToast('success', currentLang === 'ar' ? 'تم حفظ الشعار' : 'Enregistré');
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
@@ -1538,7 +1596,7 @@
             showLoading(true);
             try {
                 await addDoc(collection(db, 'university_links'), { title_ar: document.getElementById('uni-link-title-ar').value, title_fr: document.getElementById('uni-link-title-fr').value, url: document.getElementById('uni-link-url').value });
-                showToast('success', currentLang === 'ar' ? 'تم الإضافة' : 'Ajouté');
+                showToast('success', currentLang === 'ar' ? 'تم إضافة الرابط' : 'Ajouté');
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
@@ -1547,7 +1605,7 @@
         async function saveContact() {
             showLoading(true);
             await setDoc(doc(db, 'settings', 'contact'), { email: document.getElementById('admin-email').value, phone: document.getElementById('admin-phone').value, incubatorPhone: document.getElementById('admin-incubator-phone').value, fax: document.getElementById('admin-fax').value });
-            showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+            showToast('success', currentLang === 'ar' ? 'تم حفظ معلومات الاتصال' : 'Enregistré');
             showLoading(false);
         }
 
@@ -1557,7 +1615,7 @@
             showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
             showLoading(false);
         }
-        async function deleteReport(id) { if (confirm('متأكد؟')) await deleteDoc(doc(db, 'reports', id)); }
+        async function deleteReport(id) { if (confirm('متأكد من الحذف؟')) await deleteDoc(doc(db, 'reports', id)); }
 
         async function trackVisit() {
             const visitsRef = doc(db, 'settings', 'visits');
