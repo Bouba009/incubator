@@ -311,8 +311,21 @@
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
-
+        button.admin-nav-item:hover, button.admin-nav-item.active {
+            background: var(--gradient-purple);
+            color: white;
+        }
+        
         .admin-nav-item:hover, .admin-nav-item.active { background: var(--gradient-purple); color: white; }
         .admin-nav-item i { width: 24px; text-align: center; font-size: 1.1rem; }
         
@@ -443,8 +456,7 @@
                     </button>
                     <!-- لوغو الحاضنة -->
                     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="logo-img" id="nav-logo">
-                    <span class="logo-text" data-ar="حاضنة الأعمال" data-fr="Incubateur">حاضنة الأعمال</span>
-                </div>
+                    <span class="logo-text" data-ar="حاضنة الأعمال" data-fr="Incubateur">حاضنة الأعمال</span></button>
                 <div class="nav-controls">
                     <div class="lang-switcher">
                         <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar">AR</button>
@@ -480,8 +492,7 @@
             <div class="hero-content">
                 <div class="hero-badge">
                     <i class="fas fa-rocket"></i>
-                    <span id="hero-badge-text" data-ar="حاضنة الأعمال - جامعة البليدة 2" data-fr="Incubateur - Université Blida 2">حاضنة الأعمال - جامعة البليدة 2</span>
-                </div>
+                    <span id="hero-badge-text" data-ar="حاضنة الأعمال - جامعة البليدة 2" data-fr="Incubateur - Université Blida 2">حاضنة الأعمال - جامعة البليدة 2</span></button>
                 <h1 class="hero-title" id="hero-title" data-ar="نحو مستقبل مبتكر وريادي" data-fr="Vers un Avenir Innovant et Entrepreneurial">نحو مستقبل مبتكر وريادي</h1>
                 <p class="hero-desc" id="hero-desc" data-ar="انضم إلينا وكن جزءاً من مجتمع ريادي ناشئ يبني المستقبل" data-fr="Rejoignez-nous et faites partie d'une communauté entrepreneuriale qui construit l'avenir">انضم إلينا وكن جزءاً من مجتمع ريادي ناشئ يبني المستقبل</p>
                 <button class="hero-cta" id="hero-cta" onclick="handleRegistration()">
@@ -598,10 +609,10 @@
                 <div>
                     <h3 class="footer-title" data-ar="معلومات الاتصال" data-fr="Informations de Contact">معلومات الاتصال</h3>
                     <div id="contact-info">
-                        <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-envelope"></i></div><span id="contact-email">contact@incubator-blida2.dz</span></div>
-                        <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-phone"></i></div><span id="contact-phone">+213 000 000 000</span></div>
-                        <div class="footer-contact-item" id="contact-incubator" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-building"></i></div><span id="contact-incubator-phone"></span></div>
-                        <div class="footer-contact-item" id="contact-fax" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-fax"></i></div><span id="contact-fax-number"></span></div>
+                        <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-envelope"></i></div><span id="contact-email">contact@incubator-blida2.dz</span></button>
+                        <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-phone"></i></div><span id="contact-phone">+213 000 000 000</span></button>
+                        <div class="footer-contact-item" id="contact-incubator" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-building"></i></div><span id="contact-incubator-phone"></span></button>
+                        <div class="footer-contact-item" id="contact-fax" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-fax"></i></div><span id="contact-fax-number"></span></button>
                     </div>
                 </div>
                 <div>
@@ -629,8 +640,7 @@
             <div class="navbar-container">
                 <div class="logo-section">
                     <button class="menu-toggle" onclick="goHome()"><i class="fas fa-arrow-right" id="back-icon"></i></button>
-                    <span class="logo-text" data-ar="العودة للموقع" data-fr="Retour">العودة للموقع</span>
-                </div>
+                    <span class="logo-text" data-ar="العودة للموقع" data-fr="Retour">العودة للموقع</span></button>
                 <div class="nav-controls">
                     <div class="lang-switcher">
                         <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar-page">AR</button>
@@ -662,49 +672,18 @@
         <div class="admin-sidebar" id="admin-sidebar">
             <div class="admin-logo">
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="admin-logo-img">
-                <span class="admin-logo-text">Admin</span>
-            </div>
+                <span class="admin-logo-text">Admin</span></button>
             <div class="admin-nav">
-                <button class="admin-nav-item active" data-section="dashboard" type="button" onclick="showAdminSection('dashboard', this)">
-                    <i class="fas fa-chart-pie"></i>
-                    <span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span>
-                </button>
-                <button class="admin-nav-item" data-section="banner" type="button" onclick="showAdminSection('banner', this)">
-                    <i class="fas fa-image"></i>
-                    <span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span>
-                </button>
-                <button class="admin-nav-item" data-section="stats" type="button" onclick="showAdminSection('stats', this)">
-                    <i class="fas fa-chart-bar"></i>
-                    <span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span>
-                </button>
-                <button class="admin-nav-item" data-section="blog" type="button" onclick="showAdminSection('blog', this)">
-                    <i class="fas fa-blog"></i>
-                    <span data-ar="المدونة" data-fr="Blog">المدونة</span>
-                </button>
-                <button class="admin-nav-item" data-section="partners" type="button" onclick="showAdminSection('partners', this)">
-                    <i class="fas fa-handshake"></i>
-                    <span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span>
-                </button>
-                <button class="admin-nav-item" data-section="team" type="button" onclick="showAdminSection('team', this)">
-                    <i class="fas fa-users"></i>
-                    <span data-ar="الفريق" data-fr="Équipe">الفريق</span>
-                </button>
-                <button class="admin-nav-item" data-section="university" type="button" onclick="showAdminSection('university', this)">
-                    <i class="fas fa-university"></i>
-                    <span data-ar="الجامعة" data-fr="Université">الجامعة</span>
-                </button>
-                <button class="admin-nav-item" data-section="contact" type="button" onclick="showAdminSection('contact', this)">
-                    <i class="fas fa-address-book"></i>
-                    <span data-ar="الاتصال" data-fr="Contact">الاتصال</span>
-                </button>
-                <button class="admin-nav-item" data-section="privacy" type="button" onclick="showAdminSection('privacy', this)">
-                    <i class="fas fa-shield-alt"></i>
-                    <span data-ar="الخصوصية والموقع" data-fr="Confidentialité">الخصوصية والموقع</span>
-                </button>
-                <button class="admin-nav-item" data-section="reports" type="button" onclick="showAdminSection('reports', this)">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span>
-                </button>
+                <button class="admin-nav-item active" data-section="dashboard" type="button"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></button>
+                <button class="admin-nav-item" data-section="banner" type="button"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></button>
+                <button class="admin-nav-item" data-section="stats" type="button"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></button>
+                <button class="admin-nav-item" data-section="blog" type="button"><i class="fas fa-blog"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></button>
+                <button class="admin-nav-item" data-section="partners" type="button"><i class="fas fa-handshake"></i><span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span></button>
+                <button class="admin-nav-item" data-section="team" type="button"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></button>
+                <button class="admin-nav-item" data-section="university" type="button"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></button>
+                <button class="admin-nav-item" data-section="contact" type="button"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></button>
+                <button class="admin-nav-item" data-section="privacy" type="button"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و الموقع" data-fr="Confidentialité">الخصوصية والموقع</span></button>
+                <button class="admin-nav-item" data-section="reports" type="button"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></button>
             </div>
         </div>
         <div class="admin-main" id="admin-main">
@@ -1048,40 +1027,6 @@
                     showToast('error', currentLang === 'ar' ? 'فشل تحميل قواعد البيانات Firebase' : 'Échec du chargement de Firebase');
                 }
             }, 100);
-
-        // Admin navigation event listeners - supports both click and touch for mobile
-        function setupAdminNavListeners() {
-            var navItems = document.querySelectorAll('.admin-nav-item');
-            navItems.forEach(function(item) {
-                // Remove any existing listeners first
-                var newItem = item.cloneNode(true);
-                item.parentNode.replaceChild(newItem, item);
-
-                // Add click listener
-                newItem.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var section = this.getAttribute('data-section');
-                    if (section) {
-                        showAdminSection(section, this);
-                    }
-                });
-
-                // Add touch listener for mobile
-                newItem.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var section = this.getAttribute('data-section');
-                    if (section) {
-                        showAdminSection(section, this);
-                    }
-                });
-            });
-        }
-
-        // Call setup after DOM is ready
-        setupAdminNavListeners();
-
         });
 
         function checkAdminHash() {
@@ -1106,6 +1051,48 @@
             }
         }
 
+        
+        // Setup admin navigation with proper event listeners for mobile compatibility
+        function setupAdminNav() {
+            var navContainer = document.querySelector('.admin-nav');
+            if (!navContainer) return;
+
+            // Use event delegation for better performance and mobile support
+            navContainer.addEventListener('click', function(e) {
+                var target = e.target;
+                // Find the closest admin-nav-item
+                while (target && target !== navContainer) {
+                    if (target.classList && target.classList.contains('admin-nav-item')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var section = target.getAttribute('data-section');
+                        if (section) {
+                            showAdminSection(section, target);
+                        }
+                        return;
+                    }
+                    target = target.parentNode;
+                }
+            });
+
+            // Also add touchend for mobile devices
+            navContainer.addEventListener('touchend', function(e) {
+                var target = e.target;
+                while (target && target !== navContainer) {
+                    if (target.classList && target.classList.contains('admin-nav-item')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var section = target.getAttribute('data-section');
+                        if (section) {
+                            showAdminSection(section, target);
+                        }
+                        return;
+                    }
+                    target = target.parentNode;
+                }
+            });
+        }
+        
         function switchLang(lang) {
             currentLang = lang;
             document.documentElement.lang = lang;
@@ -1525,19 +1512,9 @@
                 document.getElementById('public-site').style.display = 'none';
                 document.getElementById('content-pages').style.display = 'none';
                 document.getElementById('admin-panel').classList.add('active');
-                document.getElementById('admin-panel').style.display = 'block';
                 window.location.hash = '#/admin02';
-
-                // Re-setup nav listeners after admin panel is visible
-                setupAdminNavListeners();
-
-                // Show dashboard by default and mark it active
-                var dashboardNav = document.querySelector('.admin-nav-item[data-section="dashboard"]');
-                if (dashboardNav) {
-                    showAdminSection('dashboard', dashboardNav);
-                } else {
-                    showAdminSection('dashboard', null);
-                }
+                
+                showAdminSection('dashboard');
                 loadAdminStats();
                 loadReports();
                 showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Connexion réussie');
@@ -1555,7 +1532,7 @@
         }
 
         function showAdminSection(section, clickedElement) {
-            console.log('Switching to section:', section);
+            console.log('Admin: Switching to section:', section);
 
             // Hide ALL admin section contents
             var allSections = document.querySelectorAll('.admin-section-content');
@@ -1568,9 +1545,9 @@
             var targetSection = document.getElementById(targetId);
             if (targetSection) {
                 targetSection.style.display = 'block';
-                console.log('Section shown:', targetId);
+                console.log('Admin: Section shown:', targetId);
             } else {
-                console.error('Section not found:', targetId);
+                console.error('Admin: Section NOT found:', targetId);
             }
 
             // Remove active class from ALL nav items
