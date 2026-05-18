@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -182,32 +183,35 @@
         body.fr-mode .slider-prev { right: auto; left: 10px; }
         body.fr-mode .slider-next { left: auto; right: 10px; }
 
-        .partners-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; align-items: center; }
-        .partner-logo { width: 160px; height: 100px; object-fit: contain; filter: grayscale(100%); opacity: 0.6; transition: all 0.4s ease; }
-        .partner-logo:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.15); }
+        /* الشركاء */
+        .partners-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; justify-items: center; align-items: center; }
+        .partner-logo { width: 160px; height: 100px; object-fit: contain; filter: none; opacity: 1; transition: transform 0.4s ease; }
+        .partner-logo:hover { transform: scale(1.15); }
 
-        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-        .team-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); transition: all 0.4s ease; text-align: center; border: 1px solid var(--gray-100); }
-        .team-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-xl); }
-        .team-image-wrapper { position: relative; height: 320px; overflow: hidden; }
+        /* فريق العمل */
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; justify-items: center; align-items: start; }
+        .team-card { background: transparent; border-radius: var(--radius-lg); box-shadow: none; transition: all 0.4s ease; text-align: center; border: none; }
+        .team-card:hover { transform: translateY(-5px); }
+        .team-image-wrapper { position: relative; width: 150px; height: 150px; margin: 0 auto 1rem; border-radius: 50%; overflow: hidden; box-shadow: var(--shadow-md); border: 4px solid white; }
         .team-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .team-card:hover .team-image { transform: scale(1.1); }
-        .team-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(to top, rgba(109, 40, 217, 0.9), transparent); }
-        .team-info { position: absolute; bottom: 0; width: 100%; padding: 1.5rem; color: white; }
-        .team-name { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.25rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .team-role { color: var(--orange-light); font-weight: 800; font-size: 0.95rem; }
+        .team-info { width: 100%; padding: 0; color: var(--gray-800); }
+        .team-role { color: var(--purple-primary); font-weight: 800; font-size: 0.95rem; display: block; margin-bottom: 0.25rem; }
+        .team-name { font-size: 1.2rem; font-weight: 900; color: var(--gray-900); }
 
+        /* الجامعة */
         .university-section { background: var(--gradient-purple); border-radius: var(--radius-xl); padding: 4rem 3rem; color: white; text-align: center; position: relative; overflow: hidden; box-shadow: var(--shadow-lg); }
         .university-section::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3; }
-        .uni-logo { height: 110px; width: auto; margin-bottom: 2rem; filter: brightness(0) invert(1); position: relative; z-index: 1; }
+        .uni-logo { height: 120px; width: auto; max-width: 100%; margin-bottom: 2rem; position: relative; z-index: 1; object-fit: contain; border: none; filter: none; }
         .uni-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1; }
         .uni-link { padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; color: white; text-decoration: none; font-weight: 700; transition: all 0.3s ease; }
         .uni-link:hover { background: white; color: var(--purple-primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
+        /* الفوتر */
         .footer { background: var(--gray-900); color: white; padding: 4rem 2rem 2rem; margin-top: 4rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; max-width: 1400px; margin: 0 auto; }
         .footer-brand { display: flex; flex-direction: column; gap: 1rem; }
-        .footer-logo { height: 70px; width: auto; filter: brightness(0) invert(1); }
+        .footer-logo { height: 70px; width: auto; max-width: 100%; filter: none; object-fit: contain; }
         .footer-desc { color: rgba(255,255,255,0.7); line-height: 1.8; font-weight: 500; }
         .footer-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--orange-primary); position: relative; padding-bottom: 0.5rem; }
         .footer-title::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: var(--purple-primary); border-radius: 2px; }
@@ -331,6 +335,7 @@
         .content-page h2 { color: var(--purple-dark); margin-bottom: 1.5rem; font-size: 2rem; font-weight: 900; border-bottom: 2px solid var(--gray-100); padding-bottom: 1rem; }
         .content-page p { color: var(--gray-700); line-height: 1.8; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem; }
 
+        /* الشاشات المتوسطة والصغيرة */
         @media (max-width: 1024px) {
             .blog-card { flex: 0 0 calc(50% - 1rem); margin: 0 0.5rem; }
             .admin-sidebar { transform: translateX(100%); }
@@ -350,7 +355,17 @@
             .stat-icon { width: 50px; height: 50px; font-size: 1.4rem; }
             .stat-number { font-size: 2.2rem; }
             .stat-label { font-size: 0.9rem; }
-            .team-grid { grid-template-columns: 1fr; }
+            
+            /* فريق العمل - شخصين في كل سطر للهواتف */
+            .team-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+            .team-image-wrapper { width: 120px; height: 120px; }
+            .team-name { font-size: 1.05rem; }
+            .team-role { font-size: 0.85rem; }
+
+            /* الشركاء - شركتين في كل سطر للهواتف */
+            .partners-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+            .partner-logo { width: 100%; height: 80px; }
+
             .footer-grid { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; text-align: center; }
             .form-grid { grid-template-columns: 1fr; }
@@ -361,6 +376,7 @@
             .stat-number { font-size: 1.8rem; }
             .stat-label { font-size: 0.8rem; }
             .content-page { padding: 1.5rem; margin: 1rem; }
+            .team-image-wrapper { width: 100px; height: 100px; }
         }
     </style>
 </head>
@@ -436,12 +452,12 @@
         <section class="blog-section" id="works">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span>
-                <h2 class="section-title" data-ar="مدونتنا و أعمالنا" data-fr="Notre Blog et Nos Travaux">مدونتنا و أعمالنا</h2>
+                <h2 class="section-title" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</h2>
             </div>
             <div class="blog-slider-container">
-                <button class="slider-btn slider-next" onclick="moveSlider(1)"><i class="fas fa-chevron-right"></i></button>
+                <button class="slider-btn slider-next" onclick="moveSlider(1)"><i class="fas fa-chevron-left" id="slider-next-icon"></i></button>
                 <div class="blog-slider" id="blogSlider"></div>
-                <button class="slider-btn slider-prev" onclick="moveSlider(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="slider-btn slider-prev" onclick="moveSlider(-1)"><i class="fas fa-chevron-right" id="slider-prev-icon"></i></button>
             </div>
         </section>
 
@@ -623,10 +639,10 @@
                 </div>
             </div>
 
-            <!-- المدونة -->
+            <!-- المدونة / أعمالنا -->
             <div id="admin-blog" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل مقال للمدونة" data-fr="Ajouter/Modifier un Article">إضافة أو تعديل مقال للمدونة</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل عمل (أعمالنا)" data-fr="Ajouter/Modifier un Travail">إضافة أو تعديل عمل</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="العنوان (عربي)" data-fr="Titre (AR)">العنوان (عربي)</label><input type="text" class="form-input" id="blog-title-ar"></div>
                         <div class="form-group"><label class="form-label" data-ar="العنوان (فرنسي)" data-fr="Titre (FR)">العنوان (فرنسي)</label><input type="text" class="form-input" id="blog-title-fr"></div>
@@ -637,7 +653,7 @@
                     <button class="btn btn-success" id="btn-add-blog" style="margin-top: 1.5rem;" onclick="addBlog()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="المقالات السابقة" data-fr="Articles Précédents">المقالات السابقة</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="الأعمال السابقة" data-fr="Travaux Précédents">الأعمال السابقة</span></h3>
                     <div class="admin-table-container">
                         <table class="admin-table">
                             <thead><tr><th data-ar="الصورة" data-fr="Image">الصورة</th><th data-ar="العنوان" data-fr="Titre">العنوان</th><th data-ar="الإجراءات" data-fr="Actions">الإجراءات</th></tr></thead>
@@ -903,6 +919,12 @@
             const backIcon = document.getElementById('back-icon');
             if (backIcon) backIcon.className = lang === 'ar' ? 'fas fa-arrow-right' : 'fas fa-arrow-left';
 
+            // تحديث أيقونات السلايدر الخاص بالأعمال برمجياً لكي تتوافق مع اتجاه اللغة
+            const nextIcon = document.getElementById('slider-next-icon');
+            const prevIcon = document.getElementById('slider-prev-icon');
+            if(nextIcon) nextIcon.className = lang === 'ar' ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+            if(prevIcon) prevIcon.className = lang === 'ar' ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
+
             if (document.getElementById('privacy-content-ar')) document.getElementById('privacy-content-ar').style.display = lang === 'ar' ? 'block' : 'none';
             if (document.getElementById('privacy-content-fr')) document.getElementById('privacy-content-fr').style.display = lang === 'fr' ? 'block' : 'none';
             if (document.getElementById('about-content-ar')) document.getElementById('about-content-ar').style.display = lang === 'ar' ? 'block' : 'none';
@@ -1093,8 +1115,6 @@
             const visibleCards = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
             const maxIndex = Math.max(0, cards.length - visibleCards);
             
-            if(currentLang === 'ar') direction = -direction;
-
             blogSliderIndex = Math.max(0, Math.min(blogSliderIndex + direction, maxIndex));
             updateSlider();
         }
@@ -1123,13 +1143,13 @@
 
                     if(grid) {
                         const img = document.createElement('img');
-                        img.src = data.logo || ''; img.alt = data.name || ''; img.className = 'partner-logo';
+                        img.src = data.logo || ''; img.alt = data.name || ''; img.className = 'partner-logo animate-on-scroll';
                         grid.appendChild(img);
                     }
                     if (adminList) {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td><img src="${data.logo || ''}" class="table-img"></td>
+                            <td><img src="${data.logo || ''}" class="table-img" style="object-fit:contain; background:#f0f0f0;"></td>
                             <td>${data.name}</td>
                             <td class="table-actions">
                                 <button class="table-btn table-btn-edit" onclick="editPartner('${docSnap.id}')"><i class="fas fa-edit"></i></button>
@@ -1138,6 +1158,7 @@
                         adminList.appendChild(tr);
                     }
                 });
+                setupScrollAnimations();
             });
         }
 
@@ -1157,14 +1178,22 @@
                     if(grid) {
                         const card = document.createElement('div');
                         card.className = 'team-card animate-on-scroll';
-                        card.innerHTML = `<div class="team-image-wrapper"><img src="${data.image || 'https://via.placeholder.com/300x280'}" alt="${data.name}" class="team-image"><div class="team-overlay"></div><div class="team-info"><h3 class="team-name">${data.name}</h3><p class="team-role">${role}</p></div></div>`;
+                        card.innerHTML = `
+                            <div class="team-image-wrapper">
+                                <img src="${data.image || 'https://via.placeholder.com/150'}" alt="${data.name}" class="team-image">
+                            </div>
+                            <div class="team-info">
+                                <span class="team-role">${role}</span>
+                                <h3 class="team-name">${data.name}</h3>
+                            </div>
+                        `;
                         grid.appendChild(card);
                     }
 
                     if (adminList) {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td><img src="${data.image || ''}" class="table-img"></td>
+                            <td><img src="${data.image || ''}" class="table-img" style="border-radius: 50%;"></td>
                             <td>${data.name}</td>
                             <td>${role}</td>
                             <td class="table-actions">
@@ -1354,7 +1383,7 @@
                 dashboard: { ar: 'الداشبورد', fr: 'Tableau de Bord' },
                 banner: { ar: 'إضافة حدث أو دورة', fr: 'Événement/Bannière' },
                 stats: { ar: 'تعديل الإنجازات', fr: 'Réalisations' },
-                blog: { ar: 'المدونة والأعمال', fr: 'Blog' },
+                blog: { ar: 'أعمالنا', fr: 'Nos Travaux' },
                 partners: { ar: 'الشركاء', fr: 'Partenaires' },
                 team: { ar: 'فريق العمل', fr: 'Équipe' },
                 university: { ar: 'الجامعة', fr: 'Université' },
@@ -1403,7 +1432,6 @@
             });
         }
 
-        /* دالة الرفع المعدلة للرفع إلى ImgBB بدل Firebase Storage */
         async function uploadImageSafe(file, path) {
             if (!file) return null;
             try {
@@ -1527,7 +1555,7 @@
                     if(!blogData.image) blogData.image = '';
                     blogData.createdAt = serverTimestamp();
                     await addDoc(collection(db, 'blogs'), blogData);
-                    showToast('success', currentLang === 'ar' ? 'تم إضافة المقال للمدونة' : 'Ajouté');
+                    showToast('success', currentLang === 'ar' ? 'تم إضافة العمل بنجاح' : 'Ajouté');
                 }
                 
                 document.getElementById('blog-title-ar').value = ''; 
