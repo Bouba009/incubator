@@ -363,7 +363,6 @@
             .content-page { padding: 1.5rem; margin: 1rem; }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
     <!-- الموقع العام للزوار -->
@@ -996,7 +995,6 @@
                 if (document.getElementById('stat-registrations')) document.getElementById('stat-registrations').textContent = data.registrations || 0;
                 if (document.getElementById('admin-stat-registrations')) document.getElementById('admin-stat-registrations').textContent = data.registrations || 0;
                 
-                // التعبئة الخاصة بلوحة التحكم دائما
                 if(document.getElementById('banner-title-ar')){
                     document.getElementById('banner-title-ar').value = data.title_ar || '';
                     document.getElementById('banner-title-fr').value = data.title_fr || '';
@@ -1024,8 +1022,6 @@
                         if (card.classList.contains('visible')) animateCounter(num);
                     }
                 });
-                
-                // التعبئة الخاصة بلوحة التحكم دائما
                 stats.forEach(s => { const el = document.getElementById(`stat-${s}`); if (el) el.value = data[s] || 0; });
             }
         }
@@ -1243,7 +1239,6 @@
                         else faxDiv.style.display = 'none';
                     }
                     
-                    // التعبئة الخاصة بلوحة التحكم
                     if(document.getElementById('admin-email')) {
                         document.getElementById('admin-email').value = data.email || ''; 
                         document.getElementById('admin-phone').value = data.phone || ''; 
@@ -1270,7 +1265,6 @@
                         if(pageIframe) pageIframe.src = data.mapUrl;
                     }
 
-                    // التعبئة الخاصة بلوحة التحكم
                     if(document.getElementById('privacy-text-ar')) {
                         document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; 
                         document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; 
@@ -1379,7 +1373,6 @@
             if (section === 'dashboard') loadAdminStats();
             else if (section === 'reports') loadReports();
             
-            // إغلاق قائمة الجوال إذا كانت مفتوحة
             if(window.innerWidth <= 1024) {
                 const sidebar = document.getElementById('admin-sidebar');
                 if(sidebar) sidebar.classList.remove('open');
@@ -1410,15 +1403,53 @@
             });
         }
 
+        /* دالة الرفع المعدلة لتفادي مشكلة التعليق اللانهائي */
         async function uploadImageSafe(file, path) {
             if (!file) return null;
             try {
-                const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
-                await uploadBytes(storageRef, file);
+                // 1. تنظيف اسم الملف لتجنب مسافات أو رموز تسبب أخطاء في مسار Firebase
+                const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                const fullPath = `${path}/${Date.now()}_${safeName}`;
+                const storageRef = ref(storage, fullPath);
+                
+                // 2. تحويل الصورة إلى Blob لتجنب مشاكل تعليق حزمة Firebase في بعض المتصفحات
+                const arrayBuffer = await file.arrayBuffer();
+                const blob = new Blob([arrayBuffer], { type: file.type || 'application/octet-stream' });
+                
+                // 3. سباق مع الزمن (Timeout) لـ 20 ثانية لتفادي بقاء "جاري التحميل" بشكل لانهائي
+                const uploadPromise = uploadBytes(storageRef, blob);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Timeout")), 20000)
+                );
+                
+                await Promise.race([uploadPromise, timeoutPromise]);
                 return await getDownloadURL(storageRef);
+                
             } catch (err) {
-                showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة' : 'Erreur de téléchargement d\'image');
-                return null;
+                console.warn("فشل رفع SDK، يتم المحاولة بطريقة بديلة (REST API):", err);
+                try {
+                    // 4. المحاولة بطريقة REST API المباشرة إذا استمر خطأ SDK
+                    const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                    const encodedPath = encodeURIComponent(`${path}/${Date.now()}_${safeName}`);
+                    const bucket = "incubator-blida2.firebasestorage.app";
+                    const restUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?name=${encodedPath}`;
+                    
+                    const response = await fetch(restUrl, {
+                        method: 'POST',
+                        body: file,
+                        headers: { 'Content-Type': file.type || 'application/octet-stream' }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media&token=${data.downloadTokens}`;
+                    }
+                } catch (fallbackErr) {
+                    console.error("فشل الرفع البديل أيضاً:", fallbackErr);
+                }
+                
+                showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة بسبب ضعف الأنترنت (سيتم حفظ النصوص فقط)' : 'Échec du téléchargement de l\'image (Textes sauvegardés)');
+                return null; // نعيد null لكي يستمر الكود بحفظ النصوص ويزيل نافذة التحميل
             }
         }
 
