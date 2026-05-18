@@ -31,7 +31,6 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // تصدير دوال Firebase لتكون متاحة
         window.firebaseDB = db;
         window.firebaseStorage = storage;
         window.firestoreModules = { collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp };
@@ -82,13 +81,11 @@
             font-family: 'Montserrat', sans-serif; 
         }
 
-        /* شريط التمرير */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--gray-100); }
         ::-webkit-scrollbar-thumb { background: var(--purple-primary); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--purple-dark); }
 
-        /* الحركات */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -101,53 +98,28 @@
         }
         .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
 
-        /* ==================== القائمة العلوية ==================== */
         .navbar {
-            position: fixed;
-            top: 0; width: 100%; z-index: 1000;
+            position: fixed; top: 0; width: 100%; z-index: 1000;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(124, 58, 237, 0.1);
             transition: all 0.3s ease;
         }
         .navbar.scrolled { box-shadow: var(--shadow-lg); background: rgba(255, 255, 255, 0.98); }
-        .navbar-container {
-            max-width: 1400px; margin: 0 auto;
-            padding: 0.75rem 2rem;
-            display: flex; align-items: center; justify-content: space-between;
-        }
+        .navbar-container { max-width: 1400px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; align-items: center; justify-content: space-between; }
         .logo-section { display: flex; align-items: center; gap: 1rem; }
         .logo-img { height: 55px; width: auto; transition: transform 0.3s ease; }
         .logo-img:hover { transform: scale(1.05); }
-        .logo-text {
-            font-weight: 900; font-size: 1.2rem;
-            background: var(--gradient-mixed);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
+        .logo-text { font-weight: 900; font-size: 1.2rem; background: var(--gradient-mixed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .lang-switcher { display: flex; background: var(--gray-100); border-radius: 50px; padding: 4px; gap: 4px; }
-        .lang-btn {
-            padding: 6px 16px; border: none; border-radius: 50px;
-            cursor: pointer; font-weight: 700; font-size: 0.95rem;
-            transition: all 0.3s ease; background: transparent; color: var(--gray-600);
-            font-family: inherit; letter-spacing: 1px;
-        }
+        .lang-btn { padding: 6px 16px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.3s ease; background: transparent; color: var(--gray-600); font-family: inherit; letter-spacing: 1px; }
         .lang-btn.active { background: var(--gradient-purple); color: white; box-shadow: var(--shadow-sm); }
         
-        .menu-toggle {
-            width: 45px; height: 45px; border-radius: 12px; border: none;
-            background: var(--gradient-purple); color: white;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-md);
-        }
+        .menu-toggle { width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--gradient-purple); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-md); }
         .menu-toggle:hover { transform: scale(1.1); box-shadow: var(--shadow-lg); }
 
-        /* ==================== القائمة الجانبية ==================== */
-        .side-menu {
-            position: fixed; top: 0; right: -400px; width: 380px; max-width: 90vw; height: 100vh;
-            background: white; z-index: 2000; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; padding: 2rem;
-        }
+        .side-menu { position: fixed; top: 0; right: -400px; width: 380px; max-width: 90vw; height: 100vh; background: white; z-index: 2000; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; padding: 2rem; }
         body.fr-mode .side-menu { right: auto; left: -400px; transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         body.fr-mode .side-menu.open { left: 0; right: auto; }
         .side-menu.open { right: 0; }
@@ -156,20 +128,14 @@
         .close-menu { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--gray-100); color: var(--gray-600); cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
         .close-menu:hover { background: var(--orange-primary); color: white; }
         .menu-links { display: flex; flex-direction: column; gap: 0.5rem; }
-        .menu-link {
-            padding: 1rem 1.25rem; border-radius: var(--radius-md); text-decoration: none;
-            color: var(--gray-800); font-weight: 700; display: flex; align-items: center; gap: 1rem;
-            transition: all 0.3s ease; font-size: 1.05rem;
-        }
+        .menu-link { padding: 1rem 1.25rem; border-radius: var(--radius-md); text-decoration: none; color: var(--gray-800); font-weight: 700; display: flex; align-items: center; gap: 1rem; transition: all 0.3s ease; font-size: 1.05rem; }
         .menu-link:hover { background: var(--gradient-purple); color: white; transform: translateX(-5px); box-shadow: var(--shadow-md); }
         body.fr-mode .menu-link:hover { transform: translateX(5px); }
         .menu-link i { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); border-radius: 8px; color: var(--purple-primary); transition: all 0.3s ease; }
         .menu-link:hover i { background: rgba(255,255,255,0.2); color: white; }
-        
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1999; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .menu-overlay.active { opacity: 1; visibility: visible; }
 
-        /* ==================== قسم البانر الرئيسي ==================== */
         .hero { margin-top: 80px; position: relative; min-height: 600px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
         .hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; filter: brightness(0.3); transform: scale(1.1); transition: transform 10s ease; }
         .hero:hover .hero-bg { transform: scale(1.2); }
@@ -181,13 +147,11 @@
         .hero-cta { display: inline-flex; align-items: center; gap: 0.75rem; background: var(--gradient-orange); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4); animation: pulse 2s ease infinite; font-family: inherit; }
         .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(249, 115, 22, 0.5); }
 
-        /* ==================== الأقسام العامة ==================== */
         .section { padding: 5rem 2rem; max-width: 1400px; margin: 0 auto; }
         .section-header { text-align: center; margin-bottom: 3.5rem; }
         .section-tag { display: inline-block; padding: 0.5rem 1.25rem; background: rgba(124, 58, 237, 0.1); color: var(--purple-primary); border-radius: 50px; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }
         .section-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; color: var(--gray-900); margin-bottom: 1rem; }
 
-        /* قسم الإحصائيات (الإنجازات) */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
         .stat-card { background: white; padding: 2rem; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-md); transition: all 0.4s ease; position: relative; overflow: hidden; border: 1px solid var(--gray-100); }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient-mixed); transform: scaleX(0); transition: transform 0.4s ease; }
@@ -202,22 +166,16 @@
         .stat-number { font-size: 2.8rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.5rem; line-height: 1; }
         .stat-label { font-weight: 700; color: var(--gray-700); font-size: 1.05rem; }
 
-        /* قسم المدونة (سلايدر) */
         .blog-section { background: white; border-radius: var(--radius-xl); padding: 4rem 3rem; margin: 2rem auto; max-width: 1400px; box-shadow: var(--shadow-md); position: relative; }
         .blog-slider-container { position: relative; overflow: hidden; padding: 1rem 0; }
         .blog-slider { display: flex; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .blog-card {
-            flex: 0 0 calc(33.333% - 1.33rem); margin: 0 0.665rem;
-            background: var(--gray-50); border-radius: var(--radius-lg); overflow: hidden;
-            box-shadow: var(--shadow-sm); transition: all 0.4s ease; cursor: pointer; border: 1px solid var(--gray-200);
-        }
+        .blog-card { flex: 0 0 calc(33.333% - 1.33rem); margin: 0 0.665rem; background: var(--gray-50); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: all 0.4s ease; cursor: pointer; border: 1px solid var(--gray-200); }
         .blog-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-xl); border-color: var(--purple-light); }
         .blog-image { width: 100%; height: 220px; object-fit: cover; transition: transform 0.5s ease; }
         .blog-card:hover .blog-image { transform: scale(1.08); }
         .blog-content { padding: 1.5rem; }
         .blog-title { font-size: 1.15rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.75rem; line-height: 1.4; }
         .blog-excerpt { font-size: 0.95rem; color: var(--gray-600); line-height: 1.6; font-weight: 500; }
-        
         .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: white; color: var(--purple-primary); font-size: 1.2rem; cursor: pointer; box-shadow: var(--shadow-lg); transition: all 0.3s ease; z-index: 10; display: flex; align-items: center; justify-content: center; }
         .slider-btn:hover { background: var(--purple-primary); color: white; transform: translateY(-50%) scale(1.1); }
         .slider-prev { right: 10px; }
@@ -225,12 +183,10 @@
         body.fr-mode .slider-prev { right: auto; left: 10px; }
         body.fr-mode .slider-next { left: auto; right: 10px; }
 
-        /* الشركاء */
         .partners-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; align-items: center; }
         .partner-logo { width: 160px; height: 100px; object-fit: contain; filter: grayscale(100%); opacity: 0.6; transition: all 0.4s ease; }
         .partner-logo:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.15); }
 
-        /* الفريق */
         .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
         .team-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); transition: all 0.4s ease; text-align: center; border: 1px solid var(--gray-100); }
         .team-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-xl); }
@@ -242,7 +198,6 @@
         .team-name { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.25rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .team-role { color: var(--orange-light); font-weight: 800; font-size: 0.95rem; }
 
-        /* قسم الجامعة */
         .university-section { background: var(--gradient-purple); border-radius: var(--radius-xl); padding: 4rem 3rem; color: white; text-align: center; position: relative; overflow: hidden; box-shadow: var(--shadow-lg); }
         .university-section::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3; }
         .uni-logo { height: 110px; width: auto; margin-bottom: 2rem; filter: brightness(0) invert(1); position: relative; z-index: 1; }
@@ -250,7 +205,6 @@
         .uni-link { padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; color: white; text-decoration: none; font-weight: 700; transition: all 0.3s ease; }
         .uni-link:hover { background: white; color: var(--purple-primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        /* ==================== الفوتر والاتصال ==================== */
         .footer { background: var(--gray-900); color: white; padding: 4rem 2rem 2rem; margin-top: 4rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; max-width: 1400px; margin: 0 auto; }
         .footer-brand { display: flex; flex-direction: column; gap: 1rem; }
@@ -259,27 +213,22 @@
         .footer-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--orange-primary); position: relative; padding-bottom: 0.5rem; }
         .footer-title::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: var(--purple-primary); border-radius: 2px; }
         body.fr-mode .footer-title::after { right: auto; left: 0; }
-        
         .footer-links { display: flex; flex-direction: column; gap: 0.75rem; }
         .footer-link { color: rgba(255,255,255,0.8); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease; font-weight: 600; }
         .footer-link:hover { color: var(--orange-primary); transform: translateX(-5px); }
         body.fr-mode .footer-link:hover { transform: translateX(5px); }
         .footer-link i { color: var(--purple-light); }
-        
         .footer-contact-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; color: rgba(255,255,255,0.9); font-weight: 600; }
         .footer-contact-icon { width: 45px; height: 45px; border-radius: 12px; background: rgba(124, 58, 237, 0.2); display: flex; align-items: center; justify-content: center; color: var(--purple-light); font-size: 1.2rem; }
-        
         .footer-bottom { max-width: 1400px; margin: 3rem auto 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         .footer-copyright { color: rgba(255,255,255,0.5); font-size: 0.95rem; font-weight: 600; }
         .footer-social { display: flex; gap: 1rem; }
         .social-btn { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; }
         .social-btn:hover { background: var(--orange-primary); transform: translateY(-3px); }
 
-        /* خريطة */
         .map-container { width: 100%; height: 250px; border-radius: var(--radius-lg); overflow: hidden; margin-top: 1rem; border: 2px solid rgba(124, 58, 237, 0.2); }
         .map-container iframe { width: 100%; height: 100%; border: none; }
 
-        /* ==================== النوافذ المنبثقة (Modals) ==================== */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal { background: white; border-radius: var(--radius-xl); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9) translateY(20px); transition: all 0.3s ease; box-shadow: var(--shadow-xl); }
@@ -301,32 +250,11 @@
         .admin-logo-img { height: 45px; filter: brightness(0) invert(1); }
         .admin-logo-text { font-weight: 900; font-size: 1.2rem; }
         .admin-nav { display: flex; flex-direction: column; gap: 0.5rem; }
-        .admin-nav-item { padding: 0.875rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease; font-weight: 700; color: rgba(255,255,255,0.7); }
         button.admin-nav-item {
-            width: 100%;
-            text-align: inherit;
-            font-family: inherit;
-            font-size: inherit;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            border-radius: var(--radius-md);
-            font-weight: 700;
-            color: rgba(255,255,255,0.7);
-            transition: all 0.3s ease;
+            width: 100%; text-align: inherit; font-family: inherit; font-size: inherit; border: none; background: transparent; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; touch-action: manipulation; display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1rem; border-radius: var(--radius-md); font-weight: 700; color: rgba(255,255,255,0.7); transition: all 0.3s ease;
         }
-        button.admin-nav-item:hover, button.admin-nav-item.active {
-            background: var(--gradient-purple);
-            color: white;
-        }
-        
-        .admin-nav-item:hover, .admin-nav-item.active { background: var(--gradient-purple); color: white; }
+        button.admin-nav-item:hover, button.admin-nav-item.active { background: var(--gradient-purple); color: white; }
         .admin-nav-item i { width: 24px; text-align: center; font-size: 1.1rem; }
         
         .admin-main { margin-right: 280px; padding: 2rem; min-height: 100vh; }
@@ -336,7 +264,8 @@
         .admin-logout { padding: 0.625rem 1.5rem; background: #FEE2E2; color: #EF4444; border: none; border-radius: var(--radius-md); font-weight: 800; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
         .admin-logout:hover { background: #EF4444; color: white; }
 
-        /* احصائيات الأدمن */
+        #admin-menu-toggle { display: none; width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--gradient-purple); color: white; cursor: pointer; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-md); }
+
         .admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .admin-stat-card { background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 1.2rem; transition: all 0.3s ease; border-right: 4px solid var(--purple-primary); }
         body.fr-mode .admin-stat-card { border-right: none; border-left: 4px solid var(--purple-primary); }
@@ -346,7 +275,6 @@
         .admin-stat-value { font-size: 2rem; font-weight: 900; color: var(--gray-900); line-height: 1; margin-bottom: 0.2rem; }
         .admin-stat-label { font-size: 0.9rem; color: var(--gray-600); font-weight: 700; }
 
-        /* النماذج وعناصر الإدخال */
         .admin-section { background: white; border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); }
         .admin-section-title { font-size: 1.3rem; font-weight: 900; color: var(--gray-900); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; gap: 0.75rem; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
@@ -366,7 +294,6 @@
         .btn-danger { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
         .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
 
-        /* جداول الإدارة */
         .admin-table-container { overflow-x: auto; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .admin-table th { background: var(--gray-100); padding: 1.2rem 1rem; text-align: start; font-weight: 900; color: var(--gray-700); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -380,7 +307,6 @@
         .table-btn-delete { background: #FEE2E2; color: #EF4444; }
         .table-btn-delete:hover { background: #EF4444; color: white; }
 
-        /* نافذة تسجيل الدخول */
         .login-container { max-width: 400px; width: 100%; background: white; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-xl); text-align: center; }
         .login-logo { height: 80px; margin-bottom: 1.5rem; }
         .login-title { font-size: 1.6rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.5rem; }
@@ -390,7 +316,6 @@
         .login-error { color: #EF4444; font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; display: none; }
         .login-error.show { display: block; }
 
-        /* الإشعارات */
         .toast-container { position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); z-index: 5000; display: flex; flex-direction: column; gap: 0.75rem; }
         .toast { padding: 1rem 1.5rem; border-radius: var(--radius-md); color: white; font-weight: 800; display: flex; align-items: center; gap: 0.75rem; box-shadow: var(--shadow-lg); animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s; min-width: 300px; }
         @keyframes fadeOut { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
@@ -398,24 +323,22 @@
         .toast-error { background: linear-gradient(135deg, #EF4444, #DC2626); }
         .toast-info { background: linear-gradient(135deg, #3B82F6, #2563EB); }
 
-        /* تحميل */
         .spinner { width: 40px; height: 40px; border: 4px solid var(--gray-200); border-top-color: var(--purple-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .loading-overlay.active { opacity: 1; visibility: visible; }
 
-        /* صفحات المحتوى المستقلة */
         .content-page { background: white; padding: 3rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); max-width: 900px; margin: 2rem auto; }
         .content-page h2 { color: var(--purple-dark); margin-bottom: 1.5rem; font-size: 2rem; font-weight: 900; border-bottom: 2px solid var(--gray-100); padding-bottom: 1rem; }
         .content-page p { color: var(--gray-700); line-height: 1.8; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem; }
 
-        /* متجاوب */
         @media (max-width: 1024px) {
             .blog-card { flex: 0 0 calc(50% - 1rem); margin: 0 0.5rem; }
             .admin-sidebar { transform: translateX(100%); }
             body.fr-mode .admin-sidebar { transform: translateX(-100%); }
             .admin-sidebar.open { transform: translateX(0); }
             .admin-main { margin-right: 0; margin-left: 0; }
+            #admin-menu-toggle { display: flex; }
         }
         @media (max-width: 768px) {
             .navbar-container { padding: 0.75rem 1rem; }
@@ -444,17 +367,12 @@
 <base target="_blank">
 </head>
 <body>
-    <!-- ==================== الموقع العام للزوار ==================== -->
+    <!-- الموقع العام للزوار -->
     <div id="public-site">
-        
-        <!-- القائمة العلوية -->
         <nav class="navbar" id="navbar">
             <div class="navbar-container">
                 <div class="logo-section">
-                    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <!-- لوغو الحاضنة -->
+                    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Menu"><i class="fas fa-bars"></i></button>
                     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="logo-img" id="nav-logo">
                     <span class="logo-text" data-ar="حاضنة الأعمال" data-fr="Incubateur">حاضنة الأعمال</span>
                 </div>
@@ -467,7 +385,6 @@
             </div>
         </nav>
 
-        <!-- القائمة الجانبية -->
         <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
         <div class="side-menu" id="sideMenu">
             <div class="side-menu-header">
@@ -486,7 +403,6 @@
             </div>
         </div>
 
-        <!-- قسم البانر -->
         <section class="hero" id="hero">
             <div class="hero-bg" id="heroBg" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80')"></div>
             <div class="hero-overlay"></div>
@@ -504,47 +420,21 @@
             </div>
         </section>
 
-        <!-- قسم الإحصائيات (إنجازاتنا) -->
         <section class="section" id="stats">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="إنجازاتنا" data-fr="Nos Réalisations">إنجازاتنا</span>
                 <h2 class="section-title" data-ar="أرقام تتحدث عن نجاحنا" data-fr="Des Chiffres qui Parlent de Notre Succès">أرقام تتحدث عن نجاحنا</h2>
             </div>
             <div class="stats-grid" id="stats-grid">
-                <div class="stat-card animate-on-scroll">
-                    <div class="stat-icon"><i class="fas fa-lightbulb"></i></div>
-                    <div class="stat-number" data-target="1000">0</div>
-                    <div class="stat-label" data-ar="فكرة مشروع" data-fr="Idées de Projets">فكرة مشروع</div>
-                </div>
-                <div class="stat-card animate-on-scroll">
-                    <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
-                    <div class="stat-number" data-target="100">0</div>
-                    <div class="stat-label" data-ar="دورة تدريبية" data-fr="Formations">دورة تدريبية</div>
-                </div>
-                <div class="stat-card animate-on-scroll">
-                    <div class="stat-icon"><i class="fas fa-tag"></i></div>
-                    <div class="stat-number" data-target="40">0</div>
-                    <div class="stat-label" data-ar="وسم لابل مشروع مبتكر" data-fr="Labels Projets Innovants">وسم لابل مشروع مبتكر</div>
-                </div>
-                <div class="stat-card animate-on-scroll">
-                    <div class="stat-icon"><i class="fas fa-rocket"></i></div>
-                    <div class="stat-number" data-target="10">0</div>
-                    <div class="stat-label" data-ar="مؤسسة ناشئة" data-fr="Startups">مؤسسة ناشئة</div>
-                </div>
-                <div class="stat-card animate-on-scroll">
-                    <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                    <div class="stat-number" data-target="100">0</div>
-                    <div class="stat-label" data-ar="مؤطر" data-fr="Encadrants">مؤطر</div>
-                </div>
-                <div class="stat-card animate-on-scroll">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div class="stat-number" data-target="2000">0</div>
-                    <div class="stat-label" data-ar="منخرط" data-fr="Membres">منخرط</div>
-                </div>
+                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-lightbulb"></i></div><div class="stat-number" data-target="1000">0</div><div class="stat-label" data-ar="فكرة مشروع" data-fr="Idées de Projets">فكرة مشروع</div></div>
+                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-graduation-cap"></i></div><div class="stat-number" data-target="100">0</div><div class="stat-label" data-ar="دورة تدريبية" data-fr="Formations">دورة تدريبية</div></div>
+                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-tag"></i></div><div class="stat-number" data-target="40">0</div><div class="stat-label" data-ar="وسم لابل مشروع مبتكر" data-fr="Labels Projets Innovants">وسم لابل مشروع مبتكر</div></div>
+                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-rocket"></i></div><div class="stat-number" data-target="10">0</div><div class="stat-label" data-ar="مؤسسة ناشئة" data-fr="Startups">مؤسسة ناشئة</div></div>
+                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="stat-number" data-target="100">0</div><div class="stat-label" data-ar="مؤطر" data-fr="Encadrants">مؤطر</div></div>
+                <div class="stat-card animate-on-scroll"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-number" data-target="2000">0</div><div class="stat-label" data-ar="منخرط" data-fr="Membres">منخرط</div></div>
             </div>
         </section>
 
-        <!-- قسم المدونة والأعمال -->
         <section class="blog-section" id="works">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span>
@@ -552,47 +442,35 @@
             </div>
             <div class="blog-slider-container">
                 <button class="slider-btn slider-next" onclick="moveSlider(1)"><i class="fas fa-chevron-right"></i></button>
-                <div class="blog-slider" id="blogSlider">
-                    <!-- سيتم حقن المحتوى ديناميكيا -->
-                </div>
+                <div class="blog-slider" id="blogSlider"></div>
                 <button class="slider-btn slider-prev" onclick="moveSlider(-1)"><i class="fas fa-chevron-left"></i></button>
             </div>
         </section>
 
-        <!-- قسم الشركاء -->
         <section class="section" id="partners">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="شركاؤنا" data-fr="Nos Partenaires">شركاؤنا</span>
                 <h2 class="section-title" data-ar="شركاؤنا في النجاح" data-fr="Nos Partenaires dans le Succès">شركاؤنا في النجاح</h2>
             </div>
-            <div class="partners-grid" id="partners-grid">
-                <!-- سيتم حقن المحتوى ديناميكيا -->
-            </div>
+            <div class="partners-grid" id="partners-grid"></div>
         </section>
 
-        <!-- قسم الفريق -->
         <section class="section" id="team">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="فريقنا" data-fr="Notre Équipe">فريقنا</span>
                 <h2 class="section-title" data-ar="فريقنا المتميز" data-fr="Notre Équipe d'Excellence">فريقنا المتميز</h2>
             </div>
-            <div class="team-grid" id="team-grid">
-                <!-- سيتم حقن المحتوى ديناميكيا -->
-            </div>
+            <div class="team-grid" id="team-grid"></div>
         </section>
 
-        <!-- قسم الجامعة -->
         <section class="section" id="university">
             <div class="university-section animate-on-scroll">
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="University Logo" class="uni-logo" id="uni-logo">
                 <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 1rem; position: relative; z-index: 1;" data-ar="جامعة البليدة 2" data-fr="Université Blida 2">جامعة البليدة 2</h2>
-                <div class="uni-links" id="uni-links">
-                    <!-- سيتم حقن المحتوى ديناميكيا -->
-                </div>
+                <div class="uni-links" id="uni-links"></div>
             </div>
         </section>
 
-        <!-- الفوتر و الاتصال -->
         <footer class="footer" id="contact">
             <div class="footer-grid">
                 <div class="footer-brand">
@@ -636,7 +514,6 @@
         </footer>
     </div>
 
-    <!-- ==================== صفحات المحتوى المنفصلة ==================== -->
     <div id="content-pages" style="display:none; padding-top: 100px;">
         <div class="navbar" style="position: fixed; top: 0; width: 100%; z-index: 1000;">
             <div class="navbar-container">
@@ -670,7 +547,7 @@
         </div>
     </div>
 
-    <!-- ==================== لوحة تحكم الأدمن ==================== -->
+    <!-- لوحة تحكم الأدمن -->
     <div class="admin-panel" id="admin-panel">
         <div class="admin-sidebar" id="admin-sidebar">
             <div class="admin-logo">
@@ -678,55 +555,36 @@
                 <span class="admin-logo-text">Admin</span>
             </div>
             <div class="admin-nav">
-                <button class="admin-nav-item active" data-section="dashboard" onclick="showAdminSection(\'dashboard\', this)"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></div>
-                <button class="admin-nav-item" data-section="banner" onclick="showAdminSection(\'banner\', this)"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></div>
-                <button class="admin-nav-item" data-section="stats" onclick="showAdminSection(\'stats\', this)"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></div>
-                <button class="admin-nav-item" data-section="blog" onclick="showAdminSection(\'blog\', this)"><i class="fas fa-blog"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></div>
-                <button class="admin-nav-item" data-section="partners" onclick="showAdminSection(\'partners\', this)"><i class="fas fa-handshake"></i><span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span></div>
-                <button class="admin-nav-item" data-section="team" onclick="showAdminSection(\'team\', this)"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></div>
-                <button class="admin-nav-item" data-section="university" onclick="showAdminSection(\'university\', this)"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></div>
-                <button class="admin-nav-item" data-section="contact" onclick="showAdminSection(\'contact\', this)"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></div>
-                <button class="admin-nav-item" data-section="privacy" onclick="showAdminSection(\'privacy\', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و الموقع" data-fr="Confidentialité">الخصوصية والموقع</span></div>
-                <button class="admin-nav-item" data-section="reports" onclick="showAdminSection(\'reports\', this)"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></div>
+                <button class="admin-nav-item active" data-section="dashboard" onclick="showAdminSection('dashboard', this)"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></button>
+                <button class="admin-nav-item" data-section="banner" onclick="showAdminSection('banner', this)"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></button>
+                <button class="admin-nav-item" data-section="stats" onclick="showAdminSection('stats', this)"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></button>
+                <button class="admin-nav-item" data-section="blog" onclick="showAdminSection('blog', this)"><i class="fas fa-blog"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></button>
+                <button class="admin-nav-item" data-section="partners" onclick="showAdminSection('partners', this)"><i class="fas fa-handshake"></i><span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span></button>
+                <button class="admin-nav-item" data-section="team" onclick="showAdminSection('team', this)"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></button>
+                <button class="admin-nav-item" data-section="university" onclick="showAdminSection('university', this)"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></button>
+                <button class="admin-nav-item" data-section="contact" onclick="showAdminSection('contact', this)"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></button>
+                <button class="admin-nav-item" data-section="privacy" onclick="showAdminSection('privacy', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و الموقع" data-fr="Confidentialité">الخصوصية والموقع</span></button>
+                <button class="admin-nav-item" data-section="reports" onclick="showAdminSection('reports', this)"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></button>
             </div>
         </div>
         <div class="admin-main" id="admin-main">
             <div class="admin-header">
-                <h1 class="admin-title" id="admin-section-title" data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</h1>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="menu-toggle" id="admin-menu-toggle" onclick="toggleAdminMenu()" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="admin-title" id="admin-section-title" data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</h1>
+                </div>
                 <button class="admin-logout" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i><span data-ar="خروج" data-fr="Déconnexion">خروج</span></button>
             </div>
 
             <!-- لوحة القيادة -->
             <div id="admin-dashboard" class="admin-section-content">
                 <div class="admin-stats-grid">
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-icon" style="background: var(--gradient-purple);"><i class="fas fa-user-plus"></i></div>
-                        <div class="admin-stat-info">
-                            <div class="admin-stat-value" id="admin-stat-registrations">0</div>
-                            <div class="admin-stat-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions (Événement)">التسجيلات (في الحدث)</div>
-                        </div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-icon" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i class="fas fa-eye"></i></div>
-                        <div class="admin-stat-info">
-                            <div class="admin-stat-value" id="admin-stat-daily">0</div>
-                            <div class="admin-stat-label" data-ar="الزيارات اليومية" data-fr="Visites Aujourd'hui">الزيارات اليومية</div>
-                        </div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-icon" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-chart-line"></i></div>
-                        <div class="admin-stat-info">
-                            <div class="admin-stat-value" id="admin-stat-monthly">0</div>
-                            <div class="admin-stat-label" data-ar="الزيارات الشهرية" data-fr="Visites ce Mois">الزيارات الشهرية</div>
-                        </div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626);"><i class="fas fa-exclamation-triangle"></i></div>
-                        <div class="admin-stat-info">
-                            <div class="admin-stat-value" id="admin-stat-reports">0</div>
-                            <div class="admin-stat-label" data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</div>
-                        </div>
-                    </div>
+                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: var(--gradient-purple);"><i class="fas fa-user-plus"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-registrations">0</div><div class="admin-stat-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions (Événement)">التسجيلات (في الحدث)</div></div></div>
+                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i class="fas fa-eye"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-daily">0</div><div class="admin-stat-label" data-ar="الزيارات اليومية" data-fr="Visites Aujourd'hui">الزيارات اليومية</div></div></div>
+                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-chart-line"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-monthly">0</div><div class="admin-stat-label" data-ar="الزيارات الشهرية" data-fr="Visites ce Mois">الزيارات الشهرية</div></div></div>
+                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626);"><i class="fas fa-exclamation-triangle"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-reports">0</div><div class="admin-stat-label" data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</div></div></div>
                 </div>
             </div>
 
@@ -735,38 +593,14 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-image"></i> <span data-ar="إضافة حدث أو دورة (البانر)" data-fr="Événement/Bannière">إضافة حدث أو دورة</span></h3>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label" data-ar="عنوان الحدث (عربي)" data-fr="Titre (AR)">عنوان الحدث (عربي)</label>
-                            <input type="text" class="form-input" id="banner-title-ar">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" data-ar="عنوان الحدث (فرنسي)" data-fr="Titre (FR)">عنوان الحدث (فرنسي)</label>
-                            <input type="text" class="form-input" id="banner-title-fr">
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label" data-ar="وصف (عربي)" data-fr="Description (AR)">وصف (عربي)</label>
-                            <textarea class="form-textarea" id="banner-desc-ar"></textarea>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label" data-ar="وصف (فرنسي)" data-fr="Description (FR)">وصف (فرنسي)</label>
-                            <textarea class="form-textarea" id="banner-desc-fr"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" data-ar="نص الزر (عربي)" data-fr="Texte du Bouton (AR)">نص الزر (عربي)</label>
-                            <input type="text" class="form-input" id="banner-btn-ar">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" data-ar="نص الزر (فرنسي)" data-fr="Texte du Bouton (FR)">نص الزر (فرنسي)</label>
-                            <input type="text" class="form-input" id="banner-btn-fr">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" data-ar="رابط التسجيل للزر (تغيير الرابط يصفر الإحصائيات)" data-fr="Lien du Bouton">رابط التسجيل للزر</label>
-                            <input type="url" class="form-input" id="banner-link">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" data-ar="صورة الخلفية المظلمة" data-fr="Image de Fond">صورة الخلفية المظلمة</label>
-                            <input type="file" class="form-file" id="banner-image" accept="image/*">
-                        </div>
+                        <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (عربي)" data-fr="Titre (AR)">عنوان الحدث (عربي)</label><input type="text" class="form-input" id="banner-title-ar"></div>
+                        <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (فرنسي)" data-fr="Titre (FR)">عنوان الحدث (فرنسي)</label><input type="text" class="form-input" id="banner-title-fr"></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="وصف (عربي)" data-fr="Description (AR)">وصف (عربي)</label><textarea class="form-textarea" id="banner-desc-ar"></textarea></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="وصف (فرنسي)" data-fr="Description (FR)">وصف (فرنسي)</label><textarea class="form-textarea" id="banner-desc-fr"></textarea></div>
+                        <div class="form-group"><label class="form-label" data-ar="نص الزر (عربي)" data-fr="Texte du Bouton (AR)">نص الزر (عربي)</label><input type="text" class="form-input" id="banner-btn-ar"></div>
+                        <div class="form-group"><label class="form-label" data-ar="نص الزر (فرنسي)" data-fr="Texte du Bouton (FR)">نص الزر (فرنسي)</label><input type="text" class="form-input" id="banner-btn-fr"></div>
+                        <div class="form-group"><label class="form-label" data-ar="رابط التسجيل للزر (تغيير الرابط يصفر الإحصائيات)" data-fr="Lien du Bouton">رابط التسجيل للزر</label><input type="url" class="form-input" id="banner-link"></div>
+                        <div class="form-group"><label class="form-label" data-ar="صورة الخلفية المظلمة" data-fr="Image de Fond">صورة الخلفية المظلمة</label><input type="file" class="form-file" id="banner-image" accept="image/*"></div>
                     </div>
                     <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
                         <button class="btn btn-primary" onclick="saveBanner()"><i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span></button>
@@ -937,7 +771,7 @@
         </div>
     </div>
 
-    <!-- ==================== النوافذ المنبثقة ==================== -->
+    <!-- النوافذ المنبثقة -->
     <div class="modal-overlay" id="blogModal">
         <div class="modal">
             <div class="modal-header">
@@ -983,24 +817,19 @@
         <div class="spinner"></div>
         <p style="color: var(--gray-600); font-weight: 800; margin-top: 10px;" data-ar="جاري التحميل..." data-fr="Chargement...">جاري التحميل...</p>
     </div>
-
-    <!-- حاوية الإشعارات -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ==================== الجافاسكريبت والمهام ==================== -->
+    <!-- الجافاسكريبت والمهام -->
     <script>
         let currentLang = 'ar';
         let isAdmin = false;
         let blogSliderIndex = 0;
         let db, storage, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp, ref, uploadBytes, getDownloadURL;
 
-        // متغيرات حفظ البيانات لتسهيل التعديل
         let blogsData = {};
         let partnersData = {};
         let teamData = {};
         let uniLinksData = {};
-
-        // معرفات التعديل
         let editingBlogId = null;
         let editingPartnerId = null;
         let editingTeamId = null;
@@ -1098,6 +927,10 @@
             document.getElementById('menuOverlay').classList.toggle('active');
         }
 
+        function toggleAdminMenu() {
+            document.getElementById('admin-sidebar').classList.toggle('open');
+        }
+
         function setupScrollAnimations() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -1154,12 +987,18 @@
                 if (heroTitle) { heroTitle.setAttribute('data-ar', data.title_ar || 'نحو مستقبل مبتكر وريادي'); heroTitle.setAttribute('data-fr', data.title_fr || 'Vers un Avenir Innovant'); heroTitle.textContent = heroTitle.getAttribute(`data-${currentLang}`); }
                 if (heroDesc) { heroDesc.setAttribute('data-ar', data.desc_ar || 'انضم إلينا...'); heroDesc.setAttribute('data-fr', data.desc_fr || 'Rejoignez-nous...'); heroDesc.textContent = heroDesc.getAttribute(`data-${currentLang}`); }
                 if (heroCta) { heroCta.setAttribute('data-ar', data.btn_ar || 'سجل الآن'); heroCta.setAttribute('data-fr', data.btn_fr || 'Inscrivez-vous'); heroCta.textContent = heroCta.getAttribute(`data-${currentLang}`); }
-                if (data.image) heroBg.style.backgroundImage = `url('${data.image}')`;
+                
+                if (data.image) {
+                    heroBg.style.backgroundImage = `url('${data.image}')`;
+                } else {
+                    heroBg.style.backgroundImage = `url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80')`;
+                }
                 
                 if (document.getElementById('stat-registrations')) document.getElementById('stat-registrations').textContent = data.registrations || 0;
                 if (document.getElementById('admin-stat-registrations')) document.getElementById('admin-stat-registrations').textContent = data.registrations || 0;
                 
-                if(isAdmin) {
+                // التعبئة الخاصة بلوحة التحكم دائما
+                if(document.getElementById('banner-title-ar')){
                     document.getElementById('banner-title-ar').value = data.title_ar || '';
                     document.getElementById('banner-title-fr').value = data.title_fr || '';
                     document.getElementById('banner-desc-ar').value = data.desc_ar || '';
@@ -1186,9 +1025,9 @@
                         if (card.classList.contains('visible')) animateCounter(num);
                     }
                 });
-                if(isAdmin) {
-                    stats.forEach(s => { const el = document.getElementById(`stat-${s}`); if (el) el.value = data[s] || 0; });
-                }
+                
+                // التعبئة الخاصة بلوحة التحكم دائما
+                stats.forEach(s => { const el = document.getElementById(`stat-${s}`); if (el) el.value = data[s] || 0; });
             }
         }
 
@@ -1199,12 +1038,12 @@
                 const adminList = document.getElementById('admin-blog-list');
                 if(slider) slider.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
-                blogsData = {}; // تصفير البيانات
+                blogsData = {};
 
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     const id = docSnap.id;
-                    blogsData[id] = data; // حفظ للتعديل السريع
+                    blogsData[id] = data;
 
                     const title = currentLang === 'ar' ? (data.title_ar || '') : (data.title_fr || '');
                     const content = currentLang === 'ar' ? (data.content_ar || '') : (data.content_fr || '');
@@ -1265,7 +1104,15 @@
             updateSlider();
         }
 
-        window.addEventListener('resize', updateSlider);
+        window.addEventListener('resize', () => {
+            const slider = document.getElementById('blogSlider');
+            if(!slider) return;
+            const cards = slider.querySelectorAll('.blog-card');
+            const visibleCards = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
+            const maxIndex = Math.max(0, cards.length - visibleCards);
+            if(blogSliderIndex > maxIndex) blogSliderIndex = maxIndex;
+            updateSlider();
+        });
 
         async function loadPartners() {
             onSnapshot(collection(db, 'partners'), (snapshot) => {
@@ -1281,7 +1128,7 @@
 
                     if(grid) {
                         const img = document.createElement('img');
-                        img.src = data.logo || ''; img.alt = data.name; img.className = 'partner-logo';
+                        img.src = data.logo || ''; img.alt = data.name || ''; img.className = 'partner-logo';
                         grid.appendChild(img);
                     }
                     if (adminList) {
@@ -1397,7 +1244,8 @@
                         else faxDiv.style.display = 'none';
                     }
                     
-                    if(isAdmin) {
+                    // التعبئة الخاصة بلوحة التحكم
+                    if(document.getElementById('admin-email')) {
                         document.getElementById('admin-email').value = data.email || ''; 
                         document.getElementById('admin-phone').value = data.phone || ''; 
                         document.getElementById('admin-incubator-phone').value = data.incubatorPhone || ''; 
@@ -1416,7 +1264,6 @@
                     if(document.getElementById('about-content-ar')) document.getElementById('about-content-ar').innerHTML = data.about_ar || '';
                     if(document.getElementById('about-content-fr')) document.getElementById('about-content-fr').innerHTML = data.about_fr || '';
                     
-                    // تحديث خريطة الموقع
                     if(data.mapUrl) {
                         const footerIframe = document.getElementById('footer-map-iframe');
                         const pageIframe = document.getElementById('page-map-iframe');
@@ -1424,7 +1271,8 @@
                         if(pageIframe) pageIframe.src = data.mapUrl;
                     }
 
-                    if(isAdmin) {
+                    // التعبئة الخاصة بلوحة التحكم
+                    if(document.getElementById('privacy-text-ar')) {
                         document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; 
                         document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; 
                         document.getElementById('about-text-ar').value = data.about_ar || ''; 
@@ -1494,34 +1342,21 @@
         }
 
         function showAdminSection(section, element = null) {
-            console.log('Admin: Switching to section:', section);
+            document.querySelectorAll('.admin-section-content').forEach(el => el.style.display = 'none');
 
-            // Hide ALL admin section contents
-            document.querySelectorAll('.admin-section-content').forEach(el => {
-                el.style.display = 'none';
-            });
-
-            // Show the selected section
             const targetId = 'admin-' + section;
             const targetSection = document.getElementById(targetId);
-            if (targetSection) {
-                targetSection.style.display = 'block';
-                console.log('Admin: Section shown:', targetId);
-            } else {
-                console.error('Admin: Section NOT found:', targetId);
-            }
+            if (targetSection) targetSection.style.display = 'block';
 
-            // Remove active class from ALL nav items
-            document.querySelectorAll('.admin-nav-item').forEach(el => {
-                el.classList.remove('active');
-            });
+            document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
 
-            // Add active class to clicked element
             if (element) {
                 element.classList.add('active');
+            } else {
+                const navItem = document.querySelector(`.admin-nav-item[data-section="${section}"]`);
+                if(navItem) navItem.classList.add('active');
             }
 
-            // Update title
             const titles = {
                 dashboard: { ar: 'الداشبورد', fr: 'Tableau de Bord' },
                 banner: { ar: 'إضافة حدث أو دورة', fr: 'Événement/Bannière' },
@@ -1542,12 +1377,16 @@
                 titleEl.setAttribute('data-fr', titles[section].fr);
             }
 
-            // Load section-specific data
             if (section === 'dashboard') loadAdminStats();
             else if (section === 'reports') loadReports();
+            
+            // إغلاق قائمة الجوال إذا كانت مفتوحة
+            if(window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('admin-sidebar');
+                if(sidebar) sidebar.classList.remove('open');
+            }
         }
 
-        
         async function loadAdminStats() {
             const visitsSnap = await getDoc(doc(db, 'settings', 'visits'));
             if (visitsSnap.exists()) {
@@ -1628,7 +1467,6 @@
             showLoading(false);
         }
 
-        /* ------------------ إدارة المدونة ------------------ */
         function editBlog(id) {
             const data = blogsData[id];
             if(!data) return;
@@ -1684,7 +1522,6 @@
         }
         async function deleteBlog(id) { if (confirm(currentLang === 'ar' ? 'هل أنت متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'blogs', id)); }
 
-        /* ------------------ إدارة الشركاء ------------------ */
         function editPartner(id) {
             const data = partnersData[id];
             if(!data) return;
@@ -1724,7 +1561,6 @@
         }
         async function deletePartner(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'partners', id)); }
 
-        /* ------------------ إدارة الفريق ------------------ */
         function editTeamMember(id) {
             const data = teamData[id];
             if(!data) return;
@@ -1772,7 +1608,6 @@
         }
         async function deleteTeamMember(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'team', id)); }
 
-        /* ------------------ إدارة روابط الجامعة ------------------ */
         async function saveUniLogo() {
             showLoading(true);
             try {
@@ -1825,7 +1660,6 @@
         }
         async function deleteUniLink(id) { if (confirm('متأكد؟')) await deleteDoc(doc(db, 'university_links', id)); }
 
-        /* ------------------ إدارة معلومات الاتصال ------------------ */
         async function saveContact() {
             showLoading(true);
             await setDoc(doc(db, 'settings', 'contact'), { email: document.getElementById('admin-email').value, phone: document.getElementById('admin-phone').value, incubatorPhone: document.getElementById('admin-incubator-phone').value, fax: document.getElementById('admin-fax').value });
@@ -1833,7 +1667,6 @@
             showLoading(false);
         }
 
-        /* ------------------ إدارة الخصوصية ومن نحن والخريطة ------------------ */
         async function savePrivacy() {
             showLoading(true);
             await setDoc(doc(db, 'settings', 'privacy'), { 
@@ -1848,7 +1681,6 @@
         }
         async function deleteReport(id) { if (confirm('متأكد من الحذف؟')) await deleteDoc(doc(db, 'reports', id)); }
 
-        /* ------------------ تتبع الزوار والتسجيلات ------------------ */
         async function trackVisit() {
             const visitsRef = doc(db, 'settings', 'visits');
             const visitsSnap = await getDoc(visitsRef);
@@ -1874,7 +1706,6 @@
             }
         }
 
-        /* ------------------ التحكم بالواجهة ------------------ */
         function showPage(page) {
             document.getElementById('public-site').style.display = 'none';
             document.getElementById('content-pages').style.display = 'block';
@@ -1908,4 +1739,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
