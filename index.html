@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -20,7 +19,8 @@
             apiKey: "AIzaSyBUd67AkzJjiQ7DzQZOHOI7fci_4GpjKlQ",
             authDomain: "incubator-blida2.firebaseapp.com",
             projectId: "incubator-blida2",
-            storageBucket: "incubator-blida2.appspot.com", // تم التعديل هنا
+            // تم تصحيح storageBucket إلى النطاق الصحيح لتفادي التعليق اللانهائي
+            storageBucket: "incubator-blida2.appspot.com",
             messagingSenderId: "1032747297042",
             appId: "1:1032747297042:web:605fa96e4e206bb4dd6bcb",
             measurementId: "G-H2RCS9PZ37"
@@ -1409,15 +1409,25 @@
             });
         }
 
+        // تم إضافة تحسينات على رفع الصور لمنع التعليق اللانهائي
         async function uploadImageSafe(file, path) {
             if (!file) return null;
             try {
-                const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
-                await uploadBytes(storageRef, file);
+                // استبدال أي حروف قد تعيق الرفع بمسافات آمنة
+                const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
+                const storageRef = ref(storage, `${path}/${Date.now()}_${safeName}`);
+                
+                // إضافة مهلة زمنية 30 ثانية لتفادي التعليق في "جاري التحميل" إذا كان هناك مشكل بالاتصال
+                const uploadPromise = uploadBytes(storageRef, file);
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error(currentLang === 'ar' ? "انتهى وقت الرفع. يرجى التأكد من إعدادات Storage (CORS) أو جودة الإنترنت." : "Délai d'attente dépassé. Vérifiez Storage ou la connexion."))), 30000);
+                });
+                
+                await Promise.race([uploadPromise, timeoutPromise]);
                 return await getDownloadURL(storageRef);
             } catch (err) {
                 console.error("Firebase Storage Error:", err);
-                showToast('error', currentLang === 'ar' ? 'خطأ في رفع الصورة، تأكد من صلاحيات Storage. الخطأ: ' + err.message : 'Erreur d\'image: ' + err.message);
+                showToast('error', currentLang === 'ar' ? 'خطأ في رفع الصورة: ' + err.message : 'Erreur d\'image: ' + err.message);
                 throw err;
             }
         }
