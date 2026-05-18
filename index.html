@@ -19,8 +19,7 @@
             apiKey: "AIzaSyBUd67AkzJjiQ7DzQZOHOI7fci_4GpjKlQ",
             authDomain: "incubator-blida2.firebaseapp.com",
             projectId: "incubator-blida2",
-            // تم تصحيح storageBucket إلى النطاق الصحيح لتفادي التعليق اللانهائي
-            storageBucket: "incubator-blida2.appspot.com",
+            storageBucket: "incubator-blida2.firebasestorage.app",
             messagingSenderId: "1032747297042",
             appId: "1:1032747297042:web:605fa96e4e206bb4dd6bcb",
             measurementId: "G-H2RCS9PZ37"
@@ -997,6 +996,7 @@
                 if (document.getElementById('stat-registrations')) document.getElementById('stat-registrations').textContent = data.registrations || 0;
                 if (document.getElementById('admin-stat-registrations')) document.getElementById('admin-stat-registrations').textContent = data.registrations || 0;
                 
+                // التعبئة الخاصة بلوحة التحكم دائما
                 if(document.getElementById('banner-title-ar')){
                     document.getElementById('banner-title-ar').value = data.title_ar || '';
                     document.getElementById('banner-title-fr').value = data.title_fr || '';
@@ -1025,6 +1025,7 @@
                     }
                 });
                 
+                // التعبئة الخاصة بلوحة التحكم دائما
                 stats.forEach(s => { const el = document.getElementById(`stat-${s}`); if (el) el.value = data[s] || 0; });
             }
         }
@@ -1242,6 +1243,7 @@
                         else faxDiv.style.display = 'none';
                     }
                     
+                    // التعبئة الخاصة بلوحة التحكم
                     if(document.getElementById('admin-email')) {
                         document.getElementById('admin-email').value = data.email || ''; 
                         document.getElementById('admin-phone').value = data.phone || ''; 
@@ -1268,6 +1270,7 @@
                         if(pageIframe) pageIframe.src = data.mapUrl;
                     }
 
+                    // التعبئة الخاصة بلوحة التحكم
                     if(document.getElementById('privacy-text-ar')) {
                         document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; 
                         document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; 
@@ -1300,11 +1303,8 @@
                 showToast('success', currentLang === 'ar' ? 'تم الإرسال بنجاح' : 'Envoyé avec succès');
                 closeModal('reportModal');
                 document.getElementById('report-name').value = ''; document.getElementById('report-email').value = ''; document.getElementById('report-message').value = '';
-            } catch (e) { 
-                showToast('error', e.message); 
-            } finally {
-                showLoading(false);
-            }
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
         }
 
         /* ==================== مهام لوحة التحكم (Admin) ==================== */
@@ -1379,6 +1379,7 @@
             if (section === 'dashboard') loadAdminStats();
             else if (section === 'reports') loadReports();
             
+            // إغلاق قائمة الجوال إذا كانت مفتوحة
             if(window.innerWidth <= 1024) {
                 const sidebar = document.getElementById('admin-sidebar');
                 if(sidebar) sidebar.classList.remove('open');
@@ -1409,26 +1410,15 @@
             });
         }
 
-        // تم إضافة تحسينات على رفع الصور لمنع التعليق اللانهائي
         async function uploadImageSafe(file, path) {
             if (!file) return null;
             try {
-                // استبدال أي حروف قد تعيق الرفع بمسافات آمنة
-                const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
-                const storageRef = ref(storage, `${path}/${Date.now()}_${safeName}`);
-                
-                // إضافة مهلة زمنية 30 ثانية لتفادي التعليق في "جاري التحميل" إذا كان هناك مشكل بالاتصال
-                const uploadPromise = uploadBytes(storageRef, file);
-                const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error(currentLang === 'ar' ? "انتهى وقت الرفع. يرجى التأكد من إعدادات Storage (CORS) أو جودة الإنترنت." : "Délai d'attente dépassé. Vérifiez Storage ou la connexion."))), 30000);
-                });
-                
-                await Promise.race([uploadPromise, timeoutPromise]);
+                const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
                 return await getDownloadURL(storageRef);
             } catch (err) {
-                console.error("Firebase Storage Error:", err);
-                showToast('error', currentLang === 'ar' ? 'خطأ في رفع الصورة: ' + err.message : 'Erreur d\'image: ' + err.message);
-                throw err;
+                showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة' : 'Erreur de téléchargement d\'image');
+                return null;
             }
         }
 
@@ -1454,42 +1444,26 @@
 
                 await setDoc(doc(db, 'settings', 'banner'), data, { merge: true });
                 showToast('success', currentLang === 'ar' ? 'تم حفظ التعديلات' : 'Enregistré');
-            } catch (e) { 
-                console.error("Save Banner Error:", e);
-                showToast('error', currentLang === 'ar' ? 'فشل الحفظ: ' + e.message : 'Échec: ' + e.message);
-            } finally {
-                showLoading(false);
-            }
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
         }
 
         async function deleteBanner() {
             if (!confirm(currentLang === 'ar' ? 'هل أنت متأكد من حذف البانر والحدث؟' : 'Êtes-vous sûr ?')) return;
-            showLoading(true);
-            try {
-                await setDoc(doc(db, 'settings', 'banner'), { title_ar: '', title_fr: '', desc_ar: '', desc_fr: '', btn_ar: '', btn_fr: '', link: '', registrations: 0, image: '' });
-                showToast('success', currentLang === 'ar' ? 'تم الحذف' : 'Supprimé');
-            } catch(e) {
-                showToast('error', e.message);
-            } finally {
-                showLoading(false);
-            }
+            await setDoc(doc(db, 'settings', 'banner'), { title_ar: '', title_fr: '', desc_ar: '', desc_fr: '', btn_ar: '', btn_fr: '', link: '', registrations: 0, image: '' });
+            showToast('success', currentLang === 'ar' ? 'تم الحذف' : 'Supprimé');
         }
 
         async function saveStats() {
             showLoading(true);
-            try {
-                const data = {
-                    ideas: parseInt(document.getElementById('stat-ideas').value) || 0, courses: parseInt(document.getElementById('stat-courses').value) || 0,
-                    labels: parseInt(document.getElementById('stat-labels').value) || 0, startups: parseInt(document.getElementById('stat-startups').value) || 0,
-                    mentors: parseInt(document.getElementById('stat-mentors').value) || 0, members: parseInt(document.getElementById('stat-members').value) || 0
-                };
-                await setDoc(doc(db, 'settings', 'stats'), data);
-                showToast('success', currentLang === 'ar' ? 'تم حفظ الإحصائيات بنجاح' : 'Enregistré');
-            } catch(e) {
-                showToast('error', e.message);
-            } finally {
-                showLoading(false);
-            }
+            const data = {
+                ideas: parseInt(document.getElementById('stat-ideas').value) || 0, courses: parseInt(document.getElementById('stat-courses').value) || 0,
+                labels: parseInt(document.getElementById('stat-labels').value) || 0, startups: parseInt(document.getElementById('stat-startups').value) || 0,
+                mentors: parseInt(document.getElementById('stat-mentors').value) || 0, members: parseInt(document.getElementById('stat-members').value) || 0
+            };
+            await setDoc(doc(db, 'settings', 'stats'), data);
+            showToast('success', currentLang === 'ar' ? 'تم حفظ الإحصائيات بنجاح' : 'Enregistré');
+            showLoading(false);
         }
 
         function editBlog(id) {
@@ -1542,12 +1516,8 @@
                 document.getElementById('blog-content-ar').value = ''; 
                 document.getElementById('blog-content-fr').value = '';
                 document.getElementById('blog-image').value = '';
-            } catch (e) { 
-                console.error("Blog Error:", e);
-                showToast('error', currentLang === 'ar' ? 'فشل العملية: ' + e.message : 'Échec: ' + e.message);
-            } finally {
-                showLoading(false);
-            }
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
         }
         async function deleteBlog(id) { if (confirm(currentLang === 'ar' ? 'هل أنت متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'blogs', id)); }
 
@@ -1585,12 +1555,8 @@
                 }
                 document.getElementById('partner-name').value = '';
                 document.getElementById('partner-logo').value = '';
-            } catch (e) { 
-                console.error("Partner Error:", e);
-                showToast('error', currentLang === 'ar' ? 'فشل العملية: ' + e.message : 'Échec: ' + e.message);
-            } finally {
-                showLoading(false);
-            }
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
         }
         async function deletePartner(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'partners', id)); }
 
@@ -1636,12 +1602,8 @@
                 document.getElementById('team-role-ar').value = ''; 
                 document.getElementById('team-role-fr').value = '';
                 document.getElementById('team-image').value = '';
-            } catch (e) { 
-                console.error("Team Error:", e);
-                showToast('error', currentLang === 'ar' ? 'فشل العملية: ' + e.message : 'Échec: ' + e.message);
-            } finally {
-                showLoading(false);
-            }
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
         }
         async function deleteTeamMember(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'team', id)); }
 
@@ -1649,16 +1611,10 @@
             showLoading(true);
             try {
                 const file = document.getElementById('uni-logo-file').files[0];
-                if (file) { 
-                    const url = await uploadImageSafe(file, 'university'); 
-                    if(url) await setDoc(doc(db, 'settings', 'university'), { logo: url }, { merge: true }); 
-                }
+                if (file) { const url = await uploadImageSafe(file, 'university'); if(url) await setDoc(doc(db, 'settings', 'university'), { logo: url }, { merge: true }); }
                 showToast('success', currentLang === 'ar' ? 'تم حفظ الشعار' : 'Enregistré');
-            } catch (e) { 
-                console.error("Uni Logo Error:", e);
-            } finally {
-                showLoading(false);
-            }
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
         }
 
         function editUniLink(id) {
@@ -1698,42 +1654,29 @@
                 document.getElementById('uni-link-title-ar').value = '';
                 document.getElementById('uni-link-title-fr').value = '';
                 document.getElementById('uni-link-url').value = '';
-            } catch (e) { 
-                showToast('error', e.message); 
-            } finally {
-                showLoading(false);
-            }
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
         }
         async function deleteUniLink(id) { if (confirm('متأكد؟')) await deleteDoc(doc(db, 'university_links', id)); }
 
         async function saveContact() {
             showLoading(true);
-            try {
-                await setDoc(doc(db, 'settings', 'contact'), { email: document.getElementById('admin-email').value, phone: document.getElementById('admin-phone').value, incubatorPhone: document.getElementById('admin-incubator-phone').value, fax: document.getElementById('admin-fax').value });
-                showToast('success', currentLang === 'ar' ? 'تم حفظ معلومات الاتصال' : 'Enregistré');
-            } catch (e) {
-                showToast('error', e.message); 
-            } finally {
-                showLoading(false);
-            }
+            await setDoc(doc(db, 'settings', 'contact'), { email: document.getElementById('admin-email').value, phone: document.getElementById('admin-phone').value, incubatorPhone: document.getElementById('admin-incubator-phone').value, fax: document.getElementById('admin-fax').value });
+            showToast('success', currentLang === 'ar' ? 'تم حفظ معلومات الاتصال' : 'Enregistré');
+            showLoading(false);
         }
 
         async function savePrivacy() {
             showLoading(true);
-            try {
-                await setDoc(doc(db, 'settings', 'privacy'), { 
-                    privacy_ar: document.getElementById('privacy-text-ar').value, 
-                    privacy_fr: document.getElementById('privacy-text-fr').value, 
-                    about_ar: document.getElementById('about-text-ar').value, 
-                    about_fr: document.getElementById('about-text-fr').value,
-                    mapUrl: document.getElementById('admin-map-url').value
-                });
-                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
-            } catch (e) {
-                showToast('error', e.message); 
-            } finally {
-                showLoading(false);
-            }
+            await setDoc(doc(db, 'settings', 'privacy'), { 
+                privacy_ar: document.getElementById('privacy-text-ar').value, 
+                privacy_fr: document.getElementById('privacy-text-fr').value, 
+                about_ar: document.getElementById('about-text-ar').value, 
+                about_fr: document.getElementById('about-text-fr').value,
+                mapUrl: document.getElementById('admin-map-url').value
+            });
+            showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+            showLoading(false);
         }
         async function deleteReport(id) { if (confirm('متأكد من الحذف؟')) await deleteDoc(doc(db, 'reports', id)); }
 
