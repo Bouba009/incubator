@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- تهيئة النظام -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
@@ -85,7 +86,7 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
         }
 
-        /* الشاشة الافتتاحية */
+        /* الشاشة الافتتاحية (Splash Screen) */
         .splash-screen {
             position: fixed; inset: 0; z-index: 99999;
             background: #ffffff;
@@ -203,13 +204,40 @@
         .map-container { width: 100%; height: 250px; border-radius: var(--radius-lg); overflow: hidden; border: 2px solid rgba(124, 58, 237, 0.2); }
         .map-container iframe { width: 100%; height: 100%; border: none; }
 
-        /* صفحات العرض المستقلة */
-        .content-page-wrapper { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
-        .content-page { background: white; padding: 3rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); margin-bottom: 3rem; }
-        .content-page h2 { color: var(--purple-dark); margin-bottom: 1.5rem; font-size: 2rem; font-weight: 900; border-bottom: 2px solid var(--gray-100); padding-bottom: 1rem; }
+        /* ==================== صفحات العرض المستقلة وتفاصيل المقالات المحسنة ==================== */
+        .content-page-wrapper { 
+            max-width: 1200px; 
+            width: 100%; 
+            margin: 0 auto; 
+            padding: 2rem 1.5rem; 
+            box-sizing: border-box;
+        }
+
+        .content-page,
+        .item-details-container { 
+            background: white; 
+            padding: 3rem; 
+            border-radius: var(--radius-xl); 
+            box-shadow: var(--shadow-md); 
+            margin-bottom: 3rem; 
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .content-page h2 { 
+            color: var(--purple-dark); 
+            margin-bottom: 1.5rem; 
+            font-size: 2rem; 
+            font-weight: 900; 
+            border-bottom: 2px solid var(--gray-100); 
+            padding-bottom: 1rem; 
+        }
+
         .page-header-box { text-align: center; margin-bottom: 3rem; }
-        .page-header-box h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: var(--gray-900); margin-bottom: 0.75rem; }
-        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+        .page-header-box h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; color: var(--gray-900); margin-bottom: 0.75rem; }
+        
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
         .custom-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); border: 1px solid var(--gray-200); display: flex; flex-direction: column; cursor: pointer; transition: all 0.3s; }
         .custom-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-color: var(--purple-light); }
         .custom-card-img { width: 100%; height: 220px; object-fit: cover; }
@@ -217,12 +245,89 @@
         .custom-card-tag { align-self: flex-start; padding: 4px 12px; background: rgba(124, 58, 237, 0.1); color: var(--purple-primary); border-radius: 50px; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; }
         .custom-card-title { font-size: 1.25rem; font-weight: 800; color: var(--gray-900); margin-bottom: 0.75rem; }
         .custom-card-desc { font-size: 0.95rem; color: var(--gray-600); line-height: 1.7; flex: 1; margin-bottom: 1.25rem; }
-        .item-details-container { background: white; padding: 3rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
-        .item-details-img { width: 100%; max-height: 480px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 2rem; }
-        .item-details-title { font-size: 2.2rem; font-weight: 900; color: var(--gray-900); margin-bottom: 1.5rem; }
-        .item-details-text { font-size: 1.15rem; line-height: 2; color: var(--gray-800); margin-bottom: 3rem; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 12px; margin: 1.5rem 0; box-shadow: var(--shadow-md); }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        /* تفاصيل المقال والمشروع */
+        .item-details-img { 
+            width: 100%; 
+            max-height: 480px; 
+            object-fit: cover; 
+            border-radius: var(--radius-lg); 
+            margin-bottom: 2rem; 
+            display: block;
+        }
+
+        .item-details-title { 
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem); 
+            font-weight: 900; 
+            color: var(--gray-900); 
+            margin-bottom: 1.25rem; 
+            line-height: 1.4;
+        }
+
+        .item-details-meta { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 1.25rem; 
+            color: var(--gray-600); 
+            font-size: 0.95rem; 
+            margin-bottom: 2rem; 
+            border-bottom: 1px solid var(--gray-200); 
+            padding-bottom: 1rem; 
+        }
+
+        /* تحسين وعرض النص العربي داخل المقال */
+        .item-details-text { 
+            font-size: 1.15rem; 
+            line-height: 1.9; 
+            color: var(--gray-800); 
+            margin-bottom: 3rem; 
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+
+        .item-details-text p {
+            margin-bottom: 1.25rem;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        /* حماية التجاوب مع العناصر المرفوعة عبر المحرر */
+        .item-details-text img {
+            max-width: 100% !important;
+            height: auto !important;
+            border-radius: var(--radius-md);
+            margin: 1.5rem auto;
+            display: block;
+        }
+
+        .item-details-text table {
+            width: 100% !important;
+            max-width: 100%;
+            overflow-x: auto;
+            display: block;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .video-container { 
+            position: relative; 
+            padding-bottom: 56.25%; 
+            height: 0; 
+            overflow: hidden; 
+            max-width: 100%; 
+            border-radius: 12px; 
+            margin: 1.5rem 0; 
+            box-shadow: var(--shadow-md); 
+        }
+        .video-container iframe { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+        }
 
         /* ==================== لوحة الأدمن ==================== */
         .admin-panel { display: none; min-height: 100vh; background: var(--gray-100); width: 100%; position: relative; z-index: 10000; }
@@ -319,7 +424,10 @@
         .spinner { width: 40px; height: 40px; border: 4px solid var(--gray-200); border-top-color: var(--purple-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ==================== استعلامات التجاوب الشاملة (Responsive) ==================== */
         @media (max-width: 1024px) {
+            .content-page-wrapper { padding: 1.5rem 1rem; }
+            .content-page, .item-details-container { padding: 2.2rem 1.75rem; }
             .blog-card { flex: 0 0 calc(50% - 1rem); margin: 0 0.5rem; }
             .nav-center-links { display: none; }
             .admin-sidebar { transform: translateX(100%); }
@@ -328,10 +436,69 @@
             .admin-main { margin-right: 0; margin-left: 0; }
             #admin-menu-toggle { display: flex; }
         }
+
         @media (max-width: 768px) {
+            #pages-view { padding-top: 85px !important; }
+            
+            /* حل مشكلة ضيق مساحة المقال على الهواتف والأجهزة اللوحية */
+            .content-page-wrapper { 
+                padding: 1rem 0.75rem; 
+            }
+            .content-page, 
+            .item-details-container { 
+                padding: 1.5rem 1.15rem; 
+                border-radius: var(--radius-lg);
+                margin-bottom: 2rem;
+            }
+
+            .item-details-img {
+                max-height: 280px;
+                margin-bottom: 1.25rem;
+            }
+
+            .item-details-title {
+                font-size: 1.45rem;
+                margin-bottom: 1rem;
+            }
+
+            .item-details-meta {
+                gap: 0.75rem;
+                font-size: 0.85rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .item-details-text {
+                font-size: 1.05rem; 
+                line-height: 1.85;
+                margin-bottom: 2rem;
+            }
+            .item-details-text p {
+                text-align: start; 
+            }
+
             .blog-card { flex: 0 0 calc(100% - 1rem); margin: 0 0.5rem; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .team-grid, .partners-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+            .items-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+        }
+
+        @media (max-width: 480px) {
+            .content-page-wrapper { 
+                padding: 0.75rem 0.5rem; 
+            }
+            .content-page, 
+            .item-details-container { 
+                padding: 1.25rem 0.85rem; 
+                border-radius: var(--radius-md);
+            }
+            .item-details-img {
+                max-height: 210px;
+                border-radius: var(--radius-md);
+            }
+            .item-details-text {
+                font-size: 1rem;
+                line-height: 1.8;
+            }
         }
     </style>
 </head>
@@ -343,7 +510,7 @@
             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" class="splash-logo" alt="Logo">
             <h2 class="splash-title">حاضنة الأعمال - جامعة البليدة 2</h2>
             <div class="splash-progress-bar"><div class="splash-progress-line"></div></div>
-            <p class="splash-sub">نحو مستقبل مبتكر وريادي</p>
+            <p style="font-weight: 700; color: var(--gray-600);">نحو مستقبل مبتكر وريادي</p>
         </div>
     </div>
 
@@ -507,7 +674,7 @@
                 <div class="item-details-container">
                     <img src="" id="blog-detail-img" class="item-details-img" alt="">
                     <h1 class="item-details-title" id="blog-detail-title"></h1>
-                    <div style="display: flex; gap: 1.5rem; color: var(--gray-600); font-size: 0.95rem; margin-bottom: 2rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem;">
+                    <div class="item-details-meta">
                         <span><i class="fas fa-calendar-alt"></i> <span id="blog-detail-date"></span></span>
                         <span><i class="fas fa-tag"></i> <span id="blog-detail-category"></span></span>
                     </div>
@@ -672,7 +839,7 @@
                 </div>
             </div>
 
-            <!-- التحكم بالإعلان المنبثق (يدعم كود HTML أو التخصيص الكامل) -->
+            <!-- التحكم بالإعلان المنبثق -->
             <div id="admin-popup" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-bullhorn"></i> <span>إعدادات الإعلان المنبثق</span></h3>
@@ -708,7 +875,6 @@
                             <div class="form-group"><label class="form-label">رابط التقديم / الزر</label><input type="url" class="form-input" id="popup-link"></div>
                             <div class="form-group"><label class="form-label">نص زر التقديم</label><input type="text" class="form-input" id="popup-btn-text" placeholder="اكتشف المزيد"></div>
                             
-                            <!-- تخصيص الألوان والخلفية والحجم -->
                             <div class="form-group"><label class="form-label">لون خلفية الإعلان</label><input type="color" class="form-input" style="height: 48px; padding: 4px;" id="popup-bg-color" value="#ffffff"></div>
                             <div class="form-group"><label class="form-label">لون النصوص</label><input type="color" class="form-input" style="height: 48px; padding: 4px;" id="popup-text-color" value="#111827"></div>
                             <div class="form-group"><label class="form-label">حجم خط العنوان (px)</label><input type="number" class="form-input" id="popup-font-size" value="28"></div>
@@ -1145,7 +1311,6 @@
                     window.addEventListener('hashchange', handleRouting);
                     handleRouting();
 
-                    // إخفاء الشاشة الافتتاحية بعد اكتمال التحميل
                     handleSplashScreen();
                     checkAndShowAdPopup();
                 }
@@ -1178,7 +1343,7 @@
             showLoading(false);
         }
 
-        /* ==================== محرر النصوص الغني وإدراج الفيديو ==================== */
+        /* ==================== محرر النصوص وإدراج الفيديو ==================== */
         function setupRichTextToolbars() {
             document.querySelectorAll('.rich-editor-toolbar').forEach(toolbar => {
                 const targetId = toolbar.getAttribute('data-target');
@@ -1269,7 +1434,6 @@
             const urlParams = new URLSearchParams(queryString || '');
             let path = pathWithSlash || '/';
 
-            // إذا كان الرابط يبدأ بمعرف قسم داخلي
             if (path.startsWith('/#') || (!path.startsWith('/') && !path.startsWith('admin02'))) {
                 path = '/';
             }
