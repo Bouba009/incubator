@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -9,12 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- تهيئة Firebase -->
+    <!-- تهيئة النظام -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
         import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBUd67AkzJjiQ7DzQZOHOI7fci_4GpjKlQ",
@@ -30,11 +30,14 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
+        const auth = getAuth(app);
 
         window.firebaseDB = db;
         window.firebaseStorage = storage;
+        window.firebaseAuth = auth;
         window.firestoreModules = { collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp };
         window.storageModules = { ref, uploadBytes, getDownloadURL };
+        window.authModules = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
     </script>
 
     <style>
@@ -107,11 +110,15 @@
         }
         .navbar.scrolled { box-shadow: var(--shadow-lg); background: rgba(255, 255, 255, 0.98); }
         .navbar-container { max-width: 1400px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; align-items: center; justify-content: space-between; }
-        .logo-section { display: flex; align-items: center; gap: 1rem; }
+        .logo-section { display: flex; align-items: center; gap: 1rem; cursor: pointer; }
         .logo-img { height: 55px; width: auto; transition: transform 0.3s ease; }
         .logo-img:hover { transform: scale(1.05); }
         .logo-text { font-weight: 900; font-size: 1.2rem; background: var(--gradient-mixed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
+        .nav-center-links { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-center-link { text-decoration: none; color: var(--gray-700); font-weight: 700; font-size: 1rem; transition: color 0.3s ease; }
+        .nav-center-link:hover, .nav-center-link.active { color: var(--purple-primary); }
+
         .lang-switcher { display: flex; background: var(--gray-100); border-radius: 50px; padding: 4px; gap: 4px; }
         .lang-btn { padding: 6px 16px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.3s ease; background: transparent; color: var(--gray-600); font-family: inherit; letter-spacing: 1px; }
         .lang-btn.active { background: var(--gradient-purple); color: white; box-shadow: var(--shadow-sm); }
@@ -217,7 +224,7 @@
         .footer-title::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: var(--purple-primary); border-radius: 2px; }
         body.fr-mode .footer-title::after { right: auto; left: 0; }
         .footer-links { display: flex; flex-direction: column; gap: 0.75rem; }
-        .footer-link { color: rgba(255,255,255,0.8); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease; font-weight: 600; }
+        .footer-link { color: rgba(255,255,255,0.8); text-decoration: none; display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease; font-weight: 600; cursor: pointer; }
         .footer-link:hover { color: var(--orange-primary); transform: translateX(-5px); }
         body.fr-mode .footer-link:hover { transform: translateX(5px); }
         .footer-link i { color: var(--purple-light); }
@@ -232,17 +239,37 @@
         .map-container { width: 100%; height: 250px; border-radius: var(--radius-lg); overflow: hidden; margin-top: 1rem; border: 2px solid rgba(124, 58, 237, 0.2); }
         .map-container iframe { width: 100%; height: 100%; border: none; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal { background: white; border-radius: var(--radius-xl); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9) translateY(20px); transition: all 0.3s ease; box-shadow: var(--shadow-xl); }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-        .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
-        .modal-title { font-size: 1.5rem; font-weight: 900; color: var(--gray-900); }
-        .modal-close { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--gray-100); color: var(--gray-600); cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
-        .modal-close:hover { background: #FEE2E2; color: #EF4444; }
-        .modal-body { padding: 2rem; }
-        .modal-image { width: 100%; height: 350px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 1.5rem; }
-        .modal-content { font-size: 1.1rem; line-height: 1.8; color: var(--gray-700); font-weight: 500; }
+        /* صفحات المحتوى المستقلة */
+        .content-page-wrapper { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .content-page { background: white; padding: 3rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); margin-bottom: 3rem; }
+        .content-page h2 { color: var(--purple-dark); margin-bottom: 1.5rem; font-size: 2rem; font-weight: 900; border-bottom: 2px solid var(--gray-100); padding-bottom: 1rem; }
+        .content-page p { color: var(--gray-700); line-height: 1.8; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem; }
+
+        /* شبكات العرض لصفحات: أعمالنا، المدونة، التمويلات */
+        .page-header-box { text-align: center; margin-bottom: 3rem; }
+        .page-header-box h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: var(--gray-900); margin-bottom: 0.75rem; }
+        .page-header-box p { font-size: 1.15rem; color: var(--gray-600); max-width: 700px; margin: 0 auto; font-weight: 600; }
+
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+        .custom-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); transition: all 0.4s ease; border: 1px solid var(--gray-200); display: flex; flex-direction: column; cursor: pointer; }
+        .custom-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-color: var(--purple-light); }
+        .custom-card-img { width: 100%; height: 220px; object-fit: cover; }
+        .custom-card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .custom-card-tag { align-self: flex-start; padding: 4px 12px; background: rgba(124, 58, 237, 0.1); color: var(--purple-primary); border-radius: 50px; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; }
+        .custom-card-title { font-size: 1.25rem; font-weight: 800; color: var(--gray-900); margin-bottom: 0.75rem; line-height: 1.4; }
+        .custom-card-desc { font-size: 0.95rem; color: var(--gray-600); line-height: 1.7; flex: 1; margin-bottom: 1.25rem; }
+        .custom-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--gray-100); padding-top: 1rem; }
+        .custom-card-btn { color: var(--purple-primary); font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .custom-card-btn:hover { color: var(--orange-primary); }
+
+        .item-details-container { background: white; padding: 3rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+        .item-details-img { width: 100%; max-height: 480px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
+        .item-details-title { font-size: 2.2rem; font-weight: 900; color: var(--gray-900); margin-bottom: 1.5rem; line-height: 1.3; }
+        .item-details-meta { display: flex; gap: 1.5rem; color: var(--gray-600); font-size: 0.95rem; margin-bottom: 2rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; }
+        .item-details-text { font-size: 1.15rem; line-height: 2; color: var(--gray-800); white-space: pre-line; margin-bottom: 3rem; }
+
+        .suggestions-slider-wrap { margin-top: 4rem; padding-top: 3rem; border-top: 2px solid var(--gray-100); }
+        .suggestions-title { font-size: 1.6rem; font-weight: 900; color: var(--gray-900); margin-bottom: 2rem; }
 
         /* ==================== لوحة تحكم الأدمن ==================== */
         .admin-panel { display: none; min-height: 100vh; background: var(--gray-100); }
@@ -264,7 +291,7 @@
         body.fr-mode .admin-main { margin-right: 0; margin-left: 280px; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--gray-200); }
         .admin-title { font-size: 1.8rem; font-weight: 900; color: var(--gray-900); }
-        .admin-logout { padding: 0.625rem 1.5rem; background: #FEE2E2; color: #EF4444; border: none; border-radius: var(--radius-md); font-weight: 800; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+        .admin-logout { padding: 0.625rem 1.5rem; background: #FEE2E2; color: #EF4444; border: none; border-radius: var(--radius-md); font-weight: 800; cursor: pointer; transition: all 0.3s ease; font-family: inherit; display: inline-flex; align-items: center; gap: 0.5rem; }
         .admin-logout:hover { background: #EF4444; color: white; }
 
         #admin-menu-toggle { display: none; width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--gradient-purple); color: white; cursor: pointer; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-md); }
@@ -310,11 +337,11 @@
         .table-btn-delete { background: #FEE2E2; color: #EF4444; }
         .table-btn-delete:hover { background: #EF4444; color: white; }
 
-        .login-container { max-width: 400px; width: 100%; background: white; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-xl); text-align: center; }
+        .login-container { max-width: 420px; width: 100%; background: white; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-xl); text-align: center; }
         .login-logo { height: 80px; margin-bottom: 1.5rem; }
         .login-title { font-size: 1.6rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.5rem; }
-        .login-subtitle { color: var(--gray-600); margin-bottom: 2rem; font-weight: 600; }
-        .login-input { width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; margin-bottom: 1rem; text-align: center; letter-spacing: 2px; font-weight: 700; }
+        .login-subtitle { color: var(--gray-600); margin-bottom: 2rem; font-weight: 600; font-size: 0.95rem; }
+        .login-input { width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; margin-bottom: 1rem; font-weight: 600; }
         .login-input:focus { outline: none; border-color: var(--purple-primary); }
         .login-error { color: #EF4444; font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; display: none; }
         .login-error.show { display: block; }
@@ -331,13 +358,19 @@
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .loading-overlay.active { opacity: 1; visibility: visible; }
 
-        .content-page { background: white; padding: 3rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); max-width: 900px; margin: 2rem auto; }
-        .content-page h2 { color: var(--purple-dark); margin-bottom: 1.5rem; font-size: 2rem; font-weight: 900; border-bottom: 2px solid var(--gray-100); padding-bottom: 1rem; }
-        .content-page p { color: var(--gray-700); line-height: 1.8; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { background: white; border-radius: var(--radius-xl); max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9) translateY(20px); transition: all 0.3s ease; box-shadow: var(--shadow-xl); }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
+        .modal-title { font-size: 1.5rem; font-weight: 900; color: var(--gray-900); }
+        .modal-close { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--gray-100); color: var(--gray-600); cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
+        .modal-close:hover { background: #FEE2E2; color: #EF4444; }
+        .modal-body { padding: 2rem; }
 
-        /* الشاشات المتوسطة والصغيرة */
         @media (max-width: 1024px) {
             .blog-card { flex: 0 0 calc(50% - 1rem); margin: 0 0.5rem; }
+            .nav-center-links { display: none; }
             .admin-sidebar { transform: translateX(100%); }
             body.fr-mode .admin-sidebar { transform: translateX(-100%); }
             .admin-sidebar.open { transform: translateX(0); }
@@ -355,68 +388,77 @@
             .stat-icon { width: 50px; height: 50px; font-size: 1.4rem; }
             .stat-number { font-size: 2.2rem; }
             .stat-label { font-size: 0.9rem; }
-            
-            /* فريق العمل - شخصين في كل سطر للهواتف */
             .team-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
             .team-image-wrapper { width: 120px; height: 120px; }
             .team-name { font-size: 1.05rem; }
             .team-role { font-size: 0.85rem; }
-
-            /* الشركاء - شركتين في كل سطر للهواتف */
             .partners-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
             .partner-logo { width: 100%; height: 80px; }
-
             .footer-grid { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; text-align: center; }
             .form-grid { grid-template-columns: 1fr; }
             .admin-stats-grid { grid-template-columns: 1fr; }
+            .content-page { padding: 1.5rem; }
+            .item-details-container { padding: 1.5rem; }
         }
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
             .stat-number { font-size: 1.8rem; }
             .stat-label { font-size: 0.8rem; }
-            .content-page { padding: 1.5rem; margin: 1rem; }
             .team-image-wrapper { width: 100px; height: 100px; }
         }
     </style>
 </head>
 <body>
-    <!-- الموقع العام للزوار -->
-    <div id="public-site">
-        <nav class="navbar" id="navbar">
-            <div class="navbar-container">
-                <div class="logo-section">
-                    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Menu"><i class="fas fa-bars"></i></button>
-                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="logo-img" id="nav-logo">
-                    <span class="logo-text" data-ar="حاضنة الأعمال" data-fr="Incubateur">حاضنة الأعمال</span>
-                </div>
-                <div class="nav-controls">
-                    <div class="lang-switcher">
-                        <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar">AR</button>
-                        <button class="lang-btn" onclick="switchLang('fr')" id="btn-fr">FR</button>
-                    </div>
-                </div>
-            </div>
-        </nav>
 
-        <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-        <div class="side-menu" id="sideMenu">
-            <div class="side-menu-header">
-                <span class="side-menu-title" data-ar="القائمة" data-fr="Menu">القائمة</span>
-                <button class="close-menu" onclick="toggleMenu()"><i class="fas fa-times"></i></button>
+    <!-- القائمة العلوية الرئيسية -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <div class="logo-section" onclick="navigateTo('/')">
+                <button class="menu-toggle" onclick="event.stopPropagation(); toggleMenu();" aria-label="Menu"><i class="fas fa-bars"></i></button>
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="logo-img" id="nav-logo">
+                <span class="logo-text" data-ar="حاضنة الأعمال" data-fr="Incubateur">حاضنة الأعمال</span>
             </div>
-            <div class="menu-links">
-                <a href="#hero" class="menu-link" onclick="toggleMenu()"><i class="fas fa-home"></i><span data-ar="الرئيسية" data-fr="Accueil">الرئيسية</span></a>
-                <a href="#stats" class="menu-link" onclick="toggleMenu()"><i class="fas fa-chart-line"></i><span data-ar="إنجازاتنا" data-fr="Nos Réalisations">إنجازاتنا</span></a>
-                <a href="#works" class="menu-link" onclick="toggleMenu()"><i class="fas fa-briefcase"></i><span data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span></a>
-                <a href="#partners" class="menu-link" onclick="toggleMenu()"><i class="fas fa-handshake"></i><span data-ar="شركاؤنا" data-fr="Nos Partenaires">شركاؤنا</span></a>
-                <a href="#team" class="menu-link" onclick="toggleMenu()"><i class="fas fa-users"></i><span data-ar="فريقنا" data-fr="Notre Équipe">فريقنا</span></a>
-                <a href="#university" class="menu-link" onclick="toggleMenu()"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></a>
-                <a href="#contact" class="menu-link" onclick="toggleMenu()"><i class="fas fa-envelope"></i><span data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</span></a>
-                <a href="#" class="menu-link" onclick="openReportModal(); toggleMenu(); return false;"><i class="fas fa-exclamation-triangle"></i><span data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</span></a>
+
+            <div class="nav-center-links">
+                <a href="#/" class="nav-center-link" data-ar="الرئيسية" data-fr="Accueil">الرئيسية</a>
+                <a href="#/nostravaux" class="nav-center-link" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</a>
+                <a href="#/blogs" class="nav-center-link" data-ar="المدونة" data-fr="Blog">المدونة</a>
+                <a href="#/financement" class="nav-center-link" data-ar="التمويلات" data-fr="Financement">التمويلات</a>
+            </div>
+
+            <div class="nav-controls">
+                <div class="lang-switcher">
+                    <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar">AR</button>
+                    <button class="lang-btn" onclick="switchLang('fr')" id="btn-fr">FR</button>
+                </div>
             </div>
         </div>
+    </nav>
 
+    <!-- القائمة الجانبية للشاشات المحمولة -->
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <span class="side-menu-title" data-ar="القائمة" data-fr="Menu">القائمة</span>
+            <button class="close-menu" onclick="toggleMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="menu-links">
+            <a href="#/" class="menu-link" onclick="toggleMenu()"><i class="fas fa-home"></i><span data-ar="الرئيسية" data-fr="Accueil">الرئيسية</span></a>
+            <a href="#/nostravaux" class="menu-link" onclick="toggleMenu()"><i class="fas fa-briefcase"></i><span data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span></a>
+            <a href="#/blogs" class="menu-link" onclick="toggleMenu()"><i class="fas fa-newspaper"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></a>
+            <a href="#/financement" class="menu-link" onclick="toggleMenu()"><i class="fas fa-coins"></i><span data-ar="التمويلات" data-fr="Financement">التمويلات</span></a>
+            <a href="#stats" class="menu-link" onclick="toggleMenu(); if(currentRoute !== '/') navigateTo('/');"><i class="fas fa-chart-line"></i><span data-ar="إنجازاتنا" data-fr="Nos Réalisations">إنجازاتنا</span></a>
+            <a href="#partners" class="menu-link" onclick="toggleMenu(); if(currentRoute !== '/') navigateTo('/');"><i class="fas fa-handshake"></i><span data-ar="شركاؤنا" data-fr="Nos Partenaires">شركاؤنا</span></a>
+            <a href="#team" class="menu-link" onclick="toggleMenu(); if(currentRoute !== '/') navigateTo('/');"><i class="fas fa-users"></i><span data-ar="فريقنا" data-fr="Notre Équipe">فريقنا</span></a>
+            <a href="#university" class="menu-link" onclick="toggleMenu(); if(currentRoute !== '/') navigateTo('/');"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></a>
+            <a href="#contact" class="menu-link" onclick="toggleMenu(); if(currentRoute !== '/') navigateTo('/');"><i class="fas fa-envelope"></i><span data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</span></a>
+            <a href="#" class="menu-link" onclick="openReportModal(); toggleMenu(); return false;"><i class="fas fa-exclamation-triangle"></i><span data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</span></a>
+        </div>
+    </div>
+
+    <!-- الصفحة الرئيسية للموقع -->
+    <div id="public-site">
         <section class="hero" id="hero">
             <div class="hero-bg" id="heroBg" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80')"></div>
             <div class="hero-overlay"></div>
@@ -449,18 +491,23 @@
             </div>
         </section>
 
+        <!-- سلايدر أعمالنا في الرئيسية -->
         <section class="blog-section" id="works">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span>
-                <h2 class="section-title" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</h2>
+                <h2 class="section-title" data-ar="أبرز مشاريعنا وإنجازاتنا" data-fr="Nos Travaux et Réalisations">أبرز مشاريعنا وإنجازاتنا</h2>
+                <div style="margin-top: 0.5rem;">
+                    <a href="#/nostravaux" style="color: var(--purple-primary); font-weight: 800; text-decoration: none;" data-ar="عرض جميع الأعمال ←" data-fr="Voir tous les travaux →">عرض جميع الأعمال ←</a>
+                </div>
             </div>
             <div class="blog-slider-container">
-                <button class="slider-btn slider-next" onclick="moveSlider(1)"><i class="fas fa-chevron-left" id="slider-next-icon"></i></button>
-                <div class="blog-slider" id="blogSlider"></div>
-                <button class="slider-btn slider-prev" onclick="moveSlider(-1)"><i class="fas fa-chevron-right" id="slider-prev-icon"></i></button>
+                <button class="slider-btn slider-next" onclick="moveHomeWorksSlider(1)"><i class="fas fa-chevron-left" id="slider-next-icon"></i></button>
+                <div class="blog-slider" id="homeWorksSlider"></div>
+                <button class="slider-btn slider-prev" onclick="moveHomeWorksSlider(-1)"><i class="fas fa-chevron-right" id="slider-prev-icon"></i></button>
             </div>
         </section>
 
+        <!-- قسم شركاؤنا -->
         <section class="section" id="partners">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="شركاؤنا" data-fr="Nos Partenaires">شركاؤنا</span>
@@ -469,6 +516,7 @@
             <div class="partners-grid" id="partners-grid"></div>
         </section>
 
+        <!-- قسم فريق العمل -->
         <section class="section" id="team">
             <div class="section-header animate-on-scroll">
                 <span class="section-tag" data-ar="فريقنا" data-fr="Notre Équipe">فريقنا</span>
@@ -477,6 +525,7 @@
             <div class="team-grid" id="team-grid"></div>
         </section>
 
+        <!-- قسم الجامعة -->
         <section class="section" id="university">
             <div class="university-section animate-on-scroll">
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="University Logo" class="uni-logo" id="uni-logo">
@@ -484,82 +533,145 @@
                 <div class="uni-links" id="uni-links"></div>
             </div>
         </section>
-
-        <footer class="footer" id="contact">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="footer-logo">
-                    <p class="footer-desc" data-ar="حاضنة الأعمال بجامعة البليدة 2 - نحو مجتمع ريادي مبتكر" data-fr="Incubateur d'Entreprises de l'Université Blida 2 - Vers une Communauté Entrepreneuriale Innovante">حاضنة الأعمال بجامعة البليدة 2 - نحو مجتمع ريادي مبتكر</p>
-                </div>
-                <div>
-                    <h3 class="footer-title" data-ar="روابط سريعة" data-fr="Liens Rapides">روابط سريعة</h3>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link" onclick="showPage('privacy'); return false;"><i class="fas fa-shield-alt"></i><span data-ar="سياسة الخصوصية" data-fr="Politique de Confidentialité">سياسة الخصوصية</span></a>
-                        <a href="#" class="footer-link" onclick="showPage('about'); return false;"><i class="fas fa-info-circle"></i><span data-ar="من نحن" data-fr="Qui Sommes-Nous">من نحن</span></a>
-                        <a href="#" class="footer-link" onclick="openReportModal(); return false;"><i class="fas fa-exclamation-triangle"></i><span data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</span></a>
-                        <a href="#" class="footer-link" onclick="showPage('map'); return false;"><i class="fas fa-map-marker-alt"></i><span data-ar="موقع الحاضنة" data-fr="Localisation de l'Incubateur">موقع الحاضنة</span></a>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="footer-title" data-ar="معلومات الاتصال" data-fr="Informations de Contact">معلومات الاتصال</h3>
-                    <div id="contact-info">
-                        <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-envelope"></i></div><span id="contact-email">contact@incubator-blida2.dz</span></div>
-                        <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-phone"></i></div><span id="contact-phone">+213 000 000 000</span></div>
-                        <div class="footer-contact-item" id="contact-incubator" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-building"></i></div><span id="contact-incubator-phone"></span></div>
-                        <div class="footer-contact-item" id="contact-fax" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-fax"></i></div><span id="contact-fax-number"></span></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="footer-title" data-ar="خريطة الموقع" data-fr="Carte">خريطة الموقع</h3>
-                    <div class="map-container">
-                        <iframe id="footer-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p class="footer-copyright" data-ar="© 2024 حاضنة الأعمال - جامعة البليدة 2. جميع الحقوق محفوظة." data-fr="© 2024 Incubateur - Université Blida 2. Tous Droits Réservés.">© 2024 حاضنة الأعمال - جامعة البليدة 2. جميع الحقوق محفوظة.</p>
-                <div class="footer-social">
-                    <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-        </footer>
     </div>
 
-    <div id="content-pages" style="display:none; padding-top: 100px;">
-        <div class="navbar" style="position: fixed; top: 0; width: 100%; z-index: 1000;">
-            <div class="navbar-container">
-                <div class="logo-section">
-                    <button class="menu-toggle" onclick="goHome()"><i class="fas fa-arrow-right" id="back-icon"></i></button>
-                    <span class="logo-text" data-ar="العودة للموقع" data-fr="Retour">العودة للموقع</span>
+    <!-- حاوية الصفحات المستقلة -->
+    <div id="pages-view" style="display:none; padding-top: 100px;">
+        <div class="content-page-wrapper">
+            
+            <!-- 1. صفحة أعمالنا العامة url/nostravaux -->
+            <div id="page-nostravaux" class="route-page" style="display:none;">
+                <div class="page-header-box">
+                    <span class="section-tag" data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span>
+                    <h1 data-ar="معرض أعمالنا ومشاريعنا" data-fr="Nos Travaux et Projets">معرض أعمالنا ومشاريعنا</h1>
+                    <p data-ar="تعرف على المشاريع والحلول والابتكارات التي تمت مرافقتها واحتضانها في حاضنة جامعة البليدة 2" data-fr="Découvrez les projets, solutions et innovations incubés au sein de notre incubateur">تعرف على المشاريع والحلول والابتكارات التي تمت مرافقتها واحتضانها في حاضنة جامعة البليدة 2</p>
                 </div>
-                <div class="nav-controls">
-                    <div class="lang-switcher">
-                        <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar-page">AR</button>
-                        <button class="lang-btn" onclick="switchLang('fr')" id="btn-fr-page">FR</button>
+                <div class="items-grid" id="all-works-grid"></div>
+            </div>
+
+            <!-- تفاصيل عمل محدد url/nostravaux?id=... -->
+            <div id="page-work-details" class="route-page" style="display:none;">
+                <button class="btn btn-primary" onclick="navigateTo('/nostravaux')" style="margin-bottom: 2rem;">
+                    <i class="fas fa-arrow-right"></i> <span data-ar="العودة لكل الأعمال" data-fr="Retour aux travaux">العودة لكل الأعمال</span>
+                </button>
+                <div class="item-details-container">
+                    <img src="" id="work-detail-img" class="item-details-img" alt="">
+                    <h1 class="item-details-title" id="work-detail-title"></h1>
+                    <div class="item-details-text" id="work-detail-content"></div>
+                </div>
+            </div>
+
+            <!-- 2. صفحة المدونة العامة url/blogs -->
+            <div id="page-blogs" class="route-page" style="display:none;">
+                <div class="page-header-box">
+                    <span class="section-tag" data-ar="المدونة والأخبار" data-fr="Blog & Actualités">المدونة والأخبار</span>
+                    <h1 data-ar="أخبار وبرامج الحاضنة" data-fr="Actualités et Programmes">أخبار وبرامج الحاضنة</h1>
+                    <p data-ar="تابع كل جديد من فعاليات، ورشات تدريبية، مسابقات وإعلانات حصرية خاصة بالحاضنة" data-fr="Suivez toutes les activités, ateliers, concours et annonces de l'incubateur">تابع كل جديد من فعاليات، ورشات تدريبية، مسابقات وإعلانات حصرية خاصة بالحاضنة</p>
+                </div>
+                <div class="items-grid" id="all-blogs-grid"></div>
+            </div>
+
+            <!-- تفاصيل تدوينة / خبر محدد url/blogs?id=... مع اقتراحات في الأسفل -->
+            <div id="page-blog-details" class="route-page" style="display:none;">
+                <button class="btn btn-primary" onclick="navigateTo('/blogs')" style="margin-bottom: 2rem;">
+                    <i class="fas fa-arrow-right"></i> <span data-ar="العودة للمدونة" data-fr="Retour au blog">العودة للمدونة</span>
+                </button>
+                <div class="item-details-container">
+                    <img src="" id="blog-detail-img" class="item-details-img" alt="">
+                    <h1 class="item-details-title" id="blog-detail-title"></h1>
+                    <div class="item-details-meta">
+                        <span><i class="fas fa-calendar-alt"></i> <span id="blog-detail-date"></span></span>
+                        <span><i class="fas fa-tag"></i> <span id="blog-detail-category"></span></span>
+                    </div>
+                    <div class="item-details-text" id="blog-detail-content"></div>
+
+                    <!-- اقتراحات باقي المقالات كسلايدر في الأسفل -->
+                    <div class="suggestions-slider-wrap">
+                        <h3 class="suggestions-title" data-ar="مقالات وبرامج أخرى قد تهمك" data-fr="Autres Articles et Programmes">مقالات وبرامج أخرى قد تهمك</h3>
+                        <div class="blog-slider-container">
+                            <button class="slider-btn slider-next" onclick="moveBlogSuggestionsSlider(1)"><i class="fas fa-chevron-left"></i></button>
+                            <div class="blog-slider" id="blogSuggestionsSlider"></div>
+                            <button class="slider-btn slider-prev" onclick="moveBlogSuggestionsSlider(-1)"><i class="fas fa-chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="content-page" id="privacy-page">
-            <h2 data-ar="سياسة الخصوصية" data-fr="Politique de Confidentialité">سياسة الخصوصية</h2>
-            <div id="privacy-content-ar"></div>
-            <div id="privacy-content-fr" style="display:none;"></div>
-        </div>
-        <div class="content-page" id="about-page">
-            <h2 data-ar="من نحن" data-fr="Qui Sommes-Nous">من نحن</h2>
-            <div id="about-content-ar"></div>
-            <div id="about-content-fr" style="display:none;"></div>
-        </div>
-        <div class="content-page" id="map-page">
-            <h2 data-ar="موقع الحاضنة" data-fr="Localisation de l'Incubateur">موقع الحاضنة</h2>
-            <div class="map-container" style="height: 400px;">
-                <iframe id="page-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy" style="width:100%;height:100%;border:none;"></iframe>
+
+            <!-- 3. صفحة التمويلات url/financement -->
+            <div id="page-financement" class="route-page" style="display:none;">
+                <div class="page-header-box">
+                    <span class="section-tag" data-ar="فرص الدعم والتمويل" data-fr="Opportunités de Financement">فرص الدعم والتمويل</span>
+                    <h1 data-ar="برامج وآليات تمويل المشاريع" data-fr="Programmes et Financements">برامج وآليات تمويل المشاريع</h1>
+                    <p data-ar="اكتشف الصناديق الاستثمارية، القروض المصغرة، والمنح الداعمة المتاحة لحاملي المشاريع والمؤسسات الناشئة" data-fr="Découvrez les fonds d'investissement, subventions et opportunités d'accompagnement financier pour votre projet">اكتشف الصناديق الاستثمارية، القروض المصغرة، والمنح الداعمة المتاحة لحاملي المشاريع والمؤسسات الناشئة</p>
+                </div>
+                <div class="items-grid" id="all-funding-grid"></div>
             </div>
+
+            <!-- الصفحات الثابتة (سياسة الخصوصية، من نحن، الخريطة) -->
+            <div class="content-page route-page" id="privacy-page" style="display:none;">
+                <h2 data-ar="سياسة الخصوصية" data-fr="Politique de Confidentialité">سياسة الخصوصية</h2>
+                <div id="privacy-content-ar"></div>
+                <div id="privacy-content-fr" style="display:none;"></div>
+            </div>
+            <div class="content-page route-page" id="about-page" style="display:none;">
+                <h2 data-ar="من نحن" data-fr="Qui Sommes-Nous">من نحن</h2>
+                <div id="about-content-ar"></div>
+                <div id="about-content-fr" style="display:none;"></div>
+            </div>
+            <div class="content-page route-page" id="map-page" style="display:none;">
+                <h2 data-ar="موقع الحاضنة" data-fr="Localisation de l'Incubateur">موقع الحاضنة</h2>
+                <div class="map-container" style="height: 450px;">
+                    <iframe id="page-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <!-- الفوتر العام -->
+    <footer class="footer" id="contact">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="footer-logo">
+                <p class="footer-desc" data-ar="حاضنة الأعمال بجامعة البليدة 2 - نحو مجتمع ريادي مبتكر" data-fr="Incubateur d'Entreprises de l'Université Blida 2 - Vers une Communauté Entrepreneuriale Innovante">حاضنة الأعمال بجامعة البليدة 2 - نحو مجتمع ريادي مبتكر</p>
+            </div>
+            <div>
+                <h3 class="footer-title" data-ar="روابط سريعة" data-fr="Liens Rapides">روابط سريعة</h3>
+                <div class="footer-links">
+                    <a href="#/nostravaux" class="footer-link"><i class="fas fa-briefcase"></i><span data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span></a>
+                    <a href="#/blogs" class="footer-link"><i class="fas fa-newspaper"></i><span data-ar="المدونة والأخبار" data-fr="Blog & Actualités">المدونة والأخبار</span></a>
+                    <a href="#/financement" class="footer-link"><i class="fas fa-coins"></i><span data-ar="التمويلات" data-fr="Financement">التمويلات</span></a>
+                    <a href="#/privacy" class="footer-link"><i class="fas fa-shield-alt"></i><span data-ar="سياسة الخصوصية" data-fr="Politique de Confidentialité">سياسة الخصوصية</span></a>
+                    <a href="#/about" class="footer-link"><i class="fas fa-info-circle"></i><span data-ar="من نحن" data-fr="Qui Sommes-Nous">من نحن</span></a>
+                    <a href="#" class="footer-link" onclick="openReportModal(); return false;"><i class="fas fa-exclamation-triangle"></i><span data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</span></a>
+                </div>
+            </div>
+            <div>
+                <h3 class="footer-title" data-ar="معلومات الاتصال" data-fr="Informations de Contact">معلومات الاتصال</h3>
+                <div id="contact-info">
+                    <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-envelope"></i></div><span id="contact-email">contact@incubator-blida2.dz</span></div>
+                    <div class="footer-contact-item"><div class="footer-contact-icon"><i class="fas fa-phone"></i></div><span id="contact-phone">+213 000 000 000</span></div>
+                    <div class="footer-contact-item" id="contact-incubator" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-building"></i></div><span id="contact-incubator-phone"></span></div>
+                    <div class="footer-contact-item" id="contact-fax" style="display:none;"><div class="footer-contact-icon"><i class="fas fa-fax"></i></div><span id="contact-fax-number"></span></div>
+                </div>
+            </div>
+            <div>
+                <h3 class="footer-title" data-ar="خريطة الموقع" data-fr="Carte">خريطة الموقع</h3>
+                <div class="map-container">
+                    <iframe id="footer-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copyright" data-ar="© 2024 حاضنة الأعمال - جامعة البليدة 2. جميع الحقوق محفوظة." data-fr="© 2024 Incubateur - Université Blida 2. Tous Droits Réservés.">© 2024 حاضنة الأعمال - جامعة البليدة 2. جميع الحقوق محفوظة.</p>
+            <div class="footer-social">
+                <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
 
     <!-- لوحة تحكم الأدمن -->
     <div class="admin-panel" id="admin-panel">
@@ -572,21 +684,21 @@
                 <button class="admin-nav-item active" data-section="dashboard" onclick="showAdminSection('dashboard', this)"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></button>
                 <button class="admin-nav-item" data-section="banner" onclick="showAdminSection('banner', this)"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></button>
                 <button class="admin-nav-item" data-section="stats" onclick="showAdminSection('stats', this)"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></button>
-                <button class="admin-nav-item" data-section="blog" onclick="showAdminSection('blog', this)"><i class="fas fa-blog"></i><span data-ar="المدونة" data-fr="Blog">المدونة</span></button>
+                <button class="admin-nav-item" data-section="works" onclick="showAdminSection('works', this)"><i class="fas fa-briefcase"></i><span data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span></button>
+                <button class="admin-nav-item" data-section="blogs" onclick="showAdminSection('blogs', this)"><i class="fas fa-newspaper"></i><span data-ar="المدونة والأخبار" data-fr="Blog & Actualités">المدونة والأخبار</span></button>
+                <button class="admin-nav-item" data-section="funding" onclick="showAdminSection('funding', this)"><i class="fas fa-coins"></i><span data-ar="التمويلات" data-fr="Financements">التمويلات</span></button>
                 <button class="admin-nav-item" data-section="partners" onclick="showAdminSection('partners', this)"><i class="fas fa-handshake"></i><span data-ar="الشركاء" data-fr="Partenaires">الشركاء</span></button>
                 <button class="admin-nav-item" data-section="team" onclick="showAdminSection('team', this)"><i class="fas fa-users"></i><span data-ar="الفريق" data-fr="Équipe">الفريق</span></button>
                 <button class="admin-nav-item" data-section="university" onclick="showAdminSection('university', this)"><i class="fas fa-university"></i><span data-ar="الجامعة" data-fr="Université">الجامعة</span></button>
                 <button class="admin-nav-item" data-section="contact" onclick="showAdminSection('contact', this)"><i class="fas fa-address-book"></i><span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></button>
-                <button class="admin-nav-item" data-section="privacy" onclick="showAdminSection('privacy', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية و الموقع" data-fr="Confidentialité">الخصوصية والموقع</span></button>
+                <button class="admin-nav-item" data-section="privacy" onclick="showAdminSection('privacy', this)"><i class="fas fa-shield-alt"></i><span data-ar="الخصوصية والموقع" data-fr="Confidentialité">الخصوصية والموقع</span></button>
                 <button class="admin-nav-item" data-section="reports" onclick="showAdminSection('reports', this)"><i class="fas fa-exclamation-circle"></i><span data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</span></button>
             </div>
         </div>
         <div class="admin-main" id="admin-main">
             <div class="admin-header">
                 <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button class="menu-toggle" id="admin-menu-toggle" onclick="toggleAdminMenu()" aria-label="Menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                    <button class="menu-toggle" id="admin-menu-toggle" onclick="toggleAdminMenu()" aria-label="Menu"><i class="fas fa-bars"></i></button>
                     <h1 class="admin-title" id="admin-section-title" data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</h1>
                 </div>
                 <button class="admin-logout" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i><span data-ar="خروج" data-fr="Déconnexion">خروج</span></button>
@@ -595,17 +707,17 @@
             <!-- لوحة القيادة -->
             <div id="admin-dashboard" class="admin-section-content">
                 <div class="admin-stats-grid">
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: var(--gradient-purple);"><i class="fas fa-user-plus"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-registrations">0</div><div class="admin-stat-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions (Événement)">التسجيلات (في الحدث)</div></div></div>
+                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: var(--gradient-purple);"><i class="fas fa-user-plus"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-registrations">0</div><div class="admin-stat-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions">التسجيلات (في الحدث)</div></div></div>
                     <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i class="fas fa-eye"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-daily">0</div><div class="admin-stat-label" data-ar="الزيارات اليومية" data-fr="Visites Aujourd'hui">الزيارات اليومية</div></div></div>
                     <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-chart-line"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-monthly">0</div><div class="admin-stat-label" data-ar="الزيارات الشهرية" data-fr="Visites ce Mois">الزيارات الشهرية</div></div></div>
                     <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626);"><i class="fas fa-exclamation-triangle"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-reports">0</div><div class="admin-stat-label" data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</div></div></div>
                 </div>
             </div>
 
-            <!-- البانر / الحدث -->
+            <!-- البانر والحدث -->
             <div id="admin-banner" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-image"></i> <span data-ar="إضافة حدث أو دورة (البانر)" data-fr="Événement/Bannière">إضافة حدث أو دورة</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-image"></i> <span data-ar="إضافة حدث أو دورة (البانر الرئيسي)" data-fr="Événement/Bannière Principale">إضافة حدث أو دورة</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (عربي)" data-fr="Titre (AR)">عنوان الحدث (عربي)</label><input type="text" class="form-input" id="banner-title-ar"></div>
                         <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (فرنسي)" data-fr="Titre (FR)">عنوان الحدث (فرنسي)</label><input type="text" class="form-input" id="banner-title-fr"></div>
@@ -613,8 +725,8 @@
                         <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="وصف (فرنسي)" data-fr="Description (FR)">وصف (فرنسي)</label><textarea class="form-textarea" id="banner-desc-fr"></textarea></div>
                         <div class="form-group"><label class="form-label" data-ar="نص الزر (عربي)" data-fr="Texte du Bouton (AR)">نص الزر (عربي)</label><input type="text" class="form-input" id="banner-btn-ar"></div>
                         <div class="form-group"><label class="form-label" data-ar="نص الزر (فرنسي)" data-fr="Texte du Bouton (FR)">نص الزر (فرنسي)</label><input type="text" class="form-input" id="banner-btn-fr"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رابط التسجيل للزر (تغيير الرابط يصفر الإحصائيات)" data-fr="Lien du Bouton">رابط التسجيل للزر</label><input type="url" class="form-input" id="banner-link"></div>
-                        <div class="form-group"><label class="form-label" data-ar="صورة الخلفية المظلمة" data-fr="Image de Fond">صورة الخلفية المظلمة</label><input type="file" class="form-file" id="banner-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label" data-ar="رابط التسجيل للزر" data-fr="Lien d'inscription">رابط التسجيل للزر</label><input type="url" class="form-input" id="banner-link"></div>
+                        <div class="form-group"><label class="form-label" data-ar="صورة الخلفية" data-fr="Image de Fond">صورة الخلفية</label><input type="file" class="form-file" id="banner-image" accept="image/*"></div>
                     </div>
                     <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
                         <button class="btn btn-primary" onclick="saveBanner()"><i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span></button>
@@ -639,25 +751,78 @@
                 </div>
             </div>
 
-            <!-- المدونة / أعمالنا -->
-            <div id="admin-blog" class="admin-section-content" style="display:none;">
+            <!-- إدارة أعمالنا -->
+            <div id="admin-works" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل عمل (أعمالنا)" data-fr="Ajouter/Modifier un Travail">إضافة أو تعديل عمل</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل عمل" data-fr="Ajouter/Modifier un Travail">إضافة أو تعديل عمل</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="العنوان (عربي)" data-fr="Titre (AR)">العنوان (عربي)</label><input type="text" class="form-input" id="blog-title-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="العنوان (فرنسي)" data-fr="Titre (FR)">العنوان (فرنسي)</label><input type="text" class="form-input" id="blog-title-fr"></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="المحتوى (عربي)" data-fr="Contenu (AR)">المحتوى (عربي)</label><textarea class="form-textarea" id="blog-content-ar"></textarea></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="المحتوى (فرنسي)" data-fr="Contenu (FR)">المحتوى (فرنسي)</label><textarea class="form-textarea" id="blog-content-fr"></textarea></div>
-                        <div class="form-group"><label class="form-label" data-ar="صورة المقال" data-fr="Image">صورة المقال</label><input type="file" class="form-file" id="blog-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label" data-ar="العنوان (عربي)" data-fr="Titre (AR)">العنوان (عربي)</label><input type="text" class="form-input" id="work-title-ar"></div>
+                        <div class="form-group"><label class="form-label" data-ar="العنوان (فرنسي)" data-fr="Titre (FR)">العنوان (فرنسي)</label><input type="text" class="form-input" id="work-title-fr"></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="التفاصيل والمحتوى (عربي)" data-fr="Contenu (AR)">المحتوى (عربي)</label><textarea class="form-textarea" id="work-content-ar"></textarea></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="التفاصيل والمحتوى (فرنسي)" data-fr="Contenu (FR)">المحتوى (فرنسي)</label><textarea class="form-textarea" id="work-content-fr"></textarea></div>
+                        <div class="form-group"><label class="form-label" data-ar="صورة المشروع" data-fr="Image">صورة المشروع</label><input type="file" class="form-file" id="work-image" accept="image/*"></div>
                     </div>
-                    <button class="btn btn-success" id="btn-add-blog" style="margin-top: 1.5rem;" onclick="addBlog()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
+                    <button class="btn btn-success" id="btn-add-work" style="margin-top: 1.5rem;" onclick="addWork()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="الأعمال السابقة" data-fr="Travaux Précédents">الأعمال السابقة</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="قائمة الأعمال" data-fr="Liste des Travaux">قائمة الأعمال</span></h3>
                     <div class="admin-table-container">
                         <table class="admin-table">
                             <thead><tr><th data-ar="الصورة" data-fr="Image">الصورة</th><th data-ar="العنوان" data-fr="Titre">العنوان</th><th data-ar="الإجراءات" data-fr="Actions">الإجراءات</th></tr></thead>
-                            <tbody id="admin-blog-list"></tbody>
+                            <tbody id="admin-works-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إدارة المدونة والأخبار -->
+            <div id="admin-blogs" class="admin-section-content" style="display:none;">
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-newspaper"></i> <span data-ar="إضافة أو تعديل مقال / برنامج بالمدونة" data-fr="Ajouter/Modifier un Article">إضافة أو تعديل مقال بالمدونة</span></h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label class="form-label" data-ar="العنوان (عربي)" data-fr="Titre (AR)">العنوان (عربي)</label><input type="text" class="form-input" id="post-title-ar"></div>
+                        <div class="form-group"><label class="form-label" data-ar="العنوان (فرنسي)" data-fr="Titre (FR)">العنوان (فرنسي)</label><input type="text" class="form-input" id="post-title-fr"></div>
+                        <div class="form-group"><label class="form-label" data-ar="التصنيف (عربي)" data-fr="Catégorie (AR)">التصنيف (عربي)</label><input type="text" class="form-input" id="post-cat-ar" placeholder="برامج، ورشات، فعاليات..."></div>
+                        <div class="form-group"><label class="form-label" data-ar="التصنيف (فرنسي)" data-fr="Catégorie (FR)">التصنيف (فرنسي)</label><input type="text" class="form-input" id="post-cat-fr" placeholder="Programmes, Ateliers..."></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="محتوى المقال (عربي)" data-fr="Contenu (AR)">محتوى المقال (عربي)</label><textarea class="form-textarea" id="post-content-ar" style="min-height: 150px;"></textarea></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="محتوى المقال (فرنسي)" data-fr="Contenu (FR)">محتوى المقال (فرنسي)</label><textarea class="form-textarea" id="post-content-fr" style="min-height: 150px;"></textarea></div>
+                        <div class="form-group"><label class="form-label" data-ar="الصورة البارزة" data-fr="Image">الصورة البارزة</label><input type="file" class="form-file" id="post-image" accept="image/*"></div>
+                    </div>
+                    <button class="btn btn-success" id="btn-add-post" style="margin-top: 1.5rem;" onclick="addBlogPost()"><i class="fas fa-plus"></i><span data-ar="نشر المقال" data-fr="Publier">نشر المقال</span></button>
+                </div>
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="المقالات والبرامج المنشورة" data-fr="Articles Publiés">المقالات والبرامج المنشورة</span></h3>
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead><tr><th data-ar="الصورة" data-fr="Image">الصورة</th><th data-ar="العنوان" data-fr="Titre">العنوان</th><th data-ar="التصنيف" data-fr="Catégorie">التصنيف</th><th data-ar="الإجراءات" data-fr="Actions">الإجراءات</th></tr></thead>
+                            <tbody id="admin-posts-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إدارة التمويلات -->
+            <div id="admin-funding" class="admin-section-content" style="display:none;">
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-coins"></i> <span data-ar="إضافة أو تعديل برنامج تمويل" data-fr="Ajouter/Modifier Financement">إضافة برنامج تمويل</span></h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label class="form-label" data-ar="اسم البرنامج / الجهة المانحة (عربي)" data-fr="Nom du Programme (AR)">اسم البرنامج (عربي)</label><input type="text" class="form-input" id="funding-title-ar"></div>
+                        <div class="form-group"><label class="form-label" data-ar="اسم البرنامج / الجهة المانحة (فرنسي)" data-fr="Nom du Programme (FR)">اسم البرنامج (فرنسي)</label><input type="text" class="form-input" id="funding-title-fr"></div>
+                        <div class="form-group"><label class="form-label" data-ar="نوع التمويل (عربي)" data-fr="Type (AR)">نوع التمويل (عربي)</label><input type="text" class="form-input" id="funding-type-ar" placeholder="صندوق استثماري، منحة، قرض..."></div>
+                        <div class="form-group"><label class="form-label" data-ar="نوع التمويل (فرنسي)" data-fr="Type (FR)">نوع التمويل (فرنسي)</label><input type="text" class="form-input" id="funding-type-fr" placeholder="Subvention, Capital Risque..."></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="شروط وتفاصيل التمويل (عربي)" data-fr="Détails (AR)">تفاصيل التمويل (عربي)</label><textarea class="form-textarea" id="funding-desc-ar"></textarea></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="شروط وتفاصيل التمويل (فرنسي)" data-fr="Détails (FR)">تفاصيل التمويل (فرنسي)</label><textarea class="form-textarea" id="funding-desc-fr"></textarea></div>
+                        <div class="form-group"><label class="form-label" data-ar="رابط التقديم أو الموقع الرسمي" data-fr="Lien Officiel">رابط التقديم الرسمي</label><input type="url" class="form-input" id="funding-link"></div>
+                        <div class="form-group"><label class="form-label" data-ar="شعار الجهة أو صورة الدعم" data-fr="Logo / Image">شعار أو صورة</label><input type="file" class="form-file" id="funding-image" accept="image/*"></div>
+                    </div>
+                    <button class="btn btn-success" id="btn-add-funding" style="margin-top: 1.5rem;" onclick="addFunding()"><i class="fas fa-plus"></i><span data-ar="إضافة التمويل" data-fr="Ajouter">إضافة التمويل</span></button>
+                </div>
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-list"></i> <span data-ar="قائمة برامج التمويل" data-fr="Programmes de Financement">قائمة برامج التمويل</span></h3>
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead><tr><th data-ar="الصورة" data-fr="Image">الصورة</th><th data-ar="البرنامج" data-fr="Programme">البرنامج</th><th data-ar="النوع" data-fr="Type">النوع</th><th data-ar="الإجراءات" data-fr="Actions">الإجراءات</th></tr></thead>
+                            <tbody id="admin-funding-list"></tbody>
                         </table>
                     </div>
                 </div>
@@ -666,10 +831,10 @@
             <!-- الشركاء -->
             <div id="admin-partners" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل شريك (لوغو الشركة)" data-fr="Ajouter/Modifier un Partenaire">إضافة أو تعديل شريك</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل شريك" data-fr="Ajouter/Modifier un Partenaire">إضافة أو تعديل شريك</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="اسم الشركة" data-fr="Nom">اسم الشركة</label><input type="text" class="form-input" id="partner-name"></div>
-                        <div class="form-group"><label class="form-label" data-ar="شعار الشركة (اللوغو)" data-fr="Logo">شعار الشركة (اللوغو)</label><input type="file" class="form-file" id="partner-logo" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label" data-ar="شعار الشركة" data-fr="Logo">شعار الشركة</label><input type="file" class="form-file" id="partner-logo" accept="image/*"></div>
                     </div>
                     <button class="btn btn-success" id="btn-add-partner" style="margin-top: 1.5rem;" onclick="addPartner()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
@@ -715,7 +880,7 @@
                     <button class="btn btn-primary" style="margin-top: 1rem;" onclick="saveUniLogo()"><i class="fas fa-save"></i><span data-ar="حفظ الشعار" data-fr="Enregistrer">حفظ الشعار</span></button>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-link"></i> <span data-ar="إضافة أو تعديل رابط جديد" data-fr="Ajouter/Modifier un Lien">إضافة أو تعديل رابط جديد</span></h3>
+                    <h3 class="admin-section-title"><i class="fas fa-link"></i> <span data-ar="إضافة أو تعديل رابط جديد" data-fr="Ajouter/Modifier un Lien">إضافة رابط جديد</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="عنوان الرابط (عربي)" data-fr="Titre (AR)">عنوان الرابط (عربي)</label><input type="text" class="form-input" id="uni-link-title-ar"></div>
                         <div class="form-group"><label class="form-label" data-ar="عنوان الرابط (فرنسي)" data-fr="Titre (FR)">عنوان الرابط (فرنسي)</label><input type="text" class="form-input" id="uni-link-title-fr"></div>
@@ -734,39 +899,39 @@
                 </div>
             </div>
 
-            <!-- الاتصال -->
+            <!-- معلومات الاتصال -->
             <div id="admin-contact" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-address-book"></i> <span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></h3>
                     <div class="form-grid">
                         <div class="form-group"><label class="form-label" data-ar="البريد الإلكتروني" data-fr="Email">البريد الإلكتروني</label><input type="email" class="form-input" id="admin-email"></div>
                         <div class="form-group"><label class="form-label" data-ar="رقم الهاتف" data-fr="Téléphone">رقم الهاتف</label><input type="tel" class="form-input" id="admin-phone"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رقم الحاضنة (إن وجد)" data-fr="Tel Incubateur">رقم الحاضنة (إن وجد)</label><input type="tel" class="form-input" id="admin-incubator-phone"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رقم الفاكس (إن وجد)" data-fr="Fax">رقم الفاكس (إن وجد)</label><input type="tel" class="form-input" id="admin-fax"></div>
+                        <div class="form-group"><label class="form-label" data-ar="رقم الحاضنة (إن وجد)" data-fr="Tel Incubateur">رقم الحاضنة</label><input type="tel" class="form-input" id="admin-incubator-phone"></div>
+                        <div class="form-group"><label class="form-label" data-ar="رقم الفاكس (إن وجد)" data-fr="Fax">رقم الفاكس</label><input type="tel" class="form-input" id="admin-fax"></div>
                     </div>
                     <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="saveContact()"><i class="fas fa-save"></i><span data-ar="حفظ" data-fr="Enregistrer">حفظ</span></button>
                 </div>
             </div>
 
-            <!-- الخصوصية و من نحن و الخريطة -->
+            <!-- الخصوصية والموقع -->
             <div id="admin-privacy" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-shield-alt"></i> <span data-ar="سياسة الخصوصية" data-fr="Politique de Confidentialité">سياسة الخصوصية</span></h3>
-                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="سياسة الخصوصية (عربي)" data-fr="Politique (AR)">سياسة الخصوصية (عربي)</label><textarea class="form-textarea" id="privacy-text-ar"></textarea></div>
-                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="سياسة الخصوصية (فرنسي)" data-fr="Politique (FR)">سياسة الخصوصية (فرنسي)</label><textarea class="form-textarea" id="privacy-text-fr"></textarea></div>
+                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label">سياسة الخصوصية (عربي)</label><textarea class="form-textarea" id="privacy-text-ar"></textarea></div>
+                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label">سياسة الخصوصية (فرنسي)</label><textarea class="form-textarea" id="privacy-text-fr"></textarea></div>
                 </div>
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-info-circle"></i> <span data-ar="من نحن" data-fr="Qui Sommes-Nous">من نحن</span></h3>
-                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="من نحن (عربي)" data-fr="Qui (AR)">من نحن (عربي)</label><textarea class="form-textarea" id="about-text-ar"></textarea></div>
-                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="من نحن (فرنسي)" data-fr="Qui (FR)">من نحن (فرنسي)</label><textarea class="form-textarea" id="about-text-fr"></textarea></div>
+                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label">من نحن (عربي)</label><textarea class="form-textarea" id="about-text-ar"></textarea></div>
+                    <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label">من نحن (فرنسي)</label><textarea class="form-textarea" id="about-text-fr"></textarea></div>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-section-title"><i class="fas fa-map-marker-alt"></i> <span data-ar="موقع الحاضنة (خرائط جوجل)" data-fr="Localisation (Google Maps)">موقع الحاضنة (خرائط جوجل)</span></h3>
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label class="form-label" data-ar="رابط التضمين (iframe src)" data-fr="Lien d'intégration (iframe src)">رابط التضمين (iframe src)</label>
+                    <h3 class="admin-section-title"><i class="fas fa-map-marker-alt"></i> <span data-ar="موقع الحاضنة" data-fr="Localisation">موقع الحاضنة (خرائط جوجل)</span></h3>
+                    <div class="form-group">
+                        <label class="form-label">رابط التضمين (iframe src)</label>
                         <input type="text" class="form-input" id="admin-map-url" placeholder="https://www.google.com/maps/embed?...">
                     </div>
-                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="savePrivacy()"><i class="fas fa-save"></i><span data-ar="حفظ الكل (الخصوصية، من نحن، الخريطة)" data-fr="Tout Enregistrer">حفظ الكل (الخصوصية، من نحن، الخريطة)</span></button>
+                    <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="savePrivacy()"><i class="fas fa-save"></i><span data-ar="حفظ الكل" data-fr="Enregistrer">حفظ الكل</span></button>
                 </div>
             </div>
 
@@ -782,69 +947,72 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- النوافذ المنبثقة -->
-    <div class="modal-overlay" id="blogModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="blog-modal-title"></h3>
-                <button class="modal-close" onclick="closeModal('blogModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <img src="" alt="" class="modal-image" id="blog-modal-image">
-                <div class="modal-content" id="blog-modal-content"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="reportModal">
-        <div class="modal" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3 class="modal-title" data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</h3>
-                <button class="modal-close" onclick="closeModal('reportModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="الاسم" data-fr="Nom">الاسم</label><input type="text" class="form-input" id="report-name"></div>
-                <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="البريد الإلكتروني" data-fr="Email">البريد الإلكتروني</label><input type="email" class="form-input" id="report-email"></div>
-                <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="وصف المشكل" data-fr="Description">وصف المشكل</label><textarea class="form-textarea" id="report-message"></textarea></div>
-                <button class="btn btn-primary" onclick="submitReport()"><i class="fas fa-paper-plane"></i><span data-ar="إرسال" data-fr="Envoyer">إرسال</span></button>
-            </div>
-        </div>
-    </div>
-
+    <!-- نافذة تسجيل دخول الإدارة الآمنة -->
     <div class="modal-overlay" id="adminLoginModal">
         <div class="login-container">
             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA-LoePuwkGA8tzyD2-MsyLPqu-HGgWXmszChsx3w2T8D6n1MFk4z0WrrVQ2jM7oI6I7SgTCOdvDuZy2O2KwpLpBw5y4jZmHo3gDQZxJkh2fcbbQfJsy6SQqE0LGWdSJQJ_zttxMxukuDrRdPjUlkNgNp1Lwtfr9HecFOvrfY7U5l7BkwIyxCi-p3mUHU/s320/1000018116.png" alt="Logo" class="login-logo">
-            <h2 class="login-title" data-ar="لوحة التحكم" data-fr="Administration">لوحة التحكم</h2>
-            <p class="login-subtitle" data-ar="أدخل كلمة المرور للمتابعة" data-fr="Entrez le mot de passe pour continuer">أدخل كلمة المرور للمتابعة</p>
-            <input type="password" class="login-input" id="admin-password" placeholder="••••••••">
-            <div class="login-error" id="login-error" data-ar="كلمة المرور غير صحيحة" data-fr="Mot de passe incorrect">كلمة المرور غير صحيحة</div>
+            <h2 class="login-title" data-ar="بوابة الإدارة الآمنة" data-fr="Portail d'Administration">بوابة الإدارة الآمنة</h2>
+            <p class="login-subtitle" data-ar="سجل الدخول للمتابعة إلى لوحة التحكم" data-fr="Connectez-vous pour continuer">سجل الدخول للمتابعة إلى لوحة التحكم</p>
+            
+            <input type="email" class="login-input" id="admin-auth-email" placeholder="البريد الإلكتروني للإدارة" style="margin-bottom: 0.75rem;">
+            <input type="password" class="login-input" id="admin-auth-password" placeholder="كلمة المرور">
+            <div class="login-error" id="login-error" data-ar="بيانات الاعتماد غير صالحة" data-fr="Identifiants invalides">بيانات الاعتماد غير صالحة</div>
+            
             <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="loginAdmin()"><i class="fas fa-lock"></i><span data-ar="دخول" data-fr="Connexion">دخول</span></button>
             <button class="btn btn-secondary" style="width: 100%; justify-content: center; margin-top: 0.75rem;" onclick="closeModal('adminLoginModal')"><i class="fas fa-times"></i><span data-ar="إلغاء" data-fr="Annuler">إلغاء</span></button>
         </div>
     </div>
 
-    <!-- تراكب التحميل -->
+    <!-- نافذة الإبلاغ عن مشكل -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" data-ar="الإبلاغ عن مشكل" data-fr="Signaler un Problème">الإبلاغ عن مشكل</h3>
+                <button class="modal-close" onclick="closeModal('reportModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="الاسم الكامل" data-fr="Nom Complet">الاسم الكامل</label><input type="text" class="form-input" id="report-name"></div>
+                <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="البريد الإلكتروني" data-fr="Email">البريد الإلكتروني</label><input type="email" class="form-input" id="report-email"></div>
+                <div class="form-group" style="margin-bottom: 1rem;"><label class="form-label" data-ar="وصف المشكل أو الاستفسار" data-fr="Description">وصف المشكل أو الاستفسار</label><textarea class="form-textarea" id="report-message"></textarea></div>
+                <button class="btn btn-primary" onclick="submitReport()"><i class="fas fa-paper-plane"></i><span data-ar="إرسال" data-fr="Envoyer">إرسال</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- تراكب التنبيهات والتحميل -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
-        <p style="color: var(--gray-600); font-weight: 800; margin-top: 10px;" data-ar="جاري التحميل..." data-fr="Chargement...">جاري التحميل...</p>
+        <p style="color: var(--gray-600); font-weight: 800; margin-top: 10px;" data-ar="جاري المعالجة..." data-fr="Traitement en cours...">جاري المعالجة...</p>
     </div>
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- الجافاسكريبت والمهام -->
+    <!-- شيفرة الجافاسكريبت والمنطق البرمجي -->
     <script>
         let currentLang = 'ar';
         let isAdmin = false;
-        let blogSliderIndex = 0;
-        let db, storage, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp, ref, uploadBytes, getDownloadURL;
+        let currentRoute = '/';
+        let homeWorksSliderIndex = 0;
+        let blogSuggestionsSliderIndex = 0;
 
+        let db, storage, auth;
+        let collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp;
+        let ref, uploadBytes, getDownloadURL;
+        let signInWithEmailAndPassword, fbSignOut, onAuthStateChanged;
+
+        let worksData = {};
         let blogsData = {};
+        let fundingData = {};
         let partnersData = {};
         let teamData = {};
         let uniLinksData = {};
-        let editingBlogId = null;
+
+        let editingWorkId = null;
+        let editingPostId = null;
+        let editingFundingId = null;
         let editingPartnerId = null;
         let editingTeamId = null;
         let editingUniLinkId = null;
@@ -853,42 +1021,118 @@
             let attempts = 0;
             const initInterval = setInterval(async () => {
                 attempts++;
-                if (window.firebaseDB && window.firestoreModules && window.storageModules) {
+                if (window.firebaseDB && window.firestoreModules && window.storageModules && window.firebaseAuth) {
                     clearInterval(initInterval);
                     db = window.firebaseDB;
                     storage = window.firebaseStorage;
+                    auth = window.firebaseAuth;
+
                     ({ collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, addDoc, increment, serverTimestamp } = window.firestoreModules);
                     ({ ref, uploadBytes, getDownloadURL } = window.storageModules);
-                    
+                    ({ signInWithEmailAndPassword, signOut: fbSignOut, onAuthStateChanged } = window.authModules);
+
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            isAdmin = true;
+                            if (window.location.hash.startsWith('#/admin02')) {
+                                showAdminPanel();
+                            }
+                        } else {
+                            isAdmin = false;
+                            if (window.location.hash.startsWith('#/admin02')) {
+                                openAdminLogin();
+                            }
+                        }
+                    });
+
                     await initializeData();
                     loadAllData();
                     setupScrollAnimations();
                     setupNavbarScroll();
                     trackVisit();
-                    
-                    window.addEventListener('hashchange', checkAdminHash);
-                    checkAdminHash();
+
+                    window.addEventListener('hashchange', handleRouting);
+                    handleRouting();
                 }
-                if (attempts > 50) {
+                if (attempts > 60) {
                     clearInterval(initInterval);
-                    showToast('error', currentLang === 'ar' ? 'فشل تحميل قواعد البيانات Firebase' : 'Échec du chargement de Firebase');
                 }
             }, 100);
         });
 
-        function checkAdminHash() {
-            if (window.location.hash === '#/admin02') {
-                if (!isAdmin) { openAdminLogin(); }
-            } else {
-                if (isAdmin) { logoutAdmin(); }
-            }
+        /* ==================== نظام التوجيه والروابط (Routing) ==================== */
+        function navigateTo(path) {
+            window.location.hash = path.startsWith('/') ? '#' + path : '#/' + path;
         }
 
+        function handleRouting() {
+            const hash = window.location.hash || '#/';
+            const [path, queryString] = hash.replace(/^#/, '').split('?');
+            const urlParams = new URLSearchParams(queryString || '');
+            currentRoute = path || '/';
+
+            if (currentRoute === '/admin02') {
+                if (isAdmin) {
+                    showAdminPanel();
+                } else {
+                    openAdminLogin();
+                }
+                return;
+            }
+
+            document.getElementById('admin-panel').classList.remove('active');
+
+            if (currentRoute === '/' || currentRoute === '') {
+                document.getElementById('public-site').style.display = 'block';
+                document.getElementById('pages-view').style.display = 'none';
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            document.getElementById('public-site').style.display = 'none';
+            document.getElementById('pages-view').style.display = 'block';
+            document.querySelectorAll('.route-page').forEach(p => p.style.display = 'none');
+
+            if (currentRoute === '/nostravaux') {
+                const id = urlParams.get('id');
+                if (id && worksData[id]) {
+                    renderWorkDetails(id);
+                    document.getElementById('page-work-details').style.display = 'block';
+                } else {
+                    renderAllWorks();
+                    document.getElementById('page-nostravaux').style.display = 'block';
+                }
+            } else if (currentRoute === '/blogs') {
+                const id = urlParams.get('id');
+                if (id && blogsData[id]) {
+                    renderBlogDetails(id);
+                    document.getElementById('page-blog-details').style.display = 'block';
+                } else {
+                    renderAllBlogs();
+                    document.getElementById('page-blogs').style.display = 'block';
+                }
+            } else if (currentRoute === '/financement') {
+                renderAllFunding();
+                document.getElementById('page-financement').style.display = 'block';
+            } else if (currentRoute === '/privacy') {
+                document.getElementById('privacy-page').style.display = 'block';
+            } else if (currentRoute === '/about') {
+                document.getElementById('about-page').style.display = 'block';
+            } else if (currentRoute === '/map') {
+                document.getElementById('map-page').style.display = 'block';
+            } else {
+                navigateTo('/');
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        /* ==================== تهيئة البيانات وجلبها ==================== */
         async function initializeData() {
             const defaults = {
                 stats: { ideas: 1000, courses: 100, labels: 40, startups: 10, mentors: 100, members: 2000 },
                 contact: { email: 'contact@incubator-blida2.dz', phone: '+213 000 000 000', incubatorPhone: '', fax: '' },
-                privacy: { privacy_ar: 'سياسة الخصوصية...', privacy_fr: 'Politique...', about_ar: 'من نحن...', about_fr: 'Qui...', mapUrl: '' },
+                privacy: { privacy_ar: 'سياسة الخصوصية الخاصة بحاضنة الأعمال جامعة البليدة 2...', privacy_fr: 'Politique de confidentialité...', about_ar: 'حاضنة أعمال جامعة البليدة 2 فضاء للابتكار وريادة الأعمال...', about_fr: 'Incubateur Université Blida 2...', mapUrl: '' },
                 visits: { daily: 0, monthly: 0, total: 0, lastDate: new Date().toDateString(), lastMonth: `${new Date().getFullYear()}-${new Date().getMonth()}` }
             };
             for (const [key, value] of Object.entries(defaults)) {
@@ -906,24 +1150,22 @@
 
             document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
             document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
-            if (document.getElementById('btn-ar-page')) document.getElementById('btn-ar-page').classList.toggle('active', lang === 'ar');
-            if (document.getElementById('btn-fr-page')) document.getElementById('btn-fr-page').classList.toggle('active', lang === 'fr');
 
             document.querySelectorAll('[data-ar][data-fr]').forEach(el => {
-                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = el.getAttribute(`data-${lang}`);
-                else el.textContent = el.getAttribute(`data-${lang}`);
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = el.getAttribute(`data-${lang}`);
+                } else {
+                    el.textContent = el.getAttribute(`data-${lang}`);
+                }
             });
 
             const ctaIcon = document.getElementById('hero-cta-icon');
             if (ctaIcon) ctaIcon.className = lang === 'ar' ? 'fas fa-arrow-left' : 'fas fa-arrow-right';
-            const backIcon = document.getElementById('back-icon');
-            if (backIcon) backIcon.className = lang === 'ar' ? 'fas fa-arrow-right' : 'fas fa-arrow-left';
 
-            // تحديث أيقونات السلايدر الخاص بالأعمال برمجياً لكي تتوافق مع اتجاه اللغة
             const nextIcon = document.getElementById('slider-next-icon');
             const prevIcon = document.getElementById('slider-prev-icon');
-            if(nextIcon) nextIcon.className = lang === 'ar' ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
-            if(prevIcon) prevIcon.className = lang === 'ar' ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
+            if (nextIcon) nextIcon.className = lang === 'ar' ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+            if (prevIcon) prevIcon.className = lang === 'ar' ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
 
             if (document.getElementById('privacy-content-ar')) document.getElementById('privacy-content-ar').style.display = lang === 'ar' ? 'block' : 'none';
             if (document.getElementById('privacy-content-fr')) document.getElementById('privacy-content-fr').style.display = lang === 'fr' ? 'block' : 'none';
@@ -931,15 +1173,7 @@
             if (document.getElementById('about-content-fr')) document.getElementById('about-content-fr').style.display = lang === 'fr' ? 'block' : 'none';
 
             loadAllData();
-            updateSlider();
-            
-            if(isAdmin){
-                const activeEl = document.querySelector('.admin-nav-item.active');
-                if(activeEl) {
-                    const match = activeEl.getAttribute('onclick').match(/'([^']+)'/);
-                    if(match) showAdminSection(match[1], activeEl);
-                }
-            }
+            handleRouting();
         }
 
         function toggleMenu() {
@@ -986,7 +1220,9 @@
         function loadAllData() {
             loadBanner();
             loadStats();
+            loadWorks();
             loadBlogs();
+            loadFunding();
             loadPartners();
             loadTeam();
             loadUniversity();
@@ -1008,16 +1244,10 @@
                 if (heroDesc) { heroDesc.setAttribute('data-ar', data.desc_ar || 'انضم إلينا...'); heroDesc.setAttribute('data-fr', data.desc_fr || 'Rejoignez-nous...'); heroDesc.textContent = heroDesc.getAttribute(`data-${currentLang}`); }
                 if (heroCta) { heroCta.setAttribute('data-ar', data.btn_ar || 'سجل الآن'); heroCta.setAttribute('data-fr', data.btn_fr || 'Inscrivez-vous'); heroCta.textContent = heroCta.getAttribute(`data-${currentLang}`); }
                 
-                if (data.image) {
-                    heroBg.style.backgroundImage = `url('${data.image}')`;
-                } else {
-                    heroBg.style.backgroundImage = `url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80')`;
-                }
-                
-                if (document.getElementById('stat-registrations')) document.getElementById('stat-registrations').textContent = data.registrations || 0;
+                if (data.image) heroBg.style.backgroundImage = `url('${data.image}')`;
                 if (document.getElementById('admin-stat-registrations')) document.getElementById('admin-stat-registrations').textContent = data.registrations || 0;
                 
-                if(document.getElementById('banner-title-ar')){
+                if (document.getElementById('banner-title-ar')) {
                     document.getElementById('banner-title-ar').value = data.title_ar || '';
                     document.getElementById('banner-title-fr').value = data.title_fr || '';
                     document.getElementById('banner-desc-ar').value = data.desc_ar || '';
@@ -1048,32 +1278,33 @@
             }
         }
 
-        async function loadBlogs() {
+        /* ==================== 1. أعمالنا (Works) ==================== */
+        async function loadWorks() {
             const q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
             onSnapshot(q, (snapshot) => {
-                const slider = document.getElementById('blogSlider');
-                const adminList = document.getElementById('admin-blog-list');
-                if(slider) slider.innerHTML = '';
+                worksData = {};
+                const slider = document.getElementById('homeWorksSlider');
+                const adminList = document.getElementById('admin-works-list');
+                if (slider) slider.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
-                blogsData = {};
 
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     const id = docSnap.id;
-                    blogsData[id] = data;
+                    worksData[id] = data;
 
                     const title = currentLang === 'ar' ? (data.title_ar || '') : (data.title_fr || '');
                     const content = currentLang === 'ar' ? (data.content_ar || '') : (data.content_fr || '');
                     
-                    if(slider) {
+                    if (slider) {
                         const card = document.createElement('div');
                         card.className = 'blog-card';
-                        card.onclick = () => openBlogModal(id, data);
+                        card.onclick = () => navigateTo(`/nostravaux?id=${id}`);
                         card.innerHTML = `
-                            <img src="${data.image || 'https://via.placeholder.com/400x220?text=Blog'}" alt="Blog Image" class="blog-image">
+                            <img src="${data.image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500'}" alt="${title}" class="blog-image">
                             <div class="blog-content">
                                 <h3 class="blog-title">${title}</h3>
-                                <p class="blog-excerpt">${content.substring(0, 100)}...</p>
+                                <p class="blog-excerpt">${content.substring(0, 110)}...</p>
                             </div>
                         `;
                         slider.appendChild(card);
@@ -1085,55 +1316,286 @@
                             <td><img src="${data.image || 'https://via.placeholder.com/60'}" class="table-img"></td>
                             <td>${title}</td>
                             <td class="table-actions">
-                                <button class="table-btn table-btn-edit" onclick="editBlog('${id}')"><i class="fas fa-edit"></i></button>
-                                <button class="table-btn table-btn-delete" onclick="deleteBlog('${id}')"><i class="fas fa-trash"></i></button>
+                                <button class="table-btn table-btn-edit" onclick="editWork('${id}')"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn table-btn-delete" onclick="deleteWork('${id}')"><i class="fas fa-trash"></i></button>
                             </td>
                         `;
                         adminList.appendChild(tr);
                     }
                 });
-                updateSlider();
+
+                updateHomeWorksSlider();
+                if (currentRoute === '/nostravaux') {
+                    handleRouting();
+                }
             });
         }
 
-        function updateSlider() {
-            const slider = document.getElementById('blogSlider');
-            if(!slider) return;
+        function renderAllWorks() {
+            const grid = document.getElementById('all-works-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            const ids = Object.keys(worksData);
+            if (ids.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; font-weight: 700; color: var(--gray-600);">${currentLang === 'ar' ? 'لا توجد أعمال منشورة حالياً' : 'Aucun travail publié pour le moment'}</p>`;
+                return;
+            }
+            ids.forEach(id => {
+                const item = worksData[id];
+                const title = currentLang === 'ar' ? (item.title_ar || '') : (item.title_fr || '');
+                const content = currentLang === 'ar' ? (item.content_ar || '') : (item.content_fr || '');
+                const card = document.createElement('div');
+                card.className = 'custom-card';
+                card.onclick = () => navigateTo(`/nostravaux?id=${id}`);
+                card.innerHTML = `
+                    <img src="${item.image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600'}" class="custom-card-img" alt="${title}">
+                    <div class="custom-card-body">
+                        <span class="custom-card-tag">${currentLang === 'ar' ? 'مشروع معتمد' : 'Projet Validé'}</span>
+                        <h3 class="custom-card-title">${title}</h3>
+                        <p class="custom-card-desc">${content.substring(0, 140)}...</p>
+                        <div class="custom-card-footer">
+                            <span class="custom-card-btn">${currentLang === 'ar' ? 'عرض التفاصيل' : 'Voir Détails'} <i class="fas ${currentLang === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right'}"></i></span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderWorkDetails(id) {
+            const work = worksData[id];
+            if (!work) return;
+            document.getElementById('work-detail-img').src = work.image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200';
+            document.getElementById('work-detail-title').textContent = currentLang === 'ar' ? (work.title_ar || '') : (work.title_fr || '');
+            document.getElementById('work-detail-content').textContent = currentLang === 'ar' ? (work.content_ar || '') : (work.content_fr || '');
+        }
+
+        function updateHomeWorksSlider() {
+            const slider = document.getElementById('homeWorksSlider');
+            if (!slider) return;
             const cards = slider.querySelectorAll('.blog-card');
             if (cards.length === 0) return;
             const card = cards[0];
             const cardWidth = card.offsetWidth + parseInt(window.getComputedStyle(card).marginLeft) * 2;
             const dirMultiplier = currentLang === 'ar' ? 1 : -1;
-            slider.style.transform = `translateX(${blogSliderIndex * cardWidth * dirMultiplier}px)`;
+            slider.style.transform = `translateX(${homeWorksSliderIndex * cardWidth * dirMultiplier}px)`;
         }
 
-        function moveSlider(direction) {
-            const slider = document.getElementById('blogSlider');
-            if(!slider) return;
+        function moveHomeWorksSlider(direction) {
+            const slider = document.getElementById('homeWorksSlider');
+            if (!slider) return;
             const cards = slider.querySelectorAll('.blog-card');
             if (cards.length === 0) return;
             const visibleCards = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
             const maxIndex = Math.max(0, cards.length - visibleCards);
-            
-            blogSliderIndex = Math.max(0, Math.min(blogSliderIndex + direction, maxIndex));
-            updateSlider();
+            homeWorksSliderIndex = Math.max(0, Math.min(homeWorksSliderIndex + direction, maxIndex));
+            updateHomeWorksSlider();
         }
 
-        window.addEventListener('resize', () => {
-            const slider = document.getElementById('blogSlider');
-            if(!slider) return;
+        /* ==================== 2. المدونة والأخبار (Blogs) ==================== */
+        async function loadBlogs() {
+            const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                blogsData = {};
+                const adminList = document.getElementById('admin-posts-list');
+                if (adminList) adminList.innerHTML = '';
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    blogsData[id] = data;
+
+                    if (adminList) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><img src="${data.image || 'https://via.placeholder.com/60'}" class="table-img"></td>
+                            <td>${currentLang === 'ar' ? data.title_ar : data.title_fr}</td>
+                            <td>${currentLang === 'ar' ? (data.cat_ar || '-') : (data.cat_fr || '-')}</td>
+                            <td class="table-actions">
+                                <button class="table-btn table-btn-edit" onclick="editBlogPost('${id}')"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn table-btn-delete" onclick="deleteBlogPost('${id}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        `;
+                        adminList.appendChild(tr);
+                    }
+                });
+
+                if (currentRoute === '/blogs') {
+                    handleRouting();
+                }
+            });
+        }
+
+        function renderAllBlogs() {
+            const grid = document.getElementById('all-blogs-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            const ids = Object.keys(blogsData);
+            if (ids.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; font-weight: 700; color: var(--gray-600);">${currentLang === 'ar' ? 'لا توجد مقالات أو برامج منشورة حالياً' : 'Aucun article publié pour le moment'}</p>`;
+                return;
+            }
+            ids.forEach(id => {
+                const item = blogsData[id];
+                const title = currentLang === 'ar' ? (item.title_ar || '') : (item.title_fr || '');
+                const content = currentLang === 'ar' ? (item.content_ar || '') : (item.content_fr || '');
+                const cat = currentLang === 'ar' ? (item.cat_ar || 'برامج الحاضنة') : (item.cat_fr || 'Programmes');
+
+                const card = document.createElement('div');
+                card.className = 'custom-card';
+                card.onclick = () => navigateTo(`/blogs?id=${id}`);
+                card.innerHTML = `
+                    <img src="${item.image || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600'}" class="custom-card-img" alt="${title}">
+                    <div class="custom-card-body">
+                        <span class="custom-card-tag">${cat}</span>
+                        <h3 class="custom-card-title">${title}</h3>
+                        <p class="custom-card-desc">${content.substring(0, 130)}...</p>
+                        <div class="custom-card-footer">
+                            <span class="custom-card-btn">${currentLang === 'ar' ? 'قراءة المقال' : 'Lire l\'article'} <i class="fas ${currentLang === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right'}"></i></span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderBlogDetails(id) {
+            const post = blogsData[id];
+            if (!post) return;
+            document.getElementById('blog-detail-img').src = post.image || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200';
+            document.getElementById('blog-detail-title').textContent = currentLang === 'ar' ? (post.title_ar || '') : (post.title_fr || '');
+            document.getElementById('blog-detail-content').textContent = currentLang === 'ar' ? (post.content_ar || '') : (post.content_fr || '');
+            document.getElementById('blog-detail-category').textContent = currentLang === 'ar' ? (post.cat_ar || 'أخبار وبرامج') : (post.cat_fr || 'Actualités');
+            document.getElementById('blog-detail-date').textContent = post.createdAt ? new Date(post.createdAt.toDate ? post.createdAt.toDate() : post.createdAt).toLocaleDateString() : '';
+
+            renderBlogSuggestions(id);
+        }
+
+        function renderBlogSuggestions(currentId) {
+            const slider = document.getElementById('blogSuggestionsSlider');
+            if (!slider) return;
+            slider.innerHTML = '';
+            blogSuggestionsSliderIndex = 0;
+
+            const otherIds = Object.keys(blogsData).filter(i => i !== currentId);
+            if (otherIds.length === 0) {
+                slider.innerHTML = `<p style="color: var(--gray-600); font-weight:600;">${currentLang === 'ar' ? 'لا توجد مقالات أخرى حالياً' : 'Pas d\'autres articles pour le moment'}</p>`;
+                return;
+            }
+
+            otherIds.forEach(id => {
+                const item = blogsData[id];
+                const title = currentLang === 'ar' ? (item.title_ar || '') : (item.title_fr || '');
+                const content = currentLang === 'ar' ? (item.content_ar || '') : (item.content_fr || '');
+                const card = document.createElement('div');
+                card.className = 'blog-card';
+                card.onclick = () => navigateTo(`/blogs?id=${id}`);
+                card.innerHTML = `
+                    <img src="${item.image || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500'}" alt="${title}" class="blog-image">
+                    <div class="blog-content">
+                        <h3 class="blog-title">${title}</h3>
+                        <p class="blog-excerpt">${content.substring(0, 100)}...</p>
+                    </div>
+                `;
+                slider.appendChild(card);
+            });
+            updateBlogSuggestionsSlider();
+        }
+
+        function updateBlogSuggestionsSlider() {
+            const slider = document.getElementById('blogSuggestionsSlider');
+            if (!slider) return;
             const cards = slider.querySelectorAll('.blog-card');
+            if (cards.length === 0) return;
+            const card = cards[0];
+            const cardWidth = card.offsetWidth + parseInt(window.getComputedStyle(card).marginLeft) * 2;
+            const dirMultiplier = currentLang === 'ar' ? 1 : -1;
+            slider.style.transform = `translateX(${blogSuggestionsSliderIndex * cardWidth * dirMultiplier}px)`;
+        }
+
+        function moveBlogSuggestionsSlider(direction) {
+            const slider = document.getElementById('blogSuggestionsSlider');
+            if (!slider) return;
+            const cards = slider.querySelectorAll('.blog-card');
+            if (cards.length === 0) return;
             const visibleCards = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
             const maxIndex = Math.max(0, cards.length - visibleCards);
-            if(blogSliderIndex > maxIndex) blogSliderIndex = maxIndex;
-            updateSlider();
-        });
+            blogSuggestionsSliderIndex = Math.max(0, Math.min(blogSuggestionsSliderIndex + direction, maxIndex));
+            updateBlogSuggestionsSlider();
+        }
 
+        /* ==================== 3. التمويلات (Financement) ==================== */
+        async function loadFunding() {
+            const q = query(collection(db, 'funding'), orderBy('createdAt', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                fundingData = {};
+                const adminList = document.getElementById('admin-funding-list');
+                if (adminList) adminList.innerHTML = '';
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    fundingData[id] = data;
+
+                    if (adminList) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><img src="${data.image || 'https://via.placeholder.com/60'}" class="table-img"></td>
+                            <td>${currentLang === 'ar' ? data.title_ar : data.title_fr}</td>
+                            <td>${currentLang === 'ar' ? (data.type_ar || '-') : (data.type_fr || '-')}</td>
+                            <td class="table-actions">
+                                <button class="table-btn table-btn-edit" onclick="editFunding('${id}')"><i class="fas fa-edit"></i></button>
+                                <button class="table-btn table-btn-delete" onclick="deleteFunding('${id}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        `;
+                        adminList.appendChild(tr);
+                    }
+                });
+
+                if (currentRoute === '/financement') {
+                    renderAllFunding();
+                }
+            });
+        }
+
+        function renderAllFunding() {
+            const grid = document.getElementById('all-funding-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            const ids = Object.keys(fundingData);
+            if (ids.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; font-weight: 700; color: var(--gray-600);">${currentLang === 'ar' ? 'لا توجد برامج تمويل معروضة حالياً' : 'Aucun programme de financement pour le moment'}</p>`;
+                return;
+            }
+            ids.forEach(id => {
+                const item = fundingData[id];
+                const title = currentLang === 'ar' ? (item.title_ar || '') : (item.title_fr || '');
+                const desc = currentLang === 'ar' ? (item.desc_ar || '') : (item.desc_fr || '');
+                const type = currentLang === 'ar' ? (item.type_ar || 'تمويل استثماري') : (item.type_fr || 'Financement');
+
+                const card = document.createElement('div');
+                card.className = 'custom-card';
+                card.innerHTML = `
+                    <img src="${item.image || 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=600'}" class="custom-card-img" alt="${title}">
+                    <div class="custom-card-body">
+                        <span class="custom-card-tag">${type}</span>
+                        <h3 class="custom-card-title">${title}</h3>
+                        <p class="custom-card-desc">${desc}</p>
+                        <div class="custom-card-footer">
+                            ${item.link ? `<a href="${item.link}" target="_blank" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.9rem;">${currentLang === 'ar' ? 'التقديم أو التفاصيل' : 'Postuler / Détails'} <i class="fas fa-external-link-alt"></i></a>` : '<span></span>'}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ==================== الشركاء وفريق العمل والجامعة والاتصال ==================== */
         async function loadPartners() {
             onSnapshot(collection(db, 'partners'), (snapshot) => {
                 const grid = document.getElementById('partners-grid');
                 const adminList = document.getElementById('admin-partners-list');
-                if(grid) grid.innerHTML = '';
+                if (grid) grid.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
                 partnersData = {};
 
@@ -1141,7 +1603,7 @@
                     const data = docSnap.data();
                     partnersData[docSnap.id] = data;
 
-                    if(grid) {
+                    if (grid) {
                         const img = document.createElement('img');
                         img.src = data.logo || ''; img.alt = data.name || ''; img.className = 'partner-logo animate-on-scroll';
                         grid.appendChild(img);
@@ -1166,7 +1628,7 @@
             onSnapshot(collection(db, 'team'), (snapshot) => {
                 const grid = document.getElementById('team-grid');
                 const adminList = document.getElementById('admin-team-list');
-                if(grid) grid.innerHTML = '';
+                if (grid) grid.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
                 teamData = {};
 
@@ -1175,7 +1637,7 @@
                     teamData[docSnap.id] = data;
                     const role = currentLang === 'ar' ? (data.role_ar || '') : (data.role_fr || '');
                     
-                    if(grid) {
+                    if (grid) {
                         const card = document.createElement('div');
                         card.className = 'team-card animate-on-scroll';
                         card.innerHTML = `
@@ -1208,18 +1670,17 @@
         }
 
         async function loadUniversity() {
-            const docRef = doc(db, 'settings', 'university');
-            onSnapshot(docRef, (docSnap) => {
+            onSnapshot(doc(db, 'settings', 'university'), (docSnap) => {
                 if (docSnap.exists() && docSnap.data().logo) {
                     const uniLogo = document.getElementById('uni-logo');
-                    if(uniLogo) uniLogo.src = docSnap.data().logo;
+                    if (uniLogo) uniLogo.src = docSnap.data().logo;
                 }
             });
 
             onSnapshot(collection(db, 'university_links'), (snapshot) => {
                 const container = document.getElementById('uni-links');
                 const adminList = document.getElementById('admin-uni-links-list');
-                if(container) container.innerHTML = '';
+                if (container) container.innerHTML = '';
                 if (adminList) adminList.innerHTML = '';
                 uniLinksData = {};
 
@@ -1228,7 +1689,7 @@
                     uniLinksData[docSnap.id] = data;
                     const title = currentLang === 'ar' ? data.title_ar : data.title_fr;
                     
-                    if(container) {
+                    if (container) {
                         const link = document.createElement('a');
                         link.href = data.url; link.target = '_blank'; link.className = 'uni-link'; link.textContent = title;
                         container.appendChild(link);
@@ -1253,22 +1714,22 @@
             onSnapshot(doc(db, 'settings', 'contact'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    if(document.getElementById('contact-email')) document.getElementById('contact-email').textContent = data.email || '';
-                    if(document.getElementById('contact-phone')) document.getElementById('contact-phone').textContent = data.phone || '';
+                    if (document.getElementById('contact-email')) document.getElementById('contact-email').textContent = data.email || '';
+                    if (document.getElementById('contact-phone')) document.getElementById('contact-phone').textContent = data.phone || '';
                     
                     const incDiv = document.getElementById('contact-incubator');
                     const faxDiv = document.getElementById('contact-fax');
                     
-                    if(incDiv) {
+                    if (incDiv) {
                         if (data.incubatorPhone) { incDiv.style.display = 'flex'; document.getElementById('contact-incubator-phone').textContent = data.incubatorPhone; } 
                         else incDiv.style.display = 'none';
                     }
-                    if(faxDiv) {
+                    if (faxDiv) {
                         if (data.fax) { faxDiv.style.display = 'flex'; document.getElementById('contact-fax-number').textContent = data.fax; } 
                         else faxDiv.style.display = 'none';
                     }
                     
-                    if(document.getElementById('admin-email')) {
+                    if (document.getElementById('admin-email')) {
                         document.getElementById('admin-email').value = data.email || ''; 
                         document.getElementById('admin-phone').value = data.phone || ''; 
                         document.getElementById('admin-incubator-phone').value = data.incubatorPhone || ''; 
@@ -1282,19 +1743,19 @@
             onSnapshot(doc(db, 'settings', 'privacy'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    if(document.getElementById('privacy-content-ar')) document.getElementById('privacy-content-ar').innerHTML = data.privacy_ar || '';
-                    if(document.getElementById('privacy-content-fr')) document.getElementById('privacy-content-fr').innerHTML = data.privacy_fr || '';
-                    if(document.getElementById('about-content-ar')) document.getElementById('about-content-ar').innerHTML = data.about_ar || '';
-                    if(document.getElementById('about-content-fr')) document.getElementById('about-content-fr').innerHTML = data.about_fr || '';
+                    if (document.getElementById('privacy-content-ar')) document.getElementById('privacy-content-ar').innerHTML = data.privacy_ar || '';
+                    if (document.getElementById('privacy-content-fr')) document.getElementById('privacy-content-fr').innerHTML = data.privacy_fr || '';
+                    if (document.getElementById('about-content-ar')) document.getElementById('about-content-ar').innerHTML = data.about_ar || '';
+                    if (document.getElementById('about-content-fr')) document.getElementById('about-content-fr').innerHTML = data.about_fr || '';
                     
-                    if(data.mapUrl) {
+                    if (data.mapUrl) {
                         const footerIframe = document.getElementById('footer-map-iframe');
                         const pageIframe = document.getElementById('page-map-iframe');
-                        if(footerIframe) footerIframe.src = data.mapUrl;
-                        if(pageIframe) pageIframe.src = data.mapUrl;
+                        if (footerIframe) footerIframe.src = data.mapUrl;
+                        if (pageIframe) pageIframe.src = data.mapUrl;
                     }
 
-                    if(document.getElementById('privacy-text-ar')) {
+                    if (document.getElementById('privacy-text-ar')) {
                         document.getElementById('privacy-text-ar').value = data.privacy_ar || ''; 
                         document.getElementById('privacy-text-fr').value = data.privacy_fr || ''; 
                         document.getElementById('about-text-ar').value = data.about_ar || ''; 
@@ -1305,12 +1766,7 @@
             });
         }
 
-        function openBlogModal(id, data) {
-            document.getElementById('blog-modal-title').textContent = currentLang === 'ar' ? data.title_ar : data.title_fr;
-            document.getElementById('blog-modal-image').src = data.image || '';
-            document.getElementById('blog-modal-content').innerHTML = currentLang === 'ar' ? data.content_ar : data.content_fr;
-            document.getElementById('blogModal').classList.add('active');
-        }
+        /* ==================== الإبلاغات ==================== */
         function openReportModal() { document.getElementById('reportModal').classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
@@ -1318,54 +1774,75 @@
             const name = document.getElementById('report-name').value;
             const email = document.getElementById('report-email').value;
             const message = document.getElementById('report-message').value;
-            if (!name || !email || !message) { showToast('error', currentLang === 'ar' ? 'الرجاء ملء كل الحقول' : 'Veuillez remplir tous les champs'); return; }
+            if (!name || !email || !message) { 
+                showToast('error', currentLang === 'ar' ? 'الرجاء ملء كل الحقول' : 'Veuillez remplir tous les champs'); 
+                return; 
+            }
             
             showLoading(true);
             try {
                 await addDoc(collection(db, 'reports'), { name, email, message, createdAt: serverTimestamp() });
                 showToast('success', currentLang === 'ar' ? 'تم الإرسال بنجاح' : 'Envoyé avec succès');
                 closeModal('reportModal');
-                document.getElementById('report-name').value = ''; document.getElementById('report-email').value = ''; document.getElementById('report-message').value = '';
-            } catch (e) { showToast('error', e.message); }
+                document.getElementById('report-name').value = ''; 
+                document.getElementById('report-email').value = ''; 
+                document.getElementById('report-message').value = '';
+            } catch (e) { 
+                showToast('error', currentLang === 'ar' ? 'حدث خطأ أثناء الإرسال' : 'Erreur lors de l\'envoi'); 
+            }
             showLoading(false);
         }
 
-        /* ==================== مهام لوحة التحكم (Admin) ==================== */
+        /* ==================== إدارة لوحة التحكم (Admin Panel) ==================== */
         function openAdminLogin() {
             document.getElementById('adminLoginModal').classList.add('active');
-            document.getElementById('admin-password').value = '';
             document.getElementById('login-error').classList.remove('show');
         }
 
-        function loginAdmin() {
-            if (document.getElementById('admin-password').value === '#incubatorblida2#') {
+        async function loginAdmin() {
+            const email = document.getElementById('admin-auth-email').value.trim();
+            const password = document.getElementById('admin-auth-password').value;
+
+            if (!email || !password) {
+                document.getElementById('login-error').classList.add('show');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
                 isAdmin = true;
                 closeModal('adminLoginModal');
-                document.getElementById('public-site').style.display = 'none';
-                document.getElementById('content-pages').style.display = 'none';
-                document.getElementById('admin-panel').classList.add('active');
-                window.location.hash = '#/admin02';
-                
-                showAdminSection('dashboard');
-                loadAdminStats();
-                loadReports();
+                showAdminPanel();
                 showToast('success', currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Connexion réussie');
-            } else {
+            } catch (err) {
                 document.getElementById('login-error').classList.add('show');
             }
+            showLoading(false);
         }
 
-        function logoutAdmin() {
+        function showAdminPanel() {
+            document.getElementById('public-site').style.display = 'none';
+            document.getElementById('pages-view').style.display = 'none';
+            document.getElementById('admin-panel').classList.add('active');
+            window.location.hash = '#/admin02';
+            showAdminSection('dashboard');
+            loadAdminStats();
+            loadReports();
+        }
+
+        async function logoutAdmin() {
+            try {
+                await fbSignOut(auth);
+            } catch (e) {}
             isAdmin = false;
             document.getElementById('admin-panel').classList.remove('active');
-            document.getElementById('public-site').style.display = 'block';
-            window.location.hash = '';
+            navigateTo('/');
             showToast('info', currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Déconnecté');
         }
 
         function showAdminSection(section, element = null) {
             document.querySelectorAll('.admin-section-content').forEach(el => el.style.display = 'none');
-
             const targetId = 'admin-' + section;
             const targetSection = document.getElementById(targetId);
             if (targetSection) targetSection.style.display = 'block';
@@ -1376,19 +1853,21 @@
                 element.classList.add('active');
             } else {
                 const navItem = document.querySelector(`.admin-nav-item[data-section="${section}"]`);
-                if(navItem) navItem.classList.add('active');
+                if (navItem) navItem.classList.add('active');
             }
 
             const titles = {
                 dashboard: { ar: 'الداشبورد', fr: 'Tableau de Bord' },
                 banner: { ar: 'إضافة حدث أو دورة', fr: 'Événement/Bannière' },
                 stats: { ar: 'تعديل الإنجازات', fr: 'Réalisations' },
-                blog: { ar: 'أعمالنا', fr: 'Nos Travaux' },
+                works: { ar: 'أعمالنا', fr: 'Nos Travaux' },
+                blogs: { ar: 'المدونة والأخبار', fr: 'Blog & Actualités' },
+                funding: { ar: 'التمويلات', fr: 'Financements' },
                 partners: { ar: 'الشركاء', fr: 'Partenaires' },
                 team: { ar: 'فريق العمل', fr: 'Équipe' },
                 university: { ar: 'الجامعة', fr: 'Université' },
                 contact: { ar: 'الاتصال', fr: 'Contact' },
-                privacy: { ar: 'الخصوصية والموقع', fr: 'Confidentialité et Localisation' },
+                privacy: { ar: 'الخصوصية والموقع', fr: 'Confidentialité' },
                 reports: { ar: 'الإبلاغات', fr: 'Signalements' }
             };
 
@@ -1402,9 +1881,9 @@
             if (section === 'dashboard') loadAdminStats();
             else if (section === 'reports') loadReports();
             
-            if(window.innerWidth <= 1024) {
+            if (window.innerWidth <= 1024) {
                 const sidebar = document.getElementById('admin-sidebar');
-                if(sidebar) sidebar.classList.remove('open');
+                if (sidebar) sidebar.classList.remove('open');
             }
         }
 
@@ -1421,7 +1900,7 @@
         async function loadReports() {
             onSnapshot(query(collection(db, 'reports'), orderBy('createdAt', 'desc')), (snapshot) => {
                 const tbody = document.getElementById('admin-reports-list');
-                if(!tbody) return;
+                if (!tbody) return;
                 tbody.innerHTML = '';
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
@@ -1432,50 +1911,32 @@
             });
         }
 
-        async function uploadImageSafe(file, path) {
+        async function uploadImageSafe(file) {
             if (!file) return null;
             try {
                 const formData = new FormData();
                 formData.append('image', file);
-                
                 const apiKey = '2dc71982977e5ba491a1d8acf6d67404';
                 const uploadUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
                 
-                const uploadPromise = fetch(uploadUrl, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error("Timeout")), 20000)
-                );
-                
-                const response = await Promise.race([uploadPromise, timeoutPromise]);
-                
+                const response = await fetch(uploadUrl, { method: 'POST', body: formData });
                 if (response.ok) {
                     const result = await response.json();
-                    if (result.success) {
-                        return result.data.url;
-                    } else {
-                        throw new Error(result.error.message || "حدث خطأ غير معروف في الرفع");
-                    }
-                } else {
-                    throw new Error(`خطأ في السيرفر: ${response.status}`);
+                    if (result.success) return result.data.url;
                 }
+                return null;
             } catch (err) {
-                console.error("فشل الرفع إلى ImgBB:", err);
-                showToast('error', currentLang === 'ar' ? 'فشل رفع الصورة (سيتم حفظ النصوص فقط)' : 'Échec du téléchargement de l\'image (Textes sauvegardés)');
                 return null;
             }
         }
 
+        /* عمليات حفظ وتعديل محتوى الأدمن */
         async function saveBanner() {
             showLoading(true);
             try {
                 const file = document.getElementById('banner-image').files[0];
-                let imageUrl = file ? await uploadImageSafe(file, 'banners') : null;
+                let imageUrl = file ? await uploadImageSafe(file) : null;
                 const currentData = (await getDoc(doc(db, 'settings', 'banner'))).data() || {};
-                
                 const newLink = document.getElementById('banner-link').value;
                 const data = {
                     title_ar: document.getElementById('banner-title-ar').value,
@@ -1488,15 +1949,14 @@
                     registrations: newLink !== currentData.link ? 0 : (currentData.registrations || 0)
                 };
                 if (imageUrl) data.image = imageUrl;
-
                 await setDoc(doc(db, 'settings', 'banner'), data, { merge: true });
-                showToast('success', currentLang === 'ar' ? 'تم حفظ التعديلات' : 'Enregistré');
+                showToast('success', currentLang === 'ar' ? 'تم الحفظ بنجاح' : 'Enregistré');
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
 
         async function deleteBanner() {
-            if (!confirm(currentLang === 'ar' ? 'هل أنت متأكد من حذف البانر والحدث؟' : 'Êtes-vous sûr ?')) return;
+            if (!confirm(currentLang === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Êtes-vous sûr ?')) return;
             await setDoc(doc(db, 'settings', 'banner'), { title_ar: '', title_fr: '', desc_ar: '', desc_fr: '', btn_ar: '', btn_fr: '', link: '', registrations: 0, image: '' });
             showToast('success', currentLang === 'ar' ? 'تم الحذف' : 'Supprimé');
         }
@@ -1504,180 +1964,280 @@
         async function saveStats() {
             showLoading(true);
             const data = {
-                ideas: parseInt(document.getElementById('stat-ideas').value) || 0, courses: parseInt(document.getElementById('stat-courses').value) || 0,
-                labels: parseInt(document.getElementById('stat-labels').value) || 0, startups: parseInt(document.getElementById('stat-startups').value) || 0,
-                mentors: parseInt(document.getElementById('stat-members').value) || 0, members: parseInt(document.getElementById('stat-members').value) || 0
+                ideas: parseInt(document.getElementById('stat-ideas').value) || 0, 
+                courses: parseInt(document.getElementById('stat-courses').value) || 0,
+                labels: parseInt(document.getElementById('stat-labels').value) || 0, 
+                startups: parseInt(document.getElementById('stat-startups').value) || 0,
+                mentors: parseInt(document.getElementById('stat-mentors').value) || 0, 
+                members: parseInt(document.getElementById('stat-members').value) || 0
             };
             await setDoc(doc(db, 'settings', 'stats'), data);
-            showToast('success', currentLang === 'ar' ? 'تم حفظ الإحصائيات بنجاح' : 'Enregistré');
+            showToast('success', currentLang === 'ar' ? 'تم حفظ الإحصائيات' : 'Enregistré');
             showLoading(false);
         }
 
-        function editBlog(id) {
-            const data = blogsData[id];
-            if(!data) return;
-            document.getElementById('blog-title-ar').value = data.title_ar || '';
-            document.getElementById('blog-title-fr').value = data.title_fr || '';
-            document.getElementById('blog-content-ar').value = data.content_ar || '';
-            document.getElementById('blog-content-fr').value = data.content_fr || '';
-            editingBlogId = id;
+        /* إدارة أعمالنا */
+        function editWork(id) {
+            const data = worksData[id];
+            if (!data) return;
+            document.getElementById('work-title-ar').value = data.title_ar || '';
+            document.getElementById('work-title-fr').value = data.title_fr || '';
+            document.getElementById('work-content-ar').value = data.content_ar || '';
+            document.getElementById('work-content-fr').value = data.content_fr || '';
+            editingWorkId = id;
             
-            const btn = document.getElementById('btn-add-blog');
-            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
-            btn.className = 'btn btn-primary';
-            document.getElementById('admin-blog').scrollIntoView({behavior: 'smooth', block: 'start'});
+            const btn = document.getElementById('btn-add-work');
+            btn.innerHTML = `<i class="fas fa-save"></i> <span>${currentLang === 'ar' ? 'تحديث العمل' : 'Mettre à jour'}</span>`;
+            document.getElementById('admin-works').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        async function addBlog() {
-            const title_ar = document.getElementById('blog-title-ar').value;
-            if(!title_ar) { showToast('error', currentLang === 'ar' ? 'العنوان مطلوب' : 'Le titre est requis'); return; }
+        async function addWork() {
+            const title_ar = document.getElementById('work-title-ar').value;
+            if (!title_ar) { showToast('error', currentLang === 'ar' ? 'العنوان مطلوب' : 'Titre requis'); return; }
             showLoading(true);
             try {
-                const file = document.getElementById('blog-image').files[0];
-                let imageUrl = file ? await uploadImageSafe(file, 'blogs') : null;
-                
-                const blogData = {
-                    title_ar, 
-                    title_fr: document.getElementById('blog-title-fr').value,
-                    content_ar: document.getElementById('blog-content-ar').value, 
-                    content_fr: document.getElementById('blog-content-fr').value
+                const file = document.getElementById('work-image').files[0];
+                let imageUrl = file ? await uploadImageSafe(file) : null;
+                const workObj = {
+                    title_ar,
+                    title_fr: document.getElementById('work-title-fr').value,
+                    content_ar: document.getElementById('work-content-ar').value,
+                    content_fr: document.getElementById('work-content-fr').value
                 };
-                if(imageUrl) blogData.image = imageUrl;
+                if (imageUrl) workObj.image = imageUrl;
 
-                if (editingBlogId) {
-                    await updateDoc(doc(db, 'blogs', editingBlogId), blogData);
+                if (editingWorkId) {
+                    await updateDoc(doc(db, 'blogs', editingWorkId), workObj);
                     showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
-                    editingBlogId = null;
-                    const btn = document.getElementById('btn-add-blog');
-                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
-                    btn.className = 'btn btn-success';
+                    editingWorkId = null;
+                    document.getElementById('btn-add-work').innerHTML = `<i class="fas fa-plus"></i> <span>${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
                 } else {
-                    if(!blogData.image) blogData.image = '';
-                    blogData.createdAt = serverTimestamp();
-                    await addDoc(collection(db, 'blogs'), blogData);
-                    showToast('success', currentLang === 'ar' ? 'تم إضافة العمل بنجاح' : 'Ajouté');
+                    if (!workObj.image) workObj.image = '';
+                    workObj.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'blogs'), workObj);
+                    showToast('success', currentLang === 'ar' ? 'تمت الإضافة بنجاح' : 'Ajouté');
                 }
-                
-                document.getElementById('blog-title-ar').value = ''; 
-                document.getElementById('blog-title-fr').value = ''; 
-                document.getElementById('blog-content-ar').value = ''; 
-                document.getElementById('blog-content-fr').value = '';
-                document.getElementById('blog-image').value = '';
+                document.getElementById('work-title-ar').value = '';
+                document.getElementById('work-title-fr').value = '';
+                document.getElementById('work-content-ar').value = '';
+                document.getElementById('work-content-fr').value = '';
+                document.getElementById('work-image').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
-        async function deleteBlog(id) { if (confirm(currentLang === 'ar' ? 'هل أنت متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'blogs', id)); }
+        async function deleteWork(id) { if (confirm(currentLang === 'ar' ? 'هل أنت متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'blogs', id)); }
 
-        function editPartner(id) {
-            const data = partnersData[id];
-            if(!data) return;
-            document.getElementById('partner-name').value = data.name || '';
-            editingPartnerId = id;
+        /* إدارة المدونة */
+        function editBlogPost(id) {
+            const data = blogsData[id];
+            if (!data) return;
+            document.getElementById('post-title-ar').value = data.title_ar || '';
+            document.getElementById('post-title-fr').value = data.title_fr || '';
+            document.getElementById('post-cat-ar').value = data.cat_ar || '';
+            document.getElementById('post-cat-fr').value = data.cat_fr || '';
+            document.getElementById('post-content-ar').value = data.content_ar || '';
+            document.getElementById('post-content-fr').value = data.content_fr || '';
+            editingPostId = id;
             
-            const btn = document.getElementById('btn-add-partner');
-            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
-            btn.className = 'btn btn-primary';
-            document.getElementById('admin-partners').scrollIntoView({behavior: 'smooth', block: 'start'});
+            const btn = document.getElementById('btn-add-post');
+            btn.innerHTML = `<i class="fas fa-save"></i> <span>${currentLang === 'ar' ? 'تحديث المقال' : 'Mettre à jour'}</span>`;
+            document.getElementById('admin-blogs').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        async function addBlogPost() {
+            const title_ar = document.getElementById('post-title-ar').value;
+            if (!title_ar) { showToast('error', currentLang === 'ar' ? 'العنوان مطلوب' : 'Titre requis'); return; }
+            showLoading(true);
+            try {
+                const file = document.getElementById('post-image').files[0];
+                let imageUrl = file ? await uploadImageSafe(file) : null;
+                const postObj = {
+                    title_ar,
+                    title_fr: document.getElementById('post-title-fr').value,
+                    cat_ar: document.getElementById('post-cat-ar').value,
+                    cat_fr: document.getElementById('post-cat-fr').value,
+                    content_ar: document.getElementById('post-content-ar').value,
+                    content_fr: document.getElementById('post-content-fr').value
+                };
+                if (imageUrl) postObj.image = imageUrl;
+
+                if (editingPostId) {
+                    await updateDoc(doc(db, 'posts', editingPostId), postObj);
+                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
+                    editingPostId = null;
+                    document.getElementById('btn-add-post').innerHTML = `<i class="fas fa-plus"></i> <span>${currentLang === 'ar' ? 'نشر المقال' : 'Publier'}</span>`;
+                } else {
+                    if (!postObj.image) postObj.image = '';
+                    postObj.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'posts'), postObj);
+                    showToast('success', currentLang === 'ar' ? 'تم النشر بنجاح' : 'Publié');
+                }
+                document.getElementById('post-title-ar').value = '';
+                document.getElementById('post-title-fr').value = '';
+                document.getElementById('post-cat-ar').value = '';
+                document.getElementById('post-cat-fr').value = '';
+                document.getElementById('post-content-ar').value = '';
+                document.getElementById('post-content-fr').value = '';
+                document.getElementById('post-image').value = '';
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
+        }
+        async function deleteBlogPost(id) { if (confirm(currentLang === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Supprimer?')) await deleteDoc(doc(db, 'posts', id)); }
+
+        /* إدارة التمويلات */
+        function editFunding(id) {
+            const data = fundingData[id];
+            if (!data) return;
+            document.getElementById('funding-title-ar').value = data.title_ar || '';
+            document.getElementById('funding-title-fr').value = data.title_fr || '';
+            document.getElementById('funding-type-ar').value = data.type_ar || '';
+            document.getElementById('funding-type-fr').value = data.type_fr || '';
+            document.getElementById('funding-desc-ar').value = data.desc_ar || '';
+            document.getElementById('funding-desc-fr').value = data.desc_fr || '';
+            document.getElementById('funding-link').value = data.link || '';
+            editingFundingId = id;
+
+            const btn = document.getElementById('btn-add-funding');
+            btn.innerHTML = `<i class="fas fa-save"></i> <span>${currentLang === 'ar' ? 'تحديث التمويل' : 'Mettre à jour'}</span>`;
+            document.getElementById('admin-funding').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        async function addFunding() {
+            const title_ar = document.getElementById('funding-title-ar').value;
+            if (!title_ar) { showToast('error', currentLang === 'ar' ? 'اسم البرنامج مطلوب' : 'Nom requis'); return; }
+            showLoading(true);
+            try {
+                const file = document.getElementById('funding-image').files[0];
+                let imageUrl = file ? await uploadImageSafe(file) : null;
+                const fundingObj = {
+                    title_ar,
+                    title_fr: document.getElementById('funding-title-fr').value,
+                    type_ar: document.getElementById('funding-type-ar').value,
+                    type_fr: document.getElementById('funding-type-fr').value,
+                    desc_ar: document.getElementById('funding-desc-ar').value,
+                    desc_fr: document.getElementById('funding-desc-fr').value,
+                    link: document.getElementById('funding-link').value
+                };
+                if (imageUrl) fundingObj.image = imageUrl;
+
+                if (editingFundingId) {
+                    await updateDoc(doc(db, 'funding', editingFundingId), fundingObj);
+                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
+                    editingFundingId = null;
+                    document.getElementById('btn-add-funding').innerHTML = `<i class="fas fa-plus"></i> <span>${currentLang === 'ar' ? 'إضافة التمويل' : 'Ajouter'}</span>`;
+                } else {
+                    if (!fundingObj.image) fundingObj.image = '';
+                    fundingObj.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'funding'), fundingObj);
+                    showToast('success', currentLang === 'ar' ? 'تمت إضافة برنامج التمويل بنجاح' : 'Ajouté');
+                }
+                document.getElementById('funding-title-ar').value = '';
+                document.getElementById('funding-title-fr').value = '';
+                document.getElementById('funding-type-ar').value = '';
+                document.getElementById('funding-type-fr').value = '';
+                document.getElementById('funding-desc-ar').value = '';
+                document.getElementById('funding-desc-fr').value = '';
+                document.getElementById('funding-link').value = '';
+                document.getElementById('funding-image').value = '';
+            } catch (e) { showToast('error', e.message); }
+            showLoading(false);
+        }
+        async function deleteFunding(id) { if (confirm(currentLang === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Supprimer?')) await deleteDoc(doc(db, 'funding', id)); }
+
+        /* الشركاء والفريق وباقي الإعدادات */
+        function editPartner(id) {
+            const data = partnersData[id];
+            if (!data) return;
+            document.getElementById('partner-name').value = data.name || '';
+            editingPartnerId = id;
+            document.getElementById('btn-add-partner').innerHTML = `<i class="fas fa-save"></i> <span>${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
+            document.getElementById('admin-partners').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         async function addPartner() {
             showLoading(true);
             try {
                 const file = document.getElementById('partner-logo').files[0];
-                let logoUrl = file ? await uploadImageSafe(file, 'partners') : null;
+                let logoUrl = file ? await uploadImageSafe(file) : null;
                 const data = { name: document.getElementById('partner-name').value };
-                if(logoUrl) data.logo = logoUrl;
-
+                if (logoUrl) data.logo = logoUrl;
                 if (editingPartnerId) {
                     await updateDoc(doc(db, 'partners', editingPartnerId), data);
-                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
                     editingPartnerId = null;
-                    const btn = document.getElementById('btn-add-partner');
-                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
-                    btn.className = 'btn btn-success';
+                    document.getElementById('btn-add-partner').innerHTML = `<i class="fas fa-plus"></i> <span>${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
                 } else {
-                    if(!data.logo) data.logo = '';
+                    if (!data.logo) data.logo = '';
                     await addDoc(collection(db, 'partners'), data);
-                    showToast('success', currentLang === 'ar' ? 'تم إضافة الشريك بنجاح' : 'Ajouté');
                 }
+                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
                 document.getElementById('partner-name').value = '';
                 document.getElementById('partner-logo').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
-        async function deletePartner(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'partners', id)); }
+        async function deletePartner(id) { if (confirm('متأكد؟')) await deleteDoc(doc(db, 'partners', id)); }
 
         function editTeamMember(id) {
             const data = teamData[id];
-            if(!data) return;
+            if (!data) return;
             document.getElementById('team-name').value = data.name || '';
             document.getElementById('team-role-ar').value = data.role_ar || '';
             document.getElementById('team-role-fr').value = data.role_fr || '';
             editingTeamId = id;
-            
-            const btn = document.getElementById('btn-add-team');
-            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
-            btn.className = 'btn btn-primary';
-            document.getElementById('admin-team').scrollIntoView({behavior: 'smooth', block: 'start'});
+            document.getElementById('btn-add-team').innerHTML = `<i class="fas fa-save"></i> <span>${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
+            document.getElementById('admin-team').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-
         async function addTeamMember() {
             showLoading(true);
             try {
                 const file = document.getElementById('team-image').files[0];
-                let imageUrl = file ? await uploadImageSafe(file, 'team') : null;
+                let imageUrl = file ? await uploadImageSafe(file) : null;
                 const data = { 
                     name: document.getElementById('team-name').value, 
                     role_ar: document.getElementById('team-role-ar').value, 
                     role_fr: document.getElementById('team-role-fr').value 
                 };
-                if(imageUrl) data.image = imageUrl;
-
+                if (imageUrl) data.image = imageUrl;
                 if (editingTeamId) {
                     await updateDoc(doc(db, 'team', editingTeamId), data);
-                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
                     editingTeamId = null;
-                    const btn = document.getElementById('btn-add-team');
-                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
-                    btn.className = 'btn btn-success';
+                    document.getElementById('btn-add-team').innerHTML = `<i class="fas fa-plus"></i> <span>${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
                 } else {
-                    if(!data.image) data.image = '';
+                    if (!data.image) data.image = '';
                     await addDoc(collection(db, 'team'), data);
-                    showToast('success', currentLang === 'ar' ? 'تم إضافة عضو الفريق' : 'Ajouté');
                 }
-                document.getElementById('team-name').value = ''; 
-                document.getElementById('team-role-ar').value = ''; 
+                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
+                document.getElementById('team-name').value = '';
+                document.getElementById('team-role-ar').value = '';
                 document.getElementById('team-role-fr').value = '';
                 document.getElementById('team-image').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
-        async function deleteTeamMember(id) { if (confirm(currentLang === 'ar' ? 'متأكد؟' : 'Sûr?')) await deleteDoc(doc(db, 'team', id)); }
+        async function deleteTeamMember(id) { if (confirm('متأكد؟')) await deleteDoc(doc(db, 'team', id)); }
 
         async function saveUniLogo() {
             showLoading(true);
             try {
                 const file = document.getElementById('uni-logo-file').files[0];
-                if (file) { const url = await uploadImageSafe(file, 'university'); if(url) await setDoc(doc(db, 'settings', 'university'), { logo: url }, { merge: true }); }
-                showToast('success', currentLang === 'ar' ? 'تم حفظ الشعار' : 'Enregistré');
+                if (file) {
+                    const url = await uploadImageSafe(file);
+                    if (url) await setDoc(doc(db, 'settings', 'university'), { logo: url }, { merge: true });
+                }
+                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
         }
 
         function editUniLink(id) {
             const data = uniLinksData[id];
-            if(!data) return;
+            if (!data) return;
             document.getElementById('uni-link-title-ar').value = data.title_ar || '';
             document.getElementById('uni-link-title-fr').value = data.title_fr || '';
             document.getElementById('uni-link-url').value = data.url || '';
             editingUniLinkId = id;
-            
-            const btn = document.getElementById('btn-add-uni-link');
-            btn.innerHTML = `<i class="fas fa-save"></i><span data-ar="تحديث" data-fr="Mettre à jour">${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
-            btn.className = 'btn btn-primary';
-            document.getElementById('admin-university').scrollIntoView({behavior: 'smooth', block: 'start'});
+            document.getElementById('btn-add-uni-link').innerHTML = `<i class="fas fa-save"></i> <span>${currentLang === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>`;
+            document.getElementById('admin-university').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-
         async function addUniLink() {
             showLoading(true);
             try {
@@ -1686,18 +2246,14 @@
                     title_fr: document.getElementById('uni-link-title-fr').value, 
                     url: document.getElementById('uni-link-url').value 
                 };
-                
                 if (editingUniLinkId) {
                     await updateDoc(doc(db, 'university_links', editingUniLinkId), data);
-                    showToast('success', currentLang === 'ar' ? 'تم التحديث بنجاح' : 'Mis à jour');
                     editingUniLinkId = null;
-                    const btn = document.getElementById('btn-add-uni-link');
-                    btn.innerHTML = `<i class="fas fa-plus"></i><span data-ar="إضافة رابط" data-fr="Ajouter">${currentLang === 'ar' ? 'إضافة رابط' : 'Ajouter'}</span>`;
-                    btn.className = 'btn btn-success';
+                    document.getElementById('btn-add-uni-link').innerHTML = `<i class="fas fa-plus"></i> <span>${currentLang === 'ar' ? 'إضافة' : 'Ajouter'}</span>`;
                 } else {
                     await addDoc(collection(db, 'university_links'), data);
-                    showToast('success', currentLang === 'ar' ? 'تم إضافة الرابط' : 'Ajouté');
                 }
+                showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
                 document.getElementById('uni-link-title-ar').value = '';
                 document.getElementById('uni-link-title-fr').value = '';
                 document.getElementById('uni-link-url').value = '';
@@ -1708,8 +2264,13 @@
 
         async function saveContact() {
             showLoading(true);
-            await setDoc(doc(db, 'settings', 'contact'), { email: document.getElementById('admin-email').value, phone: document.getElementById('admin-phone').value, incubatorPhone: document.getElementById('admin-incubator-phone').value, fax: document.getElementById('admin-fax').value });
-            showToast('success', currentLang === 'ar' ? 'تم حفظ معلومات الاتصال' : 'Enregistré');
+            await setDoc(doc(db, 'settings', 'contact'), {
+                email: document.getElementById('admin-email').value,
+                phone: document.getElementById('admin-phone').value,
+                incubatorPhone: document.getElementById('admin-incubator-phone').value,
+                fax: document.getElementById('admin-fax').value
+            });
+            showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
             showLoading(false);
         }
 
@@ -1725,15 +2286,20 @@
             showToast('success', currentLang === 'ar' ? 'تم الحفظ' : 'Enregistré');
             showLoading(false);
         }
-        async function deleteReport(id) { if (confirm('متأكد من الحذف؟')) await deleteDoc(doc(db, 'reports', id)); }
+
+        async function deleteReport(id) { if (confirm('حذف هذا الإبلاغ؟')) await deleteDoc(doc(db, 'reports', id)); }
 
         async function trackVisit() {
             const visitsRef = doc(db, 'settings', 'visits');
             const visitsSnap = await getDoc(visitsRef);
-            const now = new Date(); const today = now.toDateString(); const thisMonth = `${now.getFullYear()}-${now.getMonth()}`;
-            if (!visitsSnap.exists()) await setDoc(visitsRef, { daily: 1, monthly: 1, total: 1, lastDate: today, lastMonth: thisMonth });
-            else {
-                const data = visitsSnap.data(); const updates = {};
+            const now = new Date();
+            const today = now.toDateString();
+            const thisMonth = `${now.getFullYear()}-${now.getMonth()}`;
+            if (!visitsSnap.exists()) {
+                await setDoc(visitsRef, { daily: 1, monthly: 1, total: 1, lastDate: today, lastMonth: thisMonth });
+            } else {
+                const data = visitsSnap.data();
+                const updates = {};
                 if (data.lastDate !== today) { updates.daily = 1; updates.lastDate = today; } else { updates.daily = increment(1); }
                 if (data.lastMonth !== thisMonth) { updates.monthly = 1; updates.lastMonth = thisMonth; } else { updates.monthly = increment(1); }
                 updates.total = increment(1);
@@ -1747,23 +2313,8 @@
                 await updateDoc(doc(db, 'settings', 'banner'), { registrations: increment(1) });
                 window.open(bannerSnap.data().link, '_blank');
             } else {
-                const msg = currentLang === 'ar' ? 'سيتم توفير رابط التسجيل قريباً' : 'Le lien d\'inscription sera bientôt disponible';
-                showToast('info', msg);
+                showToast('info', currentLang === 'ar' ? 'سيتم توفير رابط التسجيل قريباً' : 'Le lien sera bientôt disponible');
             }
-        }
-
-        function showPage(page) {
-            document.getElementById('public-site').style.display = 'none';
-            document.getElementById('content-pages').style.display = 'block';
-            document.querySelectorAll('.content-page').forEach(el => el.style.display = 'none');
-            document.getElementById(`${page}-page`).style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        function goHome() {
-            document.getElementById('public-site').style.display = 'block';
-            document.getElementById('content-pages').style.display = 'none';
-            window.scrollTo(0, 0);
         }
 
         function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('active', show); }
@@ -1777,6 +2328,11 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
+        window.addEventListener('resize', () => {
+            updateHomeWorksSlider();
+            updateBlogSuggestionsSlider();
+        });
+
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
         });
@@ -1786,3 +2342,5 @@
     </script>
 </body>
 </html>
+
+  
