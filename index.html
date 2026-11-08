@@ -93,6 +93,11 @@
         @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulseRed {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.06); box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
         
         .animate-on-scroll {
             opacity: 0;
@@ -266,15 +271,15 @@
         .item-details-img { width: 100%; max-height: 480px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
         .item-details-title { font-size: 2.2rem; font-weight: 900; color: var(--gray-900); margin-bottom: 1.5rem; line-height: 1.3; }
         .item-details-meta { display: flex; gap: 1.5rem; color: var(--gray-600); font-size: 0.95rem; margin-bottom: 2rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; }
-        .item-details-text { font-size: 1.15rem; line-height: 2; color: var(--gray-800); white-space: pre-line; margin-bottom: 3rem; }
+        .item-details-text { font-size: 1.15rem; line-height: 2; color: var(--gray-800); margin-bottom: 3rem; }
 
         .suggestions-slider-wrap { margin-top: 4rem; padding-top: 3rem; border-top: 2px solid var(--gray-100); }
         .suggestions-title { font-size: 1.6rem; font-weight: 900; color: var(--gray-900); margin-bottom: 2rem; }
 
         /* ==================== لوحة تحكم الأدمن ==================== */
-        .admin-panel { display: none; min-height: 100vh; background: var(--gray-100); }
+        .admin-panel { display: none; min-height: 100vh; background: var(--gray-100); width: 100%; position: relative; z-index: 10000; }
         .admin-panel.active { display: block; }
-        .admin-sidebar { position: fixed; top: 0; right: 0; width: 280px; height: 100vh; background: var(--gray-900); color: white; padding: 2rem 1.5rem; overflow-y: auto; z-index: 100; transition: transform 0.3s ease; }
+        .admin-sidebar { position: fixed; top: 0; right: 0; width: 280px; height: 100vh; background: var(--gray-900); color: white; padding: 2rem 1.5rem; overflow-y: auto; z-index: 10100; transition: transform 0.3s ease; }
         body.fr-mode .admin-sidebar { right: auto; left: 0; }
         .admin-logo { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .admin-logo-img { height: 45px; filter: brightness(0) invert(1); }
@@ -296,14 +301,50 @@
 
         #admin-menu-toggle { display: none; width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--gradient-purple); color: white; cursor: pointer; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-md); }
 
-        .admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .admin-stat-card { background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 1.2rem; transition: all 0.3s ease; border-right: 4px solid var(--purple-primary); }
-        body.fr-mode .admin-stat-card { border-right: none; border-left: 4px solid var(--purple-primary); }
-        .admin-stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-        .admin-stat-icon { width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; }
-        .admin-stat-info { flex: 1; }
-        .admin-stat-value { font-size: 2rem; font-weight: 900; color: var(--gray-900); line-height: 1; margin-bottom: 0.2rem; }
-        .admin-stat-label { font-size: 0.9rem; color: var(--gray-600); font-weight: 700; }
+        /* ==================== مربعات إحصائيات ثلاثية الأبعاد (3D Gradients) ==================== */
+        .admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.75rem; margin-bottom: 2.5rem; }
+        .admin-stat-card-3d {
+            position: relative;
+            border-radius: var(--radius-xl);
+            padding: 1.8rem 1.5rem;
+            color: white;
+            overflow: hidden;
+            box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.22), 0 8px 16px -2px rgba(0, 0, 0, 0.12), inset 0 2px 3px rgba(255, 255, 255, 0.4), inset 0 -3px 8px rgba(0, 0, 0, 0.3);
+            transform: perspective(700px) rotateX(2deg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+        .admin-stat-card-3d::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 45%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.22), rgba(255,255,255,0));
+            border-radius: var(--radius-xl) var(--radius-xl) 100% 100%;
+            pointer-events: none;
+        }
+        .admin-stat-card-3d:hover {
+            transform: perspective(700px) translateY(-8px) rotateX(0deg) scale(1.02);
+            box-shadow: 0 25px 45px -4px rgba(0, 0, 0, 0.32), 0 14px 22px -3px rgba(0, 0, 0, 0.18), inset 0 2px 5px rgba(255, 255, 255, 0.6);
+        }
+        .card-3d-purple { background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 50%, #4C1D95 100%); }
+        .card-3d-blue { background: linear-gradient(135deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%); }
+        .card-3d-green { background: linear-gradient(135deg, #34D399 0%, #059669 50%, #064E3B 100%); }
+        .card-3d-red { background: linear-gradient(135deg, #FB7185 0%, #E11D48 50%, #881337 100%); }
+
+        .stat-3d-icon {
+            width: 65px; height: 65px; border-radius: 18px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: white;
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .stat-3d-info { flex: 1; }
+        .stat-3d-value { font-size: 2.4rem; font-weight: 900; line-height: 1; margin-bottom: 0.3rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .stat-3d-label { font-size: 0.95rem; font-weight: 700; color: rgba(255, 255, 255, 0.9); }
 
         .admin-section { background: white; border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); }
         .admin-section-title { font-size: 1.3rem; font-weight: 900; color: var(--gray-900); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; gap: 0.75rem; }
@@ -315,6 +356,14 @@
         .form-textarea { min-height: 120px; resize: vertical; }
         .form-file { padding: 0.75rem; border: 2px dashed var(--gray-300); border-radius: var(--radius-md); cursor: pointer; transition: all 0.3s ease; background: var(--gray-50); }
         .form-file:hover { border-color: var(--purple-primary); background: rgba(124, 58, 237, 0.05); }
+
+        /* شريط أدوات تحرير النصوص (Rich Text Toolbar) */
+        .rich-editor-container { display: flex; flex-direction: column; border: 2px solid var(--gray-200); border-radius: var(--radius-md); overflow: hidden; background: white; }
+        .rich-editor-toolbar { display: flex; flex-wrap: wrap; gap: 4px; padding: 0.5rem; background: var(--gray-100); border-bottom: 1px solid var(--gray-200); align-items: center; }
+        .toolbar-btn { width: 34px; height: 34px; border: none; background: white; border-radius: 6px; cursor: pointer; color: var(--gray-700); font-size: 0.95rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: var(--shadow-sm); }
+        .toolbar-btn:hover { background: var(--purple-primary); color: white; }
+        .toolbar-color-picker { width: 34px; height: 34px; padding: 2px; border: none; border-radius: 6px; cursor: pointer; background: white; }
+        .rich-editor-content { min-height: 180px; padding: 1rem; outline: none; font-family: inherit; font-size: 1.05rem; line-height: 1.8; color: var(--gray-800); overflow-y: auto; max-height: 400px; }
         
         .btn { padding: 0.875rem 2rem; border: none; border-radius: var(--radius-md); font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; font-family: inherit; justify-content: center; }
         .btn-primary { background: var(--gradient-purple); color: white; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
@@ -337,6 +386,16 @@
         .table-btn-delete { background: #FEE2E2; color: #EF4444; }
         .table-btn-delete:hover { background: #EF4444; color: white; }
 
+        /* نافذة الإعلان المنبثق التفاعلية */
+        .ad-modal { background: white; border-radius: var(--radius-xl); max-width: 650px; width: 100%; overflow: hidden; transform: scale(0.9) translateY(20px); transition: all 0.4s ease; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); position: relative; }
+        .ad-modal-banner { width: 100%; height: 260px; object-fit: cover; }
+        .ad-modal-body { padding: 2.2rem; text-align: center; }
+        .ad-modal-title { font-size: 1.8rem; font-weight: 900; color: var(--gray-900); margin-bottom: 1rem; }
+        .ad-modal-desc { font-size: 1.1rem; color: var(--gray-600); line-height: 1.8; margin-bottom: 2rem; font-weight: 600; }
+        .ad-modal-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .ad-countdown-badge { padding: 0.6rem 1.4rem; background: var(--gray-100); border-radius: 50px; font-weight: 800; color: var(--purple-primary); font-size: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-ad-close { padding: 0.8rem 2rem; border: none; border-radius: 50px; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; font-weight: 900; font-size: 1.05rem; cursor: pointer; display: none; align-items: center; gap: 0.5rem; animation: pulseRed 1.5s infinite; }
+
         .login-container { max-width: 420px; width: 100%; background: white; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-xl); text-align: center; }
         .login-logo { height: 80px; margin-bottom: 1.5rem; }
         .login-title { font-size: 1.6rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.5rem; }
@@ -346,7 +405,7 @@
         .login-error { color: #EF4444; font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; display: none; }
         .login-error.show { display: block; }
 
-        .toast-container { position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); z-index: 5000; display: flex; flex-direction: column; gap: 0.75rem; }
+        .toast-container { position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); z-index: 50000; display: flex; flex-direction: column; gap: 0.75rem; }
         .toast { padding: 1rem 1.5rem; border-radius: var(--radius-md); color: white; font-weight: 800; display: flex; align-items: center; gap: 0.75rem; box-shadow: var(--shadow-lg); animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s; min-width: 300px; }
         @keyframes fadeOut { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
         .toast-success { background: linear-gradient(135deg, #10B981, #059669); }
@@ -355,13 +414,13 @@
 
         .spinner { width: 40px; height: 40px; border: 4px solid var(--gray-200); border-top-color: var(--purple-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); z-index: 40000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .loading-overlay.active { opacity: 1; visibility: visible; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 2rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 2rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal { background: white; border-radius: var(--radius-xl); max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9) translateY(20px); transition: all 0.3s ease; box-shadow: var(--shadow-xl); }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-overlay.active .modal, .modal-overlay.active .ad-modal { transform: scale(1) translateY(0); }
         .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
         .modal-title { font-size: 1.5rem; font-weight: 900; color: var(--gray-900); }
         .modal-close { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--gray-100); color: var(--gray-600); cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; }
@@ -621,7 +680,7 @@
             <div class="content-page route-page" id="map-page" style="display:none;">
                 <h2 data-ar="موقع الحاضنة" data-fr="Localisation de l'Incubateur">موقع الحاضنة</h2>
                 <div class="map-container" style="height: 450px;">
-                    <iframe id="page-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe id="page-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
 
@@ -658,7 +717,7 @@
             <div>
                 <h3 class="footer-title" data-ar="خريطة الموقع" data-fr="Carte">خريطة الموقع</h3>
                 <div class="map-container">
-                    <iframe id="footer-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe id="footer-map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25585.5!2d2.8333!3d36.4667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1s0x0%3A0x0!2zMzbCsDI4JzAwLjAiTiAywrA1MCcwMC4wIkU!5e0!3m2!1sfr!2sdz!4v1" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
         </div>
@@ -683,6 +742,7 @@
             <div class="admin-nav">
                 <button class="admin-nav-item active" data-section="dashboard" onclick="showAdminSection('dashboard', this)"><i class="fas fa-chart-pie"></i><span data-ar="الداشبورد" data-fr="Tableau de Bord">الداشبورد</span></button>
                 <button class="admin-nav-item" data-section="banner" onclick="showAdminSection('banner', this)"><i class="fas fa-image"></i><span data-ar="الحدث أو الدورة" data-fr="Événement/Bannière">الحدث أو الدورة</span></button>
+                <button class="admin-nav-item" data-section="popup" onclick="showAdminSection('popup', this)"><i class="fas fa-bullhorn"></i><span data-ar="الإعلان المنبثق" data-fr="Annonce Pop-up">الإعلان المنبثق</span></button>
                 <button class="admin-nav-item" data-section="stats" onclick="showAdminSection('stats', this)"><i class="fas fa-chart-bar"></i><span data-ar="إنجازاتنا" data-fr="Réalisations">إنجازاتنا</span></button>
                 <button class="admin-nav-item" data-section="works" onclick="showAdminSection('works', this)"><i class="fas fa-briefcase"></i><span data-ar="أعمالنا" data-fr="Nos Travaux">أعمالنا</span></button>
                 <button class="admin-nav-item" data-section="blogs" onclick="showAdminSection('blogs', this)"><i class="fas fa-newspaper"></i><span data-ar="المدونة والأخبار" data-fr="Blog & Actualités">المدونة والأخبار</span></button>
@@ -704,13 +764,37 @@
                 <button class="admin-logout" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i><span data-ar="خروج" data-fr="Déconnexion">خروج</span></button>
             </div>
 
-            <!-- لوحة القيادة -->
+            <!-- لوحة القيادة مع بطاقات 3D مجسمة -->
             <div id="admin-dashboard" class="admin-section-content">
                 <div class="admin-stats-grid">
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: var(--gradient-purple);"><i class="fas fa-user-plus"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-registrations">0</div><div class="admin-stat-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions">التسجيلات (في الحدث)</div></div></div>
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i class="fas fa-eye"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-daily">0</div><div class="admin-stat-label" data-ar="الزيارات اليومية" data-fr="Visites Aujourd'hui">الزيارات اليومية</div></div></div>
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-chart-line"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-monthly">0</div><div class="admin-stat-label" data-ar="الزيارات الشهرية" data-fr="Visites ce Mois">الزيارات الشهرية</div></div></div>
-                    <div class="admin-stat-card"><div class="admin-stat-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626);"><i class="fas fa-exclamation-triangle"></i></div><div class="admin-stat-info"><div class="admin-stat-value" id="admin-stat-reports">0</div><div class="admin-stat-label" data-ar="الإبلاغات" data-fr="Signalements">الإبلاغات</div></div></div>
+                    <div class="admin-stat-card-3d card-3d-purple">
+                        <div class="stat-3d-icon"><i class="fas fa-user-plus"></i></div>
+                        <div class="stat-3d-info">
+                            <div class="stat-3d-value" id="admin-stat-registrations">0</div>
+                            <div class="stat-3d-label" data-ar="التسجيلات (في الحدث)" data-fr="Inscriptions">التسجيلات (في الحدث)</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card-3d card-3d-blue">
+                        <div class="stat-3d-icon"><i class="fas fa-eye"></i></div>
+                        <div class="stat-3d-info">
+                            <div class="stat-3d-value" id="admin-stat-daily">0</div>
+                            <div class="stat-3d-label" data-ar="الزيارات اليومية" data-fr="Visites Aujourd'hui">الزيارات اليومية</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card-3d card-3d-green">
+                        <div class="stat-3d-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-3d-info">
+                            <div class="stat-3d-value" id="admin-stat-monthly">0</div>
+                            <div class="stat-3d-label" data-ar="الزيارات الشهرية" data-fr="Visites ce Mois">الزيارات الشهرية</div>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card-3d card-3d-red">
+                        <div class="stat-3d-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-3d-info">
+                            <div class="stat-3d-value" id="admin-stat-reports">0</div>
+                            <div class="stat-3d-label" data-ar="الإبلاغات الواردة" data-fr="Signalements">الإبلاغات الواردة</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -719,14 +803,14 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-image"></i> <span data-ar="إضافة حدث أو دورة (البانر الرئيسي)" data-fr="Événement/Bannière Principale">إضافة حدث أو دورة</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (عربي)" data-fr="Titre (AR)">عنوان الحدث (عربي)</label><input type="text" class="form-input" id="banner-title-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="عنوان الحدث (فرنسي)" data-fr="Titre (FR)">عنوان الحدث (فرنسي)</label><input type="text" class="form-input" id="banner-title-fr"></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="وصف (عربي)" data-fr="Description (AR)">وصف (عربي)</label><textarea class="form-textarea" id="banner-desc-ar"></textarea></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="وصف (فرنسي)" data-fr="Description (FR)">وصف (فرنسي)</label><textarea class="form-textarea" id="banner-desc-fr"></textarea></div>
-                        <div class="form-group"><label class="form-label" data-ar="نص الزر (عربي)" data-fr="Texte du Bouton (AR)">نص الزر (عربي)</label><input type="text" class="form-input" id="banner-btn-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="نص الزر (فرنسي)" data-fr="Texte du Bouton (FR)">نص الزر (فرنسي)</label><input type="text" class="form-input" id="banner-btn-fr"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رابط التسجيل للزر" data-fr="Lien d'inscription">رابط التسجيل للزر</label><input type="url" class="form-input" id="banner-link"></div>
-                        <div class="form-group"><label class="form-label" data-ar="صورة الخلفية" data-fr="Image de Fond">صورة الخلفية</label><input type="file" class="form-file" id="banner-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label">عنوان الحدث (عربي)</label><input type="text" class="form-input" id="banner-title-ar"></div>
+                        <div class="form-group"><label class="form-label">عنوان الحدث (فرنسي)</label><input type="text" class="form-input" id="banner-title-fr"></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">وصف (عربي)</label><textarea class="form-textarea" id="banner-desc-ar"></textarea></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">وصف (فرنسي)</label><textarea class="form-textarea" id="banner-desc-fr"></textarea></div>
+                        <div class="form-group"><label class="form-label">نص الزر (عربي)</label><input type="text" class="form-input" id="banner-btn-ar"></div>
+                        <div class="form-group"><label class="form-label">نص الزر (فرنسي)</label><input type="text" class="form-input" id="banner-btn-fr"></div>
+                        <div class="form-group"><label class="form-label">رابط التسجيل للزر</label><input type="url" class="form-input" id="banner-link"></div>
+                        <div class="form-group"><label class="form-label">صورة الخلفية</label><input type="file" class="form-file" id="banner-image" accept="image/*"></div>
                     </div>
                     <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
                         <button class="btn btn-primary" onclick="saveBanner()"><i class="fas fa-save"></i><span data-ar="حفظ التعديلات" data-fr="Enregistrer">حفظ التعديلات</span></button>
@@ -735,32 +819,94 @@
                 </div>
             </div>
 
+            <!-- التحكم في الإعلان المنبثق التفاعلي -->
+            <div id="admin-popup" class="admin-section-content" style="display:none;">
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-bullhorn"></i> <span data-ar="إعدادات الإعلان المنبثق (عند فتح الموقع)" data-fr="Annonce Pop-up">إعدادات الإعلان المنبثق</span></h3>
+                    <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                        <input type="checkbox" id="popup-enabled" style="width: 22px; height: 22px; accent-color: var(--purple-primary); cursor: pointer;">
+                        <label for="popup-enabled" style="font-weight: 800; font-size: 1.1rem; cursor: pointer;" data-ar="تفعيل ظهور الإعلان المنبثق للزوار" data-fr="Activer la pop-up pour les visiteurs">تفعيل ظهور الإعلان المنبثق للزوار</label>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group"><label class="form-label">عنوان الإعلان (عربي)</label><input type="text" class="form-input" id="popup-title-ar"></div>
+                        <div class="form-group"><label class="form-label">عنوان الإعلان (فرنسي)</label><input type="text" class="form-input" id="popup-title-fr"></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">نص أو محتوى الإعلان (عربي)</label><textarea class="form-textarea" id="popup-desc-ar"></textarea></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">نص أو محتوى الإعلان (فرنسي)</label><textarea class="form-textarea" id="popup-desc-fr"></textarea></div>
+                        <div class="form-group"><label class="form-label">رابط التقديم أو الاطلاع (إن وجد)</label><input type="url" class="form-input" id="popup-link"></div>
+                        <div class="form-group"><label class="form-label">نص زر التقديم</label><input type="text" class="form-input" id="popup-btn-text" placeholder="اكتشف المزيد"></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">صورة أو بانر الإعلان</label><input type="file" class="form-file" id="popup-image" accept="image/*"></div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="savePopupSettings()"><i class="fas fa-save"></i><span data-ar="حفظ إعدادات الإعلان" data-fr="Enregistrer">حفظ إعدادات الإعلان</span></button>
+                </div>
+            </div>
+
             <!-- الإنجازات -->
             <div id="admin-stats" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-chart-bar"></i> <span data-ar="تعديل الإنجازات" data-fr="Modifier les Réalisations">تعديل الإنجازات</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="أفكار المشاريع" data-fr="Idées de Projets">أفكار المشاريع</label><input type="number" class="form-input" id="stat-ideas"></div>
-                        <div class="form-group"><label class="form-label" data-ar="الدورات التدريبية" data-fr="Formations">الدورات التدريبية</label><input type="number" class="form-input" id="stat-courses"></div>
-                        <div class="form-group"><label class="form-label" data-ar="وسوم لابل مشروع مبتكر" data-fr="Labels">وسوم لابل</label><input type="number" class="form-input" id="stat-labels"></div>
-                        <div class="form-group"><label class="form-label" data-ar="المؤسسات الناشئة" data-fr="Startups">المؤسسات الناشئة</label><input type="number" class="form-input" id="stat-startups"></div>
-                        <div class="form-group"><label class="form-label" data-ar="المؤطرون" data-fr="Encadrants">المؤطرون</label><input type="number" class="form-input" id="stat-mentors"></div>
-                        <div class="form-group"><label class="form-label" data-ar="المنخرطون" data-fr="Membres">المنخرطون</label><input type="number" class="form-input" id="stat-members"></div>
+                        <div class="form-group"><label class="form-label">أفكار المشاريع</label><input type="number" class="form-input" id="stat-ideas"></div>
+                        <div class="form-group"><label class="form-label">الدورات التدريبية</label><input type="number" class="form-input" id="stat-courses"></div>
+                        <div class="form-group"><label class="form-label">وسوم لابل مشروع مبتكر</label><input type="number" class="form-input" id="stat-labels"></div>
+                        <div class="form-group"><label class="form-label">المؤسسات الناشئة</label><input type="number" class="form-input" id="stat-startups"></div>
+                        <div class="form-group"><label class="form-label">المؤطرون</label><input type="number" class="form-input" id="stat-mentors"></div>
+                        <div class="form-group"><label class="form-label">المنخرطون</label><input type="number" class="form-input" id="stat-members"></div>
                     </div>
                     <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="saveStats()"><i class="fas fa-save"></i><span data-ar="حفظ الإحصائيات" data-fr="Enregistrer">حفظ الإحصائيات</span></button>
                 </div>
             </div>
 
-            <!-- إدارة أعمالنا -->
+            <!-- إدارة أعمالنا مع شريط الأدوات الغني للكتابة -->
             <div id="admin-works" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل عمل" data-fr="Ajouter/Modifier un Travail">إضافة أو تعديل عمل</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="العنوان (عربي)" data-fr="Titre (AR)">العنوان (عربي)</label><input type="text" class="form-input" id="work-title-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="العنوان (فرنسي)" data-fr="Titre (FR)">العنوان (فرنسي)</label><input type="text" class="form-input" id="work-title-fr"></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="التفاصيل والمحتوى (عربي)" data-fr="Contenu (AR)">المحتوى (عربي)</label><textarea class="form-textarea" id="work-content-ar"></textarea></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="التفاصيل والمحتوى (فرنسي)" data-fr="Contenu (FR)">المحتوى (فرنسي)</label><textarea class="form-textarea" id="work-content-fr"></textarea></div>
-                        <div class="form-group"><label class="form-label" data-ar="صورة المشروع" data-fr="Image">صورة المشروع</label><input type="file" class="form-file" id="work-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label">العنوان (عربي)</label><input type="text" class="form-input" id="work-title-ar"></div>
+                        <div class="form-group"><label class="form-label">العنوان (فرنسي)</label><input type="text" class="form-input" id="work-title-fr"></div>
+                        
+                        <!-- محرر نصوص متكامل للمحتوى العربي -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">المحتوى والتفاصيل (عربي)</label>
+                            <div class="rich-editor-container">
+                                <div class="rich-editor-toolbar" data-target="work-editor-ar">
+                                    <button type="button" class="toolbar-btn" data-cmd="bold" title="خط عريض"><i class="fas fa-bold"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="italic" title="مائل"><i class="fas fa-italic"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="underline" title="تسطير"><i class="fas fa-underline"></i></button>
+                                    <input type="color" class="toolbar-color-picker" title="لون الخط" onchange="applyEditorColor(this, 'work-editor-ar')">
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h2" title="عنوان رئيسي">H2</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h3" title="عنوان فرعي">H3</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertUnorderedList" title="قائمة نقطية"><i class="fas fa-list-ul"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertOrderedList" title="قائمة رقمية"><i class="fas fa-list-ol"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorLink('work-editor-ar')" title="إضافة رابط"><i class="fas fa-link"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorImage('work-editor-ar')" title="إدراج صورة برابط"><i class="fas fa-image"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="removeFormat" title="مسح التنسيق"><i class="fas fa-eraser"></i></button>
+                                </div>
+                                <div class="rich-editor-content" id="work-editor-ar" contenteditable="true" dir="rtl"></div>
+                            </div>
+                        </div>
+
+                        <!-- محرر نصوص متكامل للمحتوى الفرنسي -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">المحتوى والتفاصيل (فرنسي)</label>
+                            <div class="rich-editor-container">
+                                <div class="rich-editor-toolbar" data-target="work-editor-fr">
+                                    <button type="button" class="toolbar-btn" data-cmd="bold"><i class="fas fa-bold"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="italic"><i class="fas fa-italic"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="underline"><i class="fas fa-underline"></i></button>
+                                    <input type="color" class="toolbar-color-picker" title="Couleur" onchange="applyEditorColor(this, 'work-editor-fr')">
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h2">H2</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h3">H3</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertOrderedList"><i class="fas fa-list-ol"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorLink('work-editor-fr')"><i class="fas fa-link"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorImage('work-editor-fr')"><i class="fas fa-image"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="removeFormat"><i class="fas fa-eraser"></i></button>
+                                </div>
+                                <div class="rich-editor-content" id="work-editor-fr" contenteditable="true" dir="ltr"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">صورة المشروع الرئيسية</label><input type="file" class="form-file" id="work-image" accept="image/*"></div>
                     </div>
                     <button class="btn btn-success" id="btn-add-work" style="margin-top: 1.5rem;" onclick="addWork()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
@@ -775,18 +921,59 @@
                 </div>
             </div>
 
-            <!-- إدارة المدونة والأخبار -->
+            <!-- إدارة المدونة مع شريط الأدوات الغني للكتابة -->
             <div id="admin-blogs" class="admin-section-content" style="display:none;">
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-newspaper"></i> <span data-ar="إضافة أو تعديل مقال / برنامج بالمدونة" data-fr="Ajouter/Modifier un Article">إضافة أو تعديل مقال بالمدونة</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="العنوان (عربي)" data-fr="Titre (AR)">العنوان (عربي)</label><input type="text" class="form-input" id="post-title-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="العنوان (فرنسي)" data-fr="Titre (FR)">العنوان (فرنسي)</label><input type="text" class="form-input" id="post-title-fr"></div>
-                        <div class="form-group"><label class="form-label" data-ar="التصنيف (عربي)" data-fr="Catégorie (AR)">التصنيف (عربي)</label><input type="text" class="form-input" id="post-cat-ar" placeholder="برامج، ورشات، فعاليات..."></div>
-                        <div class="form-group"><label class="form-label" data-ar="التصنيف (فرنسي)" data-fr="Catégorie (FR)">التصنيف (فرنسي)</label><input type="text" class="form-input" id="post-cat-fr" placeholder="Programmes, Ateliers..."></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="محتوى المقال (عربي)" data-fr="Contenu (AR)">محتوى المقال (عربي)</label><textarea class="form-textarea" id="post-content-ar" style="min-height: 150px;"></textarea></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="محتوى المقال (فرنسي)" data-fr="Contenu (FR)">محتوى المقال (فرنسي)</label><textarea class="form-textarea" id="post-content-fr" style="min-height: 150px;"></textarea></div>
-                        <div class="form-group"><label class="form-label" data-ar="الصورة البارزة" data-fr="Image">الصورة البارزة</label><input type="file" class="form-file" id="post-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label">العنوان (عربي)</label><input type="text" class="form-input" id="post-title-ar"></div>
+                        <div class="form-group"><label class="form-label">العنوان (فرنسي)</label><input type="text" class="form-input" id="post-title-fr"></div>
+                        <div class="form-group"><label class="form-label">التصنيف (عربي)</label><input type="text" class="form-input" id="post-cat-ar" placeholder="برامج، ورشات، مسابقات..."></div>
+                        <div class="form-group"><label class="form-label">التصنيف (فرنسي)</label><input type="text" class="form-input" id="post-cat-fr" placeholder="Programmes, Ateliers..."></div>
+                        
+                        <!-- محرر نصوص متكامل للمقال بالعربية -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">محتوى المقال (عربي)</label>
+                            <div class="rich-editor-container">
+                                <div class="rich-editor-toolbar" data-target="post-editor-ar">
+                                    <button type="button" class="toolbar-btn" data-cmd="bold" title="خط عريض"><i class="fas fa-bold"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="italic" title="مائل"><i class="fas fa-italic"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="underline" title="تسطير"><i class="fas fa-underline"></i></button>
+                                    <input type="color" class="toolbar-color-picker" title="تلوين النص" onchange="applyEditorColor(this, 'post-editor-ar')">
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h2">H2</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h3">H3</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertOrderedList"><i class="fas fa-list-ol"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorLink('post-editor-ar')"><i class="fas fa-link"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorImage('post-editor-ar')"><i class="fas fa-image"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="removeFormat"><i class="fas fa-eraser"></i></button>
+                                </div>
+                                <div class="rich-editor-content" id="post-editor-ar" contenteditable="true" dir="rtl"></div>
+                            </div>
+                        </div>
+
+                        <!-- محرر نصوص متكامل للمقال بالفرنسية -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">محتوى المقال (فرنسي)</label>
+                            <div class="rich-editor-container">
+                                <div class="rich-editor-toolbar" data-target="post-editor-fr">
+                                    <button type="button" class="toolbar-btn" data-cmd="bold"><i class="fas fa-bold"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="italic"><i class="fas fa-italic"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="underline"><i class="fas fa-underline"></i></button>
+                                    <input type="color" class="toolbar-color-picker" title="Couleur" onchange="applyEditorColor(this, 'post-editor-fr')">
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h2">H2</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="h3">H3</button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="insertOrderedList"><i class="fas fa-list-ol"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorLink('post-editor-fr')"><i class="fas fa-link"></i></button>
+                                    <button type="button" class="toolbar-btn" onclick="promptEditorImage('post-editor-fr')"><i class="fas fa-image"></i></button>
+                                    <button type="button" class="toolbar-btn" data-cmd="removeFormat"><i class="fas fa-eraser"></i></button>
+                                </div>
+                                <div class="rich-editor-content" id="post-editor-fr" contenteditable="true" dir="ltr"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">الصورة البارزة</label><input type="file" class="form-file" id="post-image" accept="image/*"></div>
                     </div>
                     <button class="btn btn-success" id="btn-add-post" style="margin-top: 1.5rem;" onclick="addBlogPost()"><i class="fas fa-plus"></i><span data-ar="نشر المقال" data-fr="Publier">نشر المقال</span></button>
                 </div>
@@ -806,14 +993,14 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-coins"></i> <span data-ar="إضافة أو تعديل برنامج تمويل" data-fr="Ajouter/Modifier Financement">إضافة برنامج تمويل</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="اسم البرنامج / الجهة المانحة (عربي)" data-fr="Nom du Programme (AR)">اسم البرنامج (عربي)</label><input type="text" class="form-input" id="funding-title-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="اسم البرنامج / الجهة المانحة (فرنسي)" data-fr="Nom du Programme (FR)">اسم البرنامج (فرنسي)</label><input type="text" class="form-input" id="funding-title-fr"></div>
-                        <div class="form-group"><label class="form-label" data-ar="نوع التمويل (عربي)" data-fr="Type (AR)">نوع التمويل (عربي)</label><input type="text" class="form-input" id="funding-type-ar" placeholder="صندوق استثماري، منحة، قرض..."></div>
-                        <div class="form-group"><label class="form-label" data-ar="نوع التمويل (فرنسي)" data-fr="Type (FR)">نوع التمويل (فرنسي)</label><input type="text" class="form-input" id="funding-type-fr" placeholder="Subvention, Capital Risque..."></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="شروط وتفاصيل التمويل (عربي)" data-fr="Détails (AR)">تفاصيل التمويل (عربي)</label><textarea class="form-textarea" id="funding-desc-ar"></textarea></div>
-                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label" data-ar="شروط وتفاصيل التمويل (فرنسي)" data-fr="Détails (FR)">تفاصيل التمويل (فرنسي)</label><textarea class="form-textarea" id="funding-desc-fr"></textarea></div>
-                        <div class="form-group"><label class="form-label" data-ar="رابط التقديم أو الموقع الرسمي" data-fr="Lien Officiel">رابط التقديم الرسمي</label><input type="url" class="form-input" id="funding-link"></div>
-                        <div class="form-group"><label class="form-label" data-ar="شعار الجهة أو صورة الدعم" data-fr="Logo / Image">شعار أو صورة</label><input type="file" class="form-file" id="funding-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label">اسم البرنامج / الجهة المانحة (عربي)</label><input type="text" class="form-input" id="funding-title-ar"></div>
+                        <div class="form-group"><label class="form-label">اسم البرنامج / الجهة المانحة (فرنسي)</label><input type="text" class="form-input" id="funding-title-fr"></div>
+                        <div class="form-group"><label class="form-label">نوع التمويل (عربي)</label><input type="text" class="form-input" id="funding-type-ar" placeholder="صندوق استثماري، منحة، قرض..."></div>
+                        <div class="form-group"><label class="form-label">نوع التمويل (فرنسي)</label><input type="text" class="form-input" id="funding-type-fr" placeholder="Subvention, Capital Risque..."></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">تفاصيل التمويل (عربي)</label><textarea class="form-textarea" id="funding-desc-ar"></textarea></div>
+                        <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">تفاصيل التمويل (فرنسي)</label><textarea class="form-textarea" id="funding-desc-fr"></textarea></div>
+                        <div class="form-group"><label class="form-label">رابط التقديم الرسمي</label><input type="url" class="form-input" id="funding-link"></div>
+                        <div class="form-group"><label class="form-label">شعار أو صورة</label><input type="file" class="form-file" id="funding-image" accept="image/*"></div>
                     </div>
                     <button class="btn btn-success" id="btn-add-funding" style="margin-top: 1.5rem;" onclick="addFunding()"><i class="fas fa-plus"></i><span data-ar="إضافة التمويل" data-fr="Ajouter">إضافة التمويل</span></button>
                 </div>
@@ -833,8 +1020,8 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل شريك" data-fr="Ajouter/Modifier un Partenaire">إضافة أو تعديل شريك</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="اسم الشركة" data-fr="Nom">اسم الشركة</label><input type="text" class="form-input" id="partner-name"></div>
-                        <div class="form-group"><label class="form-label" data-ar="شعار الشركة" data-fr="Logo">شعار الشركة</label><input type="file" class="form-file" id="partner-logo" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label">اسم الشركة</label><input type="text" class="form-input" id="partner-name"></div>
+                        <div class="form-group"><label class="form-label">شعار الشركة</label><input type="file" class="form-file" id="partner-logo" accept="image/*"></div>
                     </div>
                     <button class="btn btn-success" id="btn-add-partner" style="margin-top: 1.5rem;" onclick="addPartner()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
@@ -854,10 +1041,10 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-plus"></i> <span data-ar="إضافة أو تعديل شخص" data-fr="Ajouter/Modifier Membre">إضافة أو تعديل شخص</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="الاسم" data-fr="Nom">الاسم</label><input type="text" class="form-input" id="team-name"></div>
-                        <div class="form-group"><label class="form-label" data-ar="المهنة (عربي)" data-fr="Poste (AR)">المهنة (عربي)</label><input type="text" class="form-input" id="team-role-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="المهنة (فرنسي)" data-fr="Poste (FR)">المهنة (فرنسي)</label><input type="text" class="form-input" id="team-role-fr"></div>
-                        <div class="form-group"><label class="form-label" data-ar="الصورة الشخصية" data-fr="Photo">الصورة الشخصية</label><input type="file" class="form-file" id="team-image" accept="image/*"></div>
+                        <div class="form-group"><label class="form-label">الاسم</label><input type="text" class="form-input" id="team-name"></div>
+                        <div class="form-group"><label class="form-label">المهنة (عربي)</label><input type="text" class="form-input" id="team-role-ar"></div>
+                        <div class="form-group"><label class="form-label">المهنة (فرنسي)</label><input type="text" class="form-input" id="team-role-fr"></div>
+                        <div class="form-group"><label class="form-label">الصورة الشخصية</label><input type="file" class="form-file" id="team-image" accept="image/*"></div>
                     </div>
                     <button class="btn btn-success" id="btn-add-team" style="margin-top: 1.5rem;" onclick="addTeamMember()"><i class="fas fa-plus"></i><span data-ar="إضافة" data-fr="Ajouter">إضافة</span></button>
                 </div>
@@ -882,9 +1069,9 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-link"></i> <span data-ar="إضافة أو تعديل رابط جديد" data-fr="Ajouter/Modifier un Lien">إضافة رابط جديد</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="عنوان الرابط (عربي)" data-fr="Titre (AR)">عنوان الرابط (عربي)</label><input type="text" class="form-input" id="uni-link-title-ar"></div>
-                        <div class="form-group"><label class="form-label" data-ar="عنوان الرابط (فرنسي)" data-fr="Titre (FR)">عنوان الرابط (فرنسي)</label><input type="text" class="form-input" id="uni-link-title-fr"></div>
-                        <div class="form-group"><label class="form-label" data-ar="الرابط الفعلي (URL)" data-fr="URL">الرابط الفعلي (URL)</label><input type="url" class="form-input" id="uni-link-url"></div>
+                        <div class="form-group"><label class="form-label">عنوان الرابط (عربي)</label><input type="text" class="form-input" id="uni-link-title-ar"></div>
+                        <div class="form-group"><label class="form-label">عنوان الرابط (فرنسي)</label><input type="text" class="form-input" id="uni-link-title-fr"></div>
+                        <div class="form-group"><label class="form-label">الرابط الفعلي (URL)</label><input type="url" class="form-input" id="uni-link-url"></div>
                     </div>
                     <button class="btn btn-success" id="btn-add-uni-link" style="margin-top: 1.5rem;" onclick="addUniLink()"><i class="fas fa-plus"></i><span data-ar="إضافة رابط" data-fr="Ajouter">إضافة رابط</span></button>
                 </div>
@@ -904,10 +1091,10 @@
                 <div class="admin-section">
                     <h3 class="admin-section-title"><i class="fas fa-address-book"></i> <span data-ar="معلومات الاتصال" data-fr="Contact">معلومات الاتصال</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label class="form-label" data-ar="البريد الإلكتروني" data-fr="Email">البريد الإلكتروني</label><input type="email" class="form-input" id="admin-email"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رقم الهاتف" data-fr="Téléphone">رقم الهاتف</label><input type="tel" class="form-input" id="admin-phone"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رقم الحاضنة (إن وجد)" data-fr="Tel Incubateur">رقم الحاضنة</label><input type="tel" class="form-input" id="admin-incubator-phone"></div>
-                        <div class="form-group"><label class="form-label" data-ar="رقم الفاكس (إن وجد)" data-fr="Fax">رقم الفاكس</label><input type="tel" class="form-input" id="admin-fax"></div>
+                        <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input type="email" class="form-input" id="admin-email"></div>
+                        <div class="form-group"><label class="form-label">رقم الهاتف</label><input type="tel" class="form-input" id="admin-phone"></div>
+                        <div class="form-group"><label class="form-label">رقم الحاضنة</label><input type="tel" class="form-input" id="admin-incubator-phone"></div>
+                        <div class="form-group"><label class="form-label">رقم الفاكس</label><input type="tel" class="form-input" id="admin-fax"></div>
                     </div>
                     <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="saveContact()"><i class="fas fa-save"></i><span data-ar="حفظ" data-fr="Enregistrer">حفظ</span></button>
                 </div>
@@ -948,6 +1135,26 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- نافذة الإعلان المنبثق التفاعلية مع عد تنازلي وزر أحمر نابض -->
+    <div class="modal-overlay" id="adPopupModal">
+        <div class="ad-modal">
+            <img src="" id="ad-banner-img" class="ad-modal-banner" style="display:none;" alt="Annonce">
+            <div class="ad-modal-body">
+                <h2 class="ad-modal-title" id="ad-title"></h2>
+                <div class="ad-modal-desc" id="ad-desc"></div>
+                <div class="ad-modal-actions">
+                    <a href="#" target="_blank" class="btn btn-primary" id="ad-cta-btn" style="display:none;"></a>
+                    <div class="ad-countdown-badge" id="ad-timer-badge">
+                        <i class="fas fa-clock"></i> <span id="ad-timer-text">يمكنك التخطي خلال: 5 ثوانٍ</span>
+                    </div>
+                    <button class="btn-ad-close" id="btn-ad-close" onclick="closeAdPopup()">
+                        <i class="fas fa-times"></i> <span data-ar="إغلاق الإعلان" data-fr="Fermer l'annonce">إغلاق الإعلان</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1018,6 +1225,7 @@
         let editingUniLinkId = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
+            setupRichTextToolbars();
             let attempts = 0;
             const initInterval = setInterval(async () => {
                 attempts++;
@@ -1053,12 +1261,54 @@
 
                     window.addEventListener('hashchange', handleRouting);
                     handleRouting();
+                    checkAndShowAdPopup();
                 }
                 if (attempts > 60) {
                     clearInterval(initInterval);
                 }
             }, 100);
         });
+
+        /* ==================== محرر النصوص المتقدم ==================== */
+        function setupRichTextToolbars() {
+            document.querySelectorAll('.rich-editor-toolbar').forEach(toolbar => {
+                const targetId = toolbar.getAttribute('data-target');
+                const targetEditor = document.getElementById(targetId);
+                toolbar.querySelectorAll('button[data-cmd]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const cmd = btn.getAttribute('data-cmd');
+                        const val = btn.getAttribute('data-val') || null;
+                        targetEditor.focus();
+                        document.execCommand(cmd, false, val);
+                    });
+                });
+            });
+        }
+
+        function applyEditorColor(input, editorId) {
+            const editor = document.getElementById(editorId);
+            editor.focus();
+            document.execCommand('foreColor', false, input.value);
+        }
+
+        function promptEditorLink(editorId) {
+            const editor = document.getElementById(editorId);
+            const url = prompt(currentLang === 'ar' ? 'أدخل رابط الويب:' : 'Entrez le lien:');
+            if (url) {
+                editor.focus();
+                document.execCommand('createLink', false, url);
+            }
+        }
+
+        function promptEditorImage(editorId) {
+            const editor = document.getElementById(editorId);
+            const url = prompt(currentLang === 'ar' ? 'أدخل رابط الصورة المباشر:' : 'Entrez l\'URL de l\'image:');
+            if (url) {
+                editor.focus();
+                document.execCommand('insertImage', false, url);
+            }
+        }
 
         /* ==================== نظام التوجيه والروابط (Routing) ==================== */
         function navigateTo(path) {
@@ -1080,6 +1330,8 @@
                 return;
             }
 
+            // إظهار عناصر الموقع العام وإخفاء لوحة الأدمن
+            restorePublicSiteVisibility();
             document.getElementById('admin-panel').classList.remove('active');
 
             if (currentRoute === '/' || currentRoute === '') {
@@ -1133,7 +1385,8 @@
                 stats: { ideas: 1000, courses: 100, labels: 40, startups: 10, mentors: 100, members: 2000 },
                 contact: { email: 'contact@incubator-blida2.dz', phone: '+213 000 000 000', incubatorPhone: '', fax: '' },
                 privacy: { privacy_ar: 'سياسة الخصوصية الخاصة بحاضنة الأعمال جامعة البليدة 2...', privacy_fr: 'Politique de confidentialité...', about_ar: 'حاضنة أعمال جامعة البليدة 2 فضاء للابتكار وريادة الأعمال...', about_fr: 'Incubateur Université Blida 2...', mapUrl: '' },
-                visits: { daily: 0, monthly: 0, total: 0, lastDate: new Date().toDateString(), lastMonth: `${new Date().getFullYear()}-${new Date().getMonth()}` }
+                visits: { daily: 0, monthly: 0, total: 0, lastDate: new Date().toDateString(), lastMonth: `${new Date().getFullYear()}-${new Date().getMonth()}` },
+                popup: { enabled: false, title_ar: 'أهلاً بكم في حاضنة الأعمال', title_fr: 'Bienvenue à l\'Incubateur', desc_ar: 'سجل الآن في أحدث البرامج التدريبية المتاحة', desc_fr: 'Inscrivez-vous dès maintenant à nos programmes', image: '', link: '', btn_text: 'اكتشف المزيد' }
             };
             for (const [key, value] of Object.entries(defaults)) {
                 const docRef = doc(db, 'settings', key);
@@ -1228,6 +1481,7 @@
             loadUniversity();
             loadContact();
             loadPrivacy();
+            loadPopupSettings();
         }
 
         async function loadBanner() {
@@ -1278,6 +1532,100 @@
             }
         }
 
+        /* ==================== النافذة الإعلانية المنبثقة ==================== */
+        async function loadPopupSettings() {
+            const docSnap = await getDoc(doc(db, 'settings', 'popup'));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (document.getElementById('popup-enabled')) document.getElementById('popup-enabled').checked = !!data.enabled;
+                if (document.getElementById('popup-title-ar')) document.getElementById('popup-title-ar').value = data.title_ar || '';
+                if (document.getElementById('popup-title-fr')) document.getElementById('popup-title-fr').value = data.title_fr || '';
+                if (document.getElementById('popup-desc-ar')) document.getElementById('popup-desc-ar').value = data.desc_ar || '';
+                if (document.getElementById('popup-desc-fr')) document.getElementById('popup-desc-fr').value = data.desc_fr || '';
+                if (document.getElementById('popup-link')) document.getElementById('popup-link').value = data.link || '';
+                if (document.getElementById('popup-btn-text')) document.getElementById('popup-btn-text').value = data.btn_text || '';
+            }
+        }
+
+        async function checkAndShowAdPopup() {
+            if (isAdmin || window.location.hash.startsWith('#/admin02')) return;
+            if (sessionStorage.getItem('ad_viewed')) return;
+
+            const docSnap = await getDoc(doc(db, 'settings', 'popup'));
+            if (docSnap.exists() && docSnap.data().enabled) {
+                const data = docSnap.data();
+                document.getElementById('ad-title').textContent = currentLang === 'ar' ? (data.title_ar || '') : (data.title_fr || '');
+                document.getElementById('ad-desc').textContent = currentLang === 'ar' ? (data.desc_ar || '') : (data.desc_fr || '');
+                
+                const bannerImg = document.getElementById('ad-banner-img');
+                if (data.image) {
+                    bannerImg.src = data.image;
+                    bannerImg.style.display = 'block';
+                } else {
+                    bannerImg.style.display = 'none';
+                }
+
+                const ctaBtn = document.getElementById('ad-cta-btn');
+                if (data.link) {
+                    ctaBtn.href = data.link;
+                    ctaBtn.textContent = data.btn_text || (currentLang === 'ar' ? 'اكتشف المزيد' : 'En savoir plus');
+                    ctaBtn.style.display = 'inline-flex';
+                } else {
+                    ctaBtn.style.display = 'none';
+                }
+
+                // فتح النافذة وبدء العد التنازلي 5 ثوانٍ
+                document.getElementById('adPopupModal').classList.add('active');
+                sessionStorage.setItem('ad_viewed', 'true');
+
+                let timeLeft = 5;
+                const timerBadge = document.getElementById('ad-timer-badge');
+                const timerText = document.getElementById('ad-timer-text');
+                const closeBtn = document.getElementById('btn-ad-close');
+
+                timerBadge.style.display = 'inline-flex';
+                closeBtn.style.display = 'none';
+
+                const timerInterval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft > 0) {
+                        timerText.textContent = currentLang === 'ar' ? `يمكنك التخطي خلال: ${timeLeft} ثوانٍ` : `Fermeture dans: ${timeLeft}s`;
+                    } else {
+                        clearInterval(timerInterval);
+                        timerBadge.style.display = 'none';
+                        closeBtn.style.display = 'inline-flex';
+                    }
+                }, 1000);
+            }
+        }
+
+        function closeAdPopup() {
+            document.getElementById('adPopupModal').classList.remove('active');
+        }
+
+        async function savePopupSettings() {
+            showLoading(true);
+            try {
+                const file = document.getElementById('popup-image').files[0];
+                let imageUrl = file ? await uploadImageSafe(file) : null;
+                const updateData = {
+                    enabled: document.getElementById('popup-enabled').checked,
+                    title_ar: document.getElementById('popup-title-ar').value,
+                    title_fr: document.getElementById('popup-title-fr').value,
+                    desc_ar: document.getElementById('popup-desc-ar').value,
+                    desc_fr: document.getElementById('popup-desc-fr').value,
+                    link: document.getElementById('popup-link').value,
+                    btn_text: document.getElementById('popup-btn-text').value
+                };
+                if (imageUrl) updateData.image = imageUrl;
+                await setDoc(doc(db, 'settings', 'popup'), updateData, { merge: true });
+                showToast('success', currentLang === 'ar' ? 'تم حفظ إعدادات الإعلان' : 'Enregistré');
+            } catch (e) {
+                showToast('error', e.message);
+            }
+            showLoading(false);
+        }
+
         /* ==================== 1. أعمالنا (Works) ==================== */
         async function loadWorks() {
             const q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
@@ -1304,7 +1652,7 @@
                             <img src="${data.image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500'}" alt="${title}" class="blog-image">
                             <div class="blog-content">
                                 <h3 class="blog-title">${title}</h3>
-                                <p class="blog-excerpt">${content.substring(0, 110)}...</p>
+                                <div class="blog-excerpt">${content.replace(/<[^>]*>/g, '').substring(0, 110)}...</div>
                             </div>
                         `;
                         slider.appendChild(card);
@@ -1352,7 +1700,7 @@
                     <div class="custom-card-body">
                         <span class="custom-card-tag">${currentLang === 'ar' ? 'مشروع معتمد' : 'Projet Validé'}</span>
                         <h3 class="custom-card-title">${title}</h3>
-                        <p class="custom-card-desc">${content.substring(0, 140)}...</p>
+                        <div class="custom-card-desc">${content.replace(/<[^>]*>/g, '').substring(0, 140)}...</div>
                         <div class="custom-card-footer">
                             <span class="custom-card-btn">${currentLang === 'ar' ? 'عرض التفاصيل' : 'Voir Détails'} <i class="fas ${currentLang === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right'}"></i></span>
                         </div>
@@ -1367,7 +1715,7 @@
             if (!work) return;
             document.getElementById('work-detail-img').src = work.image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200';
             document.getElementById('work-detail-title').textContent = currentLang === 'ar' ? (work.title_ar || '') : (work.title_fr || '');
-            document.getElementById('work-detail-content').textContent = currentLang === 'ar' ? (work.content_ar || '') : (work.content_fr || '');
+            document.getElementById('work-detail-content').innerHTML = currentLang === 'ar' ? (work.content_ar || '') : (work.content_fr || '');
         }
 
         function updateHomeWorksSlider() {
@@ -1449,7 +1797,7 @@
                     <div class="custom-card-body">
                         <span class="custom-card-tag">${cat}</span>
                         <h3 class="custom-card-title">${title}</h3>
-                        <p class="custom-card-desc">${content.substring(0, 130)}...</p>
+                        <div class="custom-card-desc">${content.replace(/<[^>]*>/g, '').substring(0, 130)}...</div>
                         <div class="custom-card-footer">
                             <span class="custom-card-btn">${currentLang === 'ar' ? 'قراءة المقال' : 'Lire l\'article'} <i class="fas ${currentLang === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right'}"></i></span>
                         </div>
@@ -1464,7 +1812,7 @@
             if (!post) return;
             document.getElementById('blog-detail-img').src = post.image || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200';
             document.getElementById('blog-detail-title').textContent = currentLang === 'ar' ? (post.title_ar || '') : (post.title_fr || '');
-            document.getElementById('blog-detail-content').textContent = currentLang === 'ar' ? (post.content_ar || '') : (post.content_fr || '');
+            document.getElementById('blog-detail-content').innerHTML = currentLang === 'ar' ? (post.content_ar || '') : (post.content_fr || '');
             document.getElementById('blog-detail-category').textContent = currentLang === 'ar' ? (post.cat_ar || 'أخبار وبرامج') : (post.cat_fr || 'Actualités');
             document.getElementById('blog-detail-date').textContent = post.createdAt ? new Date(post.createdAt.toDate ? post.createdAt.toDate() : post.createdAt).toLocaleDateString() : '';
 
@@ -1494,7 +1842,7 @@
                     <img src="${item.image || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500'}" alt="${title}" class="blog-image">
                     <div class="blog-content">
                         <h3 class="blog-title">${title}</h3>
-                        <p class="blog-excerpt">${content.substring(0, 100)}...</p>
+                        <p class="blog-excerpt">${content.replace(/<[^>]*>/g, '').substring(0, 100)}...</p>
                     </div>
                 `;
                 slider.appendChild(card);
@@ -1821,14 +2169,29 @@
             showLoading(false);
         }
 
+        // إخفاء كل عناصر الموقع الخارجي عند تفعيل واجهة الأدمن
         function showAdminPanel() {
+            document.getElementById('navbar').style.display = 'none';
+            document.getElementById('sideMenu').style.display = 'none';
+            document.getElementById('menuOverlay').style.display = 'none';
             document.getElementById('public-site').style.display = 'none';
             document.getElementById('pages-view').style.display = 'none';
+            document.getElementById('contact').style.display = 'none'; // الفوتر
+
             document.getElementById('admin-panel').classList.add('active');
             window.location.hash = '#/admin02';
             showAdminSection('dashboard');
             loadAdminStats();
             loadReports();
+            window.scrollTo(0, 0);
+        }
+
+        // استعادة ظهور الموقع عند تسجيل خروج الأدمن
+        function restorePublicSiteVisibility() {
+            document.getElementById('navbar').style.display = 'block';
+            document.getElementById('sideMenu').style.display = '';
+            document.getElementById('menuOverlay').style.display = '';
+            document.getElementById('contact').style.display = 'block';
         }
 
         async function logoutAdmin() {
@@ -1837,6 +2200,7 @@
             } catch (e) {}
             isAdmin = false;
             document.getElementById('admin-panel').classList.remove('active');
+            restorePublicSiteVisibility();
             navigateTo('/');
             showToast('info', currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Déconnecté');
         }
@@ -1859,6 +2223,7 @@
             const titles = {
                 dashboard: { ar: 'الداشبورد', fr: 'Tableau de Bord' },
                 banner: { ar: 'إضافة حدث أو دورة', fr: 'Événement/Bannière' },
+                popup: { ar: 'الإعلان المنبثق', fr: 'Annonce Pop-up' },
                 stats: { ar: 'تعديل الإنجازات', fr: 'Réalisations' },
                 works: { ar: 'أعمالنا', fr: 'Nos Travaux' },
                 blogs: { ar: 'المدونة والأخبار', fr: 'Blog & Actualités' },
@@ -1982,8 +2347,8 @@
             if (!data) return;
             document.getElementById('work-title-ar').value = data.title_ar || '';
             document.getElementById('work-title-fr').value = data.title_fr || '';
-            document.getElementById('work-content-ar').value = data.content_ar || '';
-            document.getElementById('work-content-fr').value = data.content_fr || '';
+            document.getElementById('work-editor-ar').innerHTML = data.content_ar || '';
+            document.getElementById('work-editor-fr').innerHTML = data.content_fr || '';
             editingWorkId = id;
             
             const btn = document.getElementById('btn-add-work');
@@ -1993,6 +2358,7 @@
 
         async function addWork() {
             const title_ar = document.getElementById('work-title-ar').value;
+            const content_ar = document.getElementById('work-editor-ar').innerHTML;
             if (!title_ar) { showToast('error', currentLang === 'ar' ? 'العنوان مطلوب' : 'Titre requis'); return; }
             showLoading(true);
             try {
@@ -2001,8 +2367,8 @@
                 const workObj = {
                     title_ar,
                     title_fr: document.getElementById('work-title-fr').value,
-                    content_ar: document.getElementById('work-content-ar').value,
-                    content_fr: document.getElementById('work-content-fr').value
+                    content_ar: content_ar,
+                    content_fr: document.getElementById('work-editor-fr').innerHTML
                 };
                 if (imageUrl) workObj.image = imageUrl;
 
@@ -2019,8 +2385,8 @@
                 }
                 document.getElementById('work-title-ar').value = '';
                 document.getElementById('work-title-fr').value = '';
-                document.getElementById('work-content-ar').value = '';
-                document.getElementById('work-content-fr').value = '';
+                document.getElementById('work-editor-ar').innerHTML = '';
+                document.getElementById('work-editor-fr').innerHTML = '';
                 document.getElementById('work-image').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
@@ -2035,8 +2401,8 @@
             document.getElementById('post-title-fr').value = data.title_fr || '';
             document.getElementById('post-cat-ar').value = data.cat_ar || '';
             document.getElementById('post-cat-fr').value = data.cat_fr || '';
-            document.getElementById('post-content-ar').value = data.content_ar || '';
-            document.getElementById('post-content-fr').value = data.content_fr || '';
+            document.getElementById('post-editor-ar').innerHTML = data.content_ar || '';
+            document.getElementById('post-editor-fr').innerHTML = data.content_fr || '';
             editingPostId = id;
             
             const btn = document.getElementById('btn-add-post');
@@ -2056,8 +2422,8 @@
                     title_fr: document.getElementById('post-title-fr').value,
                     cat_ar: document.getElementById('post-cat-ar').value,
                     cat_fr: document.getElementById('post-cat-fr').value,
-                    content_ar: document.getElementById('post-content-ar').value,
-                    content_fr: document.getElementById('post-content-fr').value
+                    content_ar: document.getElementById('post-editor-ar').innerHTML,
+                    content_fr: document.getElementById('post-editor-fr').innerHTML
                 };
                 if (imageUrl) postObj.image = imageUrl;
 
@@ -2076,8 +2442,8 @@
                 document.getElementById('post-title-fr').value = '';
                 document.getElementById('post-cat-ar').value = '';
                 document.getElementById('post-cat-fr').value = '';
-                document.getElementById('post-content-ar').value = '';
-                document.getElementById('post-content-fr').value = '';
+                document.getElementById('post-editor-ar').innerHTML = '';
+                document.getElementById('post-editor-fr').innerHTML = '';
                 document.getElementById('post-image').value = '';
             } catch (e) { showToast('error', e.message); }
             showLoading(false);
@@ -2342,5 +2708,3 @@
     </script>
 </body>
 </html>
-
-  
